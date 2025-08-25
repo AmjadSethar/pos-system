@@ -62,7 +62,6 @@
 											<th>{{ __('app.name') }}</th>
 											<th>{{ __('app.mobile') }}</th>
 											<th>{{ __('app.whatsapp') }}</th>
-											<th>{{ __('app.email') }}</th>
 											<th>{{ __('Credit Limit') }}</th>
 												<th>{{ __('app.status') }}</th>
 											<th>{{ __('app.created_by') }}</th>

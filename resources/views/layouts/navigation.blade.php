@@ -41,6 +41,11 @@
 						    <a href="{{ route('party.list', ['partyType' => 'supplier']) }}"><i class='bx bx-radio-circle'></i>{{ __('supplier.suppliers') }}</a>
 						</li>
 						@endcan
+						@can('party.category.view')
+						<li class="{{ request()->is('category/*', 'category/*') ? 'mm-active' : '' }}">
+								<a href="{{ route('party.category.list') }}"><i class='bx bx-radio-circle'></i>{{ __('Category') }}</a>
+							</li>
+						@endcan
 					</ul>
 				</li>
 				@endcanany
@@ -158,12 +163,12 @@
 						<div class="parent-icon"><i class="bx bx-package"></i>
 						</div>
 						<div class="menu-title">{{
-						__('item.items') }}</div>
+						__('Inventory') }}</div>
 					</a>
 					<ul>
 						@can('item.view')
 						<li class="{{ request()->is('item/list', 'item/create', 'item/edit*', 'item/transaction*') ? 'mm-active' : '' }}">
-											<a href="{{ route('item.list') }}"><i class='bx bx-radio-circle'></i>{{ __('item.list') }}</a>
+											<a href="{{ route('item.list') }}"><i class='bx bx-radio-circle'></i>{{ __('Inventory') }}</a>
 										</li>
 
 						@endcan

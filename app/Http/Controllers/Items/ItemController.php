@@ -170,7 +170,7 @@ class ItemController extends Controller
 
                 'tracking_type'             =>  $request->tracking_type,
                 'min_stock'                 =>  $request->min_stock,
-                'item_location'             =>  $request->item_location,
+                // 'item_location'             =>  $request->item_location,
 
                 'status'                    =>  $request->status,
             ];
@@ -312,9 +312,9 @@ class ItemController extends Controller
                  * Record ItemTransactions
                  * */
                 //if($request->opening_quantity){
-                    if(!$transaction = $this->recordInItemTransactionEntry($request)){
-                        throw new \Exception(__('item.failed_to_record_item_transactions'));
-                    }
+                    // if(!$transaction = $this->recordInItemTransactionEntry($request)){
+                    //     throw new \Exception(__('item.failed_to_record_item_transactions'));
+                    // }
                 //}
 
             }

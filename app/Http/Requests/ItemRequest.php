@@ -33,7 +33,7 @@ class ItemRequest extends FormRequest
 
         $rulesArray = [
             'hsn'                             => ['nullable', 'string', 'max:100'],
-            'item_category_id'                => ['required'],
+            // 'item_category_id'                => ['required'],
             'base_unit_id'                    => ['required'],
             'secondary_unit_id'               => ['required'],
             'conversion_rate'                 => ['required'],
@@ -55,9 +55,9 @@ class ItemRequest extends FormRequest
             'is_wholesale_price_with_tax'     => ['required', 'numeric'],
 
             //Stock Tab
-            'tracking_type'                   => ['required', 'string', 'max:100'],
+            'tracking_type'                   => ['nullable', 'string', 'max:100'],
             'warehouse_id'                    => ['required'],
-            'transaction_date'                => ['required'],
+            // 'transaction_date'                => ['required'],
             'opening_quantity'                => ['nullable', 'numeric'],
             'serial_number_json'              => ['nullable'],
             'batch_details_json'              => ['nullable'],
@@ -115,7 +115,7 @@ class ItemRequest extends FormRequest
             $data['conversion_rate']        = ($data['is_service']) ? 1 : $data['conversion_rate'];
             $data['tracking_type']          = ($data['is_service']) ? 'regular' : $data['tracking_type'];
             $data['min_stock']              = ($data['is_service']) ? 0 : $data['min_stock'];
-            $data['item_location']          = ($data['is_service']) ? null : $data['item_location'];
+            // $data['item_location']          = ($data['is_service']) ? null : $data['item_location'];
             $data['sku']                    = $data['sku'] ?? null;
             $data['mrp']                    = $data['mrp'] ?? 0;
 

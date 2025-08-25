@@ -75,6 +75,7 @@ use App\Http\Controllers\Payment\SaleReturnPaymentController;
 use App\Http\Controllers\Transaction\CashController;
 use App\Http\Controllers\Transaction\ChequeController;
 use App\Http\Controllers\Transaction\BankController;
+use App\Http\Controllers\Party\PartyCategoryController;
 
 
 /*
@@ -287,7 +288,26 @@ Route::middleware('auth')->group(function () {
          * Ajax selection box search
          * */
         Route::get('/ajax/get-list', [PartyController::class, 'getAjaxSearchBarList']);
+
+
+
+        
     });
+
+
+    Route::get('/category/create', [PartyCategoryController::class, 'create'])
+                ->middleware('can:item.category.create')
+                ->name('party.category.create');//View
+        Route::get('/category/edit/{id}', [PartyCategoryController::class, 'edit'])
+                ->middleware('can:party.category.edit')
+                ->name('party.category.edit'); //Edit
+        Route::put('/category/update', [PartyCategoryController::class, 'update'])->name('party.category.update'); //Update
+        Route::get('/category/list', [PartyCategoryController::class, 'list'])
+                ->middleware('can:party.category.view')
+                ->name('party.category.list'); //List
+        Route::get('/category/datatable-list', [PartyCategoryController::class, 'datatableList'])->name('party.category.datatable.list'); //Datatable List
+        Route::post('/category/store', [PartyCategoryController::class, 'store'])->name('party.category.store');//Save operation
+        Route::post('/category/delete/', [PartyCategoryController::class, 'delete'])->middleware('can:party.category.delete')->name('party.category.delete');//delete operation
 
     /**
      * Customer

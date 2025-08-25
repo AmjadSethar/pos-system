@@ -5,9 +5,7 @@ $(function() {
 
     const datatableForm = $("#datatableForm");
 
-    const partyType = $('input[name="party_type"]').val();
-
-    let partyPaymentHistoryModal = $('#partyPaymentHistoryModal');
+    
 
     /**
      *Server Side Datatable Records
@@ -16,18 +14,13 @@ $(function() {
         //Delete previous data
         tableId.DataTable().destroy();
 
-        var exportColumns = [2,3,4,5,6,7,8,9,10];//Index Starts from 0
+        var exportColumns = [2,3,4,5];//Index Starts from 0
 
         var table = tableId.DataTable({
             processing: true,
             serverSide: true,
             method:'get',
-            ajax: {
-                    url: baseURL+'/party/'+partyType+'/datatable-list',
-                    data:{
-                            is_wholesale_customer : isWholesaleCustomer(),
-                        },
-                },
+            ajax: baseURL + '/category/datatable-list',
             columns: [
                 {targets: 0, data:'id', orderable:true, visible:false},
                 {
@@ -39,32 +32,12 @@ $(function() {
                       }
                 },
 
-                {data: 'name', name: 'name',},
-                {data: "mobile", name: "mobile"},
-                {data: "whatsapp", name: "whatsapp"},
-                {data: "credit_limit", name: "credit_limit"},
+                {data: 'name', name: 'name'},
                 
-
-
-                {
-                    data: 'status',
-                    name: 'status',
-                    orderable: false,
-                    className: 'text-center',
-                    render: function(data, type, full, meta) {
-                        if(data == 1){
-                            return '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3">Active</div>';
-                        }
-                        else{
-                            return '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">Inactive</div>';
-                        }
-
-                    }
-                },
-
+                {data: 'description', name: 'description', orderable: false},
+              
                 {data: 'username', name: 'username'},
                 {data: 'created_at', name: 'created_at'},
-
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ],
 
@@ -280,119 +253,4 @@ $(function() {
         loadDatatables();
 	} );
 
-    $(document).on('click', '.party-payment-history', function() {
-        var partyId = $(this).attr('data-party-id');
-        var url = baseURL + `/party/payment-history/`;
-        ajaxGetRequest(url ,partyId, 'party-payment-history');
-    });
-
-    $(document).on('click', '.party-delete-payment', function() {
-        var paymentId = $(this).closest('tr').attr('id');
-        deletePaymentRequest(paymentId);
-    });
-
-    /**
-     * Caller:
-     * Function to single delete request
-     * Call Delete Request
-    */
-    async function deletePaymentRequest(paymentId) {
-        const confirmed = await confirmAction();//Defined in ./common/common.js
-        if (confirmed) {
-            var url = baseURL + `/party/payment-delete/`;
-            ajaxGetRequest(url ,paymentId, 'delete-party-payment');
-        }
-    }
-
-    function ajaxGetRequest(url, id, _from) {
-          $.ajax({
-            url: url + id,
-            type: 'GET',
-            headers: {
-              'X-CSRF-TOKEN': datatableForm.find('input[name="_token"]').val(),
-            },
-            beforeSend: function() {
-              showSpinner();
-            },
-            success: function(response) {
-              if(_from == 'delete-party-payment'){
-                handlePartyPaymentDeleteResponse(response);
-              }
-              else if (_from == 'party-payment-history') {
-                handlePartyPaymentHistoryResponse(response);
-              } else {
-                //
-              }
-            },
-            error: function(response) {
-               var message = response.responseJSON.message;
-               iziToast.error({title: 'Error', layout: 2, message: message});
-            },
-            complete: function() {
-              hideSpinner();
-            },
-          });
-    }
-
-    function handlePartyPaymentHistoryResponse(response, showModel = true) {
-        $("#party-name").text(response.party_name);
-        $("#balance-amount").text(_parseFix(response.balance));
-
-        let totalAmount = 0;
-        
-        var table = $('#payment-history-table tbody');
-
-        table.empty(); // Clear existing rows
-        
-        $.each(response.partyPayments, function(index, payment) {
-            totalAmount += parseFloat(payment.amount);
-            var newRow = `
-                <tr id="${payment.payment_id}">
-                    <td>${payment.transaction_date}</td>
-                    <td>${payment.payment_direction}</td>
-                    <td>${payment.reference_no}</td>
-                    <td>${payment.payment_type}</td>
-                    <td class="text-end text-${payment.color}">${payment.amount}</td>
-                    <td>
-                        <div class="d-flex order-actions justify-content-center">
-                            <a href="${baseURL}/party/payment-receipt/print/${payment.payment_id}" target="_blank" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Print"><i class="bx bxs-printer"></i></a>
-                            <a href="${baseURL}/party/payment-receipt/pdf/${payment.payment_id}" target="_blank" class="ms-1 text-success" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="PDF"><i class="bx bxs-file-pdf"></i></a>
-                            <a href="javascript:;" role="button" class="ms-1 party-delete-payment text-danger" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Delete"><i class="bx bxs-trash"></i></a>
-                        </div>
-                    </td>
-                </tr>
-            `;
-
-            table.append(newRow);
-        });
-
-        //show only if not shown, in delete payment condition no need to show modal
-        if(showModel){
-            partyPaymentHistoryModal.modal('show');
-        }
-
-        setTooltip();
-    }
-
-    function handlePartyPaymentDeleteResponse(response) {
-        iziToast.success({title: 'Success', layout: 2, message: response.message});
-        partyPaymentHistoryModal.modal('hide');
-        loadDatatables();
-    }
-
-    function isWholesaleCustomer() {
-
-        if(partyType != 'customer'){
-            return 0;//0 retail
-        }
-        
-        /**
-         * @return 0 if wholesaler else 0 for retailer
-         * */
-        return $("#customer_type").val();
-    }
-
-    $(document).on("change", '#customer_type', function function_name() {
-        loadDatatables();
-    });
 });

@@ -71,7 +71,8 @@ class PartyController extends Controller
      */
     public function create($partyType) : View {
         $lang = $this->getLang($partyType);
-        return view('party.create', compact('lang'));
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+        return view('party.create', compact('lang','categories',));
     }
 
     /**
@@ -84,6 +85,8 @@ class PartyController extends Controller
         $lang = $this->getLang($partyType);
 
         $party = Party::where('party_type', $partyType)->whereId($id)->get()->first();
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+
         if(!$party){
             return abort(403, 'Unauthorized');
         }
@@ -104,7 +107,7 @@ class PartyController extends Controller
          * */
         $todaysDate = $this->toUserDateFormat(now());
 
-        return view('party.edit', compact('party', 'transaction', 'opening_balance_type', 'todaysDate', 'lang'));
+        return view('party.edit', compact('party', 'transaction', 'opening_balance_type', 'todaysDate', 'lang','categories'));
     }
 
 

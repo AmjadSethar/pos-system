@@ -6,9 +6,9 @@
         <div class="page-wrapper">
             <div class="page-content">
                 <x-breadcrumb :langArray="[
-                                            'item.items',
-                                            'item.list',
-                                            'item.update',
+                                            'Inventory',
+                                            'Inventory List',
+                                            'Inventory Update',
                                         ]"/>
                 <div class="row">
                     <div class="col-12 col-lg-12">
@@ -16,7 +16,7 @@
 
 
                             <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
-                              <h5 class="mb-0">{{ __('item.details') }} <span class="text-primary">({{ $item->is_service ? __('service.service') : __('item.product') }})</span></h5>
+                              <h5 class="mb-0">{{ __('Inventory Detail') }} </h5>
                               <div class="btn-group d-none">
                                 <input type="radio" class="btn-check" name="item_type_radio" id="product" value="product" autocomplete="off" {{ (!$item->is_service) ? 'checked' : '' }}>
                                 <label class="btn btn-outline-primary btn-sm" for="product">{{ __('item.product') }}</label>
@@ -41,21 +41,14 @@
                                     <input type="hidden" name="serial_number_json" value='{{ $serviceJson }}'>
                                     <input type="hidden" name="batch_details_json" value='{{ $batchJson }}'>
                                     <input type="hidden" name="is_service" value='{{ ($item->is_service) ? 1 : 0 }}'>
+                                    <input type="hidden" name="tracking_type" value='regular'>
+
 
                                     <div class="col-md-4">
                                         <x-label for="name" name="{{ __('app.name') }}" />
                                         <x-input type="text" name="name" :required="true" value="{{ $item->name }}"/>
                                     </div>
-                                    <div class="col-md-4">
-                                        <x-label for="hsn" name="{{ __('item.hsn') }}" />
-                                        <x-input type="text" name="hsn" :required="false" value="{{ $item->hsn }}"/>
-                                    </div>
-                                    @if(app('company')['show_sku'])
-                                    <div class="col-md-4">
-                                        <x-label for="sku" name="{{ __('item.sku') }}" />
-                                        <x-input type="text" name="sku" :required="false" value="{{ $item->sku }}"/>
-                                    </div>
-                                    @endif
+                                   
                                     <div class="col-md-4">
                                         <x-label for="hsn" name="{{ __('item.code') }}" />
                                         <div class="input-group mb-3">
@@ -63,10 +56,7 @@
                                             <button class="btn btn-outline-secondary auto-generate-code" type="button" id="button-addon2">{{ __('app.auto') }}</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <x-label for="item_category_id" name="{{ __('item.category.category') }}" />
-                                        <x-dropdown-item-category selected="{{ $item->item_category_id }}" :isMultiple=false />
-                                    </div>
+                                    
 
                                     <div class="col-md-4 p-4 item-type-product">
                                         <button type="button" class="btn btn-light px-5 rounded-0" data-bs-toggle="modal" data-bs-target="#unitModal">{{ __('unit.select_unit') }}</button>
@@ -83,54 +73,7 @@
                                         <x-dropdown-status selected="{{ $item->status }}" dropdownName='status'/>
                                     </div>
 
-                                    <div class="col-md-12 mt-5 item-type-product">
-                                            <div class="d-flex align-items-center gap-3">
-
-                                                <x-radio-block id="regular_tracking" boxName="tracking_type" text="{{ __('item.regular') }}" value="regular" boxType="radio" parentDivClass="fw-bold" :checked=true />
-
-                                                @if(app('company')['enable_batch_tracking'])
-                                                <x-radio-block id="batch_tracking" boxName="tracking_type" text="{{ __('item.batch_tracking') }}" value="batch" boxType="radio" parentDivClass="fw-bold"/>
-                                                @endif
-
-                                                @if(app('company')['enable_serial_tracking'])
-                                                <x-radio-block id="serial_tracking" boxName="tracking_type" text="{{ __('item.serial_no_tracking') }}" value="serial" boxType="radio" parentDivClass="fw-bold"/>
-                                                @endif
-
-                                            </div>
-                                    </div>
-
-                                    <ul class="nav nav-tabs nav-success" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link active" data-bs-toggle="tab" href="#successhome" role="tab" aria-selected="true">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="tab-icon"><i class='bx bx-dollar font-18 me-1'></i>
-                                                    </div>
-                                                    <div class="tab-title">{{ __('item.pricing') }}</div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item item-type-product" role="presentation">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#successprofile" role="tab" aria-selected="false">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="tab-icon"><i class='bx bx-box font-18 me-1'></i>
-                                                    </div>
-                                                    <div class="tab-title">{{ __('item.stock') }}</div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#successcontact" role="tab" aria-selected="false">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="tab-icon"><i class='bx bx-image-add font-18 me-1'></i>
-                                                    </div>
-                                                    <div class="tab-title">{{ __('app.image') }}</div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content py-3">
-                                        <div class="tab-pane fade show active" id="successhome" role="tabpanel">
-                                            <div class="row">
+                                    <div class="row">
                                                 <div class="col-md-4">
                                                     <x-label for="sale_price" name="{{ __('item.sale_price') }}" />
                                                     <div class="input-group mb-3">
@@ -176,24 +119,14 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="successprofile" role="tabpanel">
+                                            
 
-                                           <div class="row">
+                                            <div class="row">
                                                 <div class="col-md-4">
                                                     <x-label for="warehouse_id" name="{{ __('warehouse.warehouse') }}" />
                                                     <x-dropdown-warehouse selected="{{ $transaction->warehouse_id??'' }}" dropdownName='warehouse_id'/>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <x-label for="transaction_date" name="{{ __('app.as_of_date') }}" />
-                                                    <div class="input-group mb-3">
-                                                        <x-input type="text" additionalClasses="datepicker-edit" name="transaction_date" :required="true" value="{{ $transaction->formatted_transaction_date??$todaysDate }}"/>
-                                                        <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
-                                                    </div>
-                                                </div>
 
-                                           </div>
-                                           <div class="row mb-3">
                                                 <div class="col-md-4">
                                                     <x-label for="opening_quantity" name="{{ __('item.opening_quantity') }}" />
                                                     <div class="input-group mb-3">
@@ -201,39 +134,29 @@
 
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <x-label for="at_price" name="{{ __('item.at_price') }}" />
-                                                    <x-input type="text" additionalClasses="cu_numeric" name="at_price" :required="false" value="{{ ($transaction)?$formatNumber->formatWithPrecision($transaction->unit_price, comma:false):0 }}"/>
-                                                </div>
 
-                                           </div>
-
-
-                                           <div class="row mb-3">
                                                 <div class="col-md-4">
                                                     <x-label for="min_stock" name="{{ __('item.min_stock') }}" />
                                                     <x-input type="text" additionalClasses="cu_numeric" name="min_stock" :required="false" value="{{ $formatNumber->formatQuantity($item->min_stock) }}"/>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <x-label for="location" name="{{ __('item.item_location') }}" />
-                                                    <x-input type="text" name="item_location" :required="false" value="{{ $item->item_location }}"/>
-                                                </div>
-                                           </div>
+                                                
 
-                                        </div>
-                                        <div class="tab-pane fade" id="successcontact" role="tabpanel">
+                                           </div>
+                                         
+
                                             <div class="col-md-12">
                                                 <x-label for="picture" name="{{ __('app.image') }}" />
                                                 <x-browse-image
-                                                                src="{{ url('/item/getimage/' . $item->image_path) }}"
-                                                                name='image'
-                                                                imageid='uploaded-image-1'
-                                                                inputBoxClass='input-box-class-1'
-                                                                imageResetClass='image-reset-class-1'
-                                                                />
+                                                    src="{{ url('/item/getimage/' . $item->image_path) }}"
+                                                    name='image'
+                                                    imageid='uploaded-image-1'
+                                                    inputBoxClass='input-box-class-1'
+                                                    imageResetClass='image-reset-class-1'
+                                                    />
                                             </div>
-                                        </div>
-                                    </div>
+                                    
+
+                                 
 
                                     <div class="col-md-12">
                                         <div class="d-md-flex d-grid align-items-center gap-3">

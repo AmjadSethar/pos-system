@@ -9,8 +9,8 @@
 		<div class="page-wrapper">
 			<div class="page-content">
 					<x-breadcrumb :langArray="[
-											'item.items',
-											'item.list',
+											'Inventory',
+											'Inventory List',
 										]"/>
 
                     <div class="card">
@@ -18,7 +18,7 @@
 					<div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
 					    <!-- Other content on the left side -->
 					    <div>
-					    	<h5 class="mb-0 text-uppercase">{{ __('item.list') }}</h5>
+					    	<h5 class="mb-0 text-uppercase">{{ __('Inventory List') }}</h5>
 					    </div>
 					    <div class="d-flex gap-2">
 						    @can('import.item')
@@ -28,21 +28,14 @@
 
 						    @can('item.create')
 						    <!-- Button pushed to the right side -->
-						    <x-anchor-tag href="{{ route('item.create') }}" text="{{ __('item.create') }}" class="btn btn-primary px-5" />
+						    <x-anchor-tag href="{{ route('item.create') }}" text="{{ __('Inventory Create') }}" class="btn btn-primary px-5" />
 						    @endcan
 						</div>
 					</div>
 
 					<div class="card-body">
 						<div class="row g-3">
-							<div class="col-md-3">
-                                <x-label for="is_service" name="{{ __('item.item_type') }}" />
-                                <select class="form-select single-select-clear-field" id="is_service" name="is_service" data-placeholder="Choose one thing">
-								    <option></option>
-								    <option value='0'>{{ __('item.product') }}</option>
-								    <option value='1'>{{ __('service.service') }}</option>
-								</select>
-                            </div>
+							
                             <div class="col-md-3">
                                 <x-label for="item_category_id" name="{{ __('item.category.category') }}" />
                                 <x-dropdown-item-category selected="" :isMultiple='false' :showSelectOptionAll='true' />
