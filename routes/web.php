@@ -309,6 +309,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/category/store', [PartyCategoryController::class, 'store'])->name('party.category.store');//Save operation
         Route::post('/category/delete/', [PartyCategoryController::class, 'delete'])->middleware('can:party.category.delete')->name('party.category.delete');//delete operation
 
+
+
+       
     /**
      * Customer
      * */

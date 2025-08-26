@@ -53,6 +53,7 @@ class Item extends Model
         'item_location',
         'image_path',
         'status',
+        'supplier_id'
     ];
 
     /**

@@ -86,12 +86,13 @@ class PurchaseController extends Controller
     public function create(): View  {
         $prefix = Prefix::findOrNew($this->companyId);
         $lastCountId = $this->getLastCountId();
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
         $selectedPaymentTypesArray = json_encode($this->paymentTypeService->selectedPaymentTypesArray());
         $data = [
             'prefix_code' => $prefix->purchase_bill,
             'count_id' => ($lastCountId+1),
         ];
-        return view('purchase.bill.create',compact('data', 'selectedPaymentTypesArray'));
+        return view('purchase.bill.create',compact('data', 'selectedPaymentTypesArray','categories'));
     }
 
     /**

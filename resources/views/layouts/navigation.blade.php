@@ -55,8 +55,7 @@
 					<a href="javascript:;" class="has-arrow">
 						<div class="parent-icon"><i class="bx bx-cart"></i>
 						</div>
-						<div class="menu-title">{{
-						__('sale.sale') }}</div>
+						<div class="menu-title">Order</div>
 					</a>
 					<ul>
 						{{-- @can('sale.invoice.create')
@@ -79,7 +78,11 @@
 
 						@can('sale.order.view')
 						<li class="{{ request()->is('sale/order/*') ? 'mm-active' : '' }}">
-											<a href="{{ route('sale.order.list') }}"><i class='bx bx-radio-circle'></i>{{ __('sale.order.order') }}</a>
+											<a href="{{ route('sale.order.list') }}"><i class='bx bx-radio-circle'></i>Order List</a>
+										</li>
+
+										<li class="{{ request()->is('sale/order/*') ? 'mm-active' : '' }}">
+											<a href="{{ route('sale.order.create') }}"><i class='bx bx-radio-circle'></i>Create Order</a>
 										</li>
 						@endcan
 
@@ -91,6 +94,9 @@
 					</ul>
 				</li>
 				@endcanany
+
+
+				
 
 				@canany(['purchase.bill.view', 'purchase.order.view', 'purchase.return.view'])
 				<li>

@@ -67,6 +67,28 @@ class SaleOrderController extends Controller
         $this->saleOrderSmsNotificationService = $saleOrderSmsNotificationService;
     }
 
+    public function getLang($partyType) : array
+    {
+        if($partyType == 'customer'){
+            $lang = [
+                'party_list' => __('customer.list'),
+                'party_create' => __('customer.create_customer'),
+                'party_update' => __('customer.update_customer'),
+                'party_type' => $partyType,
+                'party_details' => __('customer.details'),
+            ];
+        }else{
+            $lang = [
+                'party_list' => __('supplier.list'),
+                'party_create' => __('supplier.create_supplier'),
+                'party_update' => __('supplier.update_supplier'),
+                'party_type' => $partyType,
+                'party_details' => __('supplier.details'),
+            ];
+        }
+        return $lang;
+    }
+
     /**
      * Create a new order.
      *
@@ -74,13 +96,16 @@ class SaleOrderController extends Controller
      */
     public function create(): View  {
         $prefix = Prefix::findOrNew($this->companyId);
+        // $lang = $this->getLang($p);
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+
         $lastCountId = $this->getLastCountId();
         $selectedPaymentTypesArray = json_encode($this->paymentTypeService->selectedPaymentTypesArray());
         $data = [
             'prefix_code' => $prefix->sale_order,
             'count_id' => ($lastCountId+1),
         ];
-        return view('sale.order.create',compact('data', 'selectedPaymentTypesArray'));
+        return view('sale.order.create',compact('data', 'selectedPaymentTypesArray', 'categories'));
     }
 
     /**

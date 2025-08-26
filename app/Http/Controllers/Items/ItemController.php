@@ -70,7 +70,10 @@ class ItemController extends Controller
         $data = [
             'count_id' => str_pad(rand(0, 9999999999), 10, '0', STR_PAD_LEFT),
         ];
-        return view('items.item.create', compact('data'));
+        $supplier = Party::where('party_type', 'supplier')
+                            ->where('status', '1')
+                            ->get();
+        return view('items.item.create', compact('data','supplier'));
     }
     /**
      * Get last count ID
@@ -173,6 +176,7 @@ class ItemController extends Controller
                 // 'item_location'             =>  $request->item_location,
 
                 'status'                    =>  $request->status,
+                'supplier_id'                    =>  $request->supplier,
             ];
             if($request->operation == 'save'){
                 // Create a new expense record using Eloquent and save it
