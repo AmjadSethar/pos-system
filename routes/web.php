@@ -76,6 +76,7 @@ use App\Http\Controllers\Transaction\CashController;
 use App\Http\Controllers\Transaction\ChequeController;
 use App\Http\Controllers\Transaction\BankController;
 use App\Http\Controllers\Party\PartyCategoryController;
+use App\Http\Controllers\OrderPaymentController;
 
 
 /*
@@ -287,7 +288,7 @@ Route::middleware('auth')->group(function () {
         /**
          * Ajax selection box search
          * */
-        Route::get('/ajax/get-list', [PartyController::class, 'getAjaxSearchBarList']);
+         Route::get('/ajax/get-list', [PartyController::class, 'getAjaxSearchBarList']);
 
 
 
@@ -1388,6 +1389,46 @@ Route::middleware('auth')->group(function () {
                 ->middleware('can:sale.order.create');
 
     });
+
+
+    // order payments
+     Route::group(['prefix' => 'order-payments'], function () {
+
+        // Route::get('/create', [OrderPaymentController::class, 'create'])
+        //         ->middleware('can:sale.order.create')
+        //         ->name('sale.order.create');//View
+
+        Route::get('/create', [OrderPaymentController::class, 'create'])->name('order-payments.create');//View
+        Route::get('/get-customer-orders', [OrderPaymentController::class, 'getCustomerOrders'])->name('get.customer.orders');//View
+        Route::post('/store', [OrderPaymentController::class, 'CustomerOrdersPaymentStore'])->name('order.payment.store');//View
+
+
+
+        // Route::get('/edit/{id}', [OrderPaymentController::class, 'edit'])
+        //         ->middleware('can:sale.order.edit')
+        //         ->name('sale.order.edit'); //Edit
+        // Route::put('/update', [OrderPaymentController::class, 'store'])->name('sale.order.update'); //Update
+        // Route::get('/list', [OrderPaymentController::class, 'list'])
+        //         ->middleware('can:sale.order.view')
+        //         ->name('sale.order.list'); //List
+        // Route::get('/details/{id}', [OrderPaymentController::class, 'details'])
+        //             ->middleware('can:sale.order.view')
+        //             ->name('sale.order.details');
+        // Route::get('/print/{id}', [OrderPaymentController::class, 'print'])
+        //             ->middleware('can:sale.order.view')
+        //             ->name('sale.order.print');
+        // Route::get('/pdf/{id}', [OrderPaymentController::class, 'generatePdf'])
+        //             ->middleware('can:sale.order.view')
+        //             ->name('sale.order.pdf');
+        // Route::get('/datatable-list', [OrderPaymentController::class, 'datatableList'])->name('sale.order.datatable.list'); //Datatable List
+        // Route::post('/store', [OrderPaymentController::class, 'store'])->name('sale.order.store');//Save operation
+        // Route::post('/delete/', [OrderPaymentController::class, 'delete'])->middleware('can:sale.order.delete')->name('sale.order.delete');//delete operation
+
+       
+
+     });
+
+    
 
     /**
      * Sale Bill

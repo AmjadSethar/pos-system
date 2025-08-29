@@ -80,12 +80,10 @@
                                                 <x-dropdown-general optionNaming="amountOrPercentage" selected="" dropdownName='sale_price_discount_type'/>
                                             </div>
                                         </div>
-                                        @if(app('company')['show_mrp'])
                                         <div class="col-md-4">
-                                            <x-label for="mrp" name="{{ __('item.mrp') }}" />
-                                            <x-input type="text" name="mrp" :required="false" additionalClasses='cu_numeric' value=""/>
-                                        </div>
-                                        @endif
+                                        <x-label for="item_category_id" name="{{ __('item.category.category') }}" />
+                                        <x-dropdown-item-category selected="" :isMultiple=false />
+                                    </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4">

@@ -51,7 +51,8 @@
                                         <x-label for="whatsapp" name="{{ __('app.whatsapp_number') }}" />
                                         <x-input type="number" name="whatsapp" :required="false" value=""/>
                                     </div>
-                                    <div class="col-md-6">
+                                    @if ( $lang['party_type']  == 'customer')
+                                        <div class="col-md-6">
                                         <x-label for="category" name="{{ __('Category') }}" />
                                         <select class="form-select single-select-clear-field" id="category" name="category" data-placeholder="Choose one thing">
                                             <option></option>
@@ -59,7 +60,9 @@
                                                 <option value="{{ $value }}">{{ $value }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    </div>    
+                                    @endif
+                                    
                                     
 
                                     <div class="col-md-6">

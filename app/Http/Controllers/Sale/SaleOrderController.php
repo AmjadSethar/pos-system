@@ -348,9 +348,9 @@ class SaleOrderController extends Controller
              * Update Sale Order Model
              * Total Paid Amunt
              * */
-            if(!$this->paymentTransactionService->updateTotalPaidAmountInModel($request->modelName)){
-                throw new \Exception(__('payment.failed_to_update_paid_amount'));
-            }
+            // if(!$this->paymentTransactionService->updateTotalPaidAmountInModel($request->modelName)){
+            //     throw new \Exception(__('payment.failed_to_update_paid_amount'));
+            // }
 
             /**
              * Update Account Transaction entry

@@ -96,6 +96,46 @@
 				@endcanany
 
 
+
+
+				{{-- @canany(['sale.invoice.view', 'sale.order.view', 'sale.return.view']) --}}
+				<li>
+					<a href="javascript:;" class="has-arrow">
+						<div class="parent-icon"><i class="bx bx-cart"></i>
+						</div>
+						<div class="menu-title">Order Payments</div>
+					</a>
+					<ul>
+						{{-- @can('sale.invoice.create')
+						<li class="{{ request()->is('pos*') ? 'mm-active' : '' }}">
+											<a href="{{ route('pos.create') }}"><i class='bx bx-radio-circle'></i>{{ __('sale.pos') }}</a>
+										</li>
+						@endcan --}}
+
+                        {{-- @can('sale.invoice.view') --}}
+						<li class="{{ request()->is('sale/invoice/*') ? 'mm-active' : '' }}">
+											<a href="{{ route('order-payments.create') }}"><i class='bx bx-radio-circle'></i>Pay Order Payment</a>
+										</li>
+						{{-- @endcan --}}
+
+						{{-- @can('sale.invoice.view') --}}
+						<li class="{{ request()->is('payment/in') ? 'mm-active' : '' }}">
+											<a href="{{ route('sale.payment.in') }}"><i class='bx bx-radio-circle'></i>{{ __('Payment History') }}</a>
+										</li>
+						{{-- @endcan --}}
+
+						
+
+						{{-- @can('sale.return.view') --}}
+						<li class="{{ request()->is('sale/return/*') ? 'mm-active' : '' }}">
+											<a href="{{ route('sale.return.list') }}"><i class='bx bx-radio-circle'></i>{{ __('sale.return.return') }}</a>
+										</li>
+						{{-- @endcan --}}
+					</ul>
+				</li>
+				{{-- @endcanany --}}
+
+
 				
 
 				@canany(['purchase.bill.view', 'purchase.order.view', 'purchase.return.view'])

@@ -51,12 +51,13 @@ class OrderController extends Controller
      */
     public function create()  {
         $prefix = Prefix::findOrNew($this->companyId);
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
         $lastCountId = $this->getLastCountId();
         $data = [
             'prefix_code' => $prefix->order,
             'count_id' => ($lastCountId+1),
         ];
-        return view('order.create', compact('data'));
+        return view('order.create', compact('data','categories'));
     }
 
     /**
