@@ -93,7 +93,7 @@
                                                 <tr class="text-uppercase">
                                                     <th>#</th>
                                                     <th class="text-left">{{ __('item.item') }}</th>
-                                                    <th class="text-left">{{ __('item.hsn') }}</th>
+                                                    {{-- <th class="text-left">{{ __('item.hsn') }}</th> --}}
                                                     @if($isHasBatchItem)
 
                                                         <th class="{{ !app('company')['enable_batch_tracking'] ? 'd-none':'' }}">{{ __('item.batch_no') }}</th>
@@ -132,9 +132,9 @@
                                                             @endif
                                                         </small>
                                                    </td>
-                                                   <td>
+                                                   {{-- <td>
                                                        {{ $transaction->item->hsn }}
-                                                   </td>
+                                                   </td> --}}
                                                    @if($isHasBatchItem)
                                                         <td class="{{ !app('company')['enable_batch_tracking'] ? 'd-none':'' }}">
                                                             {{ $transaction->batch ? $transaction->batch->itemBatchMaster->batch_no : '' }}

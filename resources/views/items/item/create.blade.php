@@ -129,9 +129,8 @@
                                             <x-input type="text" additionalClasses="cu_numeric" name="min_stock" :required="false" value=""/>
                                         </div>
                                     </div>
-                                    <div class="row">
                                         <div class="col-md-6">
-                                        <label for="supplier">Supplier</label>
+                                        <label for="supplier" class="form-label">Supplier</label>
                                         <select class="form-select single-select-clear-field" id="supplier" name="supplier" data-placeholder="Choose Supplier">
                                             <option></option>
                                             @foreach ($supplier as $sup)
@@ -139,7 +138,6 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    </div>  
                                                 
                                     <div class="col-md-6">
                                         <x-label for="description" name="{{ __('app.description') }}" />
@@ -156,18 +154,18 @@
                                                     imageResetClass='image-reset-class-1'
                                                     />
                                             </div>
-
+                                            <div class="col-md-12 mt-3">
+                                                <div class="d-md-flex d-grid align-items-center gap-3">
+                                                    <x-button type="submit" class="primary px-4" text="{{ __('app.submit') }}" />
+                                                    <x-anchor-tag href="{{ route('dashboard') }}" text="{{ __('app.close') }}" class="btn btn-light px-4" />
+                                                </div>
+                                            </div>
                                     
                                     </div>
 
                                     
 
-                                    <div class="col-md-12">
-                                        <div class="d-md-flex d-grid align-items-center gap-3">
-                                            <x-button type="submit" class="primary px-4" text="{{ __('app.submit') }}" />
-                                            <x-anchor-tag href="{{ route('dashboard') }}" text="{{ __('app.close') }}" class="btn btn-light px-4" />
-                                        </div>
-                                    </div>
+                                    
                                 </form>
 
                             </div>

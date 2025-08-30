@@ -38,25 +38,49 @@ class OrderPaymentController extends Controller
         return view('order_payments.create',compact('data','categories','customers'));
     }
 
+    // public function getCustomerOrders(Request $request)
+    // {
+    //     $customerId = $request->customer_id;
+
+    //     $orders = SaleOrder::where('party_id', $customerId)
+            
+    //         ->get();
+
+    //     // You can return a Blade partial or raw HTML
+    //     // return view('partials.customer_orders', compact('orders'));
+
+    //     return response()->json([
+    //         'html' => view('order_payments.partials.customer_orders', compact('orders'))->render(),
+    //         'orders' => $orders,
+    //     ]);
+
+
+
+    // }
+
+
     public function getCustomerOrders(Request $request)
     {
         $customerId = $request->customer_id;
 
-        $orders = SaleOrder::where('party_id', $customerId)
-            
-            ->get();
+        // Fetch customer orders
+        $orders = SaleOrder::with('item')->where('party_id', $customerId)->get();
 
-        // You can return a Blade partial or raw HTML
-        // return view('partials.customer_orders', compact('orders'));
+        // Total order amount
+        $totalOrders = $orders->sum('grand_total');
+
+        // Total paid from payments table
+        $totalPaid = CustomerPayment::where('party_id', $customerId)->sum('paid_amount');
+
+        // Remaining
+        $remaining = $totalOrders - $totalPaid;
 
         return response()->json([
-            'html' => view('order_payments.partials.customer_orders', compact('orders'))->render(),
+            'html' => view('order_payments.partials.customer_orders', compact('orders', 'totalOrders', 'totalPaid', 'remaining'))->render(),
             'orders' => $orders,
         ]);
-
-
-
     }
+
 
     // public function CustomerOrdersPaymentStore(Request $request)
     // {
@@ -67,6 +91,7 @@ class OrderPaymentController extends Controller
 
     public function CustomerOrdersPaymentStore(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'party_id' => 'required|exists:parties,id',
             'amount' => 'required|numeric',

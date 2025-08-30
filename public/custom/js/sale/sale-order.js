@@ -350,12 +350,12 @@
             newRow.append('<td>' + inputDeleteButton + '</td>');
             newRow.append('<td>' + hiddenWarehouseId + hiddenItemId + inputItemName + inputDescription + '</td>');
 
-            newRow.append(`<td class="${(!itemSettings.enable_serial_tracking)?'d-none':''}">` + serialTracking + hiddenSerialNumbers + '</td>');
-            newRow.append(`<td class="${(!itemSettings.enable_batch_tracking)?'d-none':''}">` + inputBatchNumber + '</td>');
-            newRow.append(`<td class="${(!itemSettings.enable_mfg_date)?'d-none':''}">` + mfgDate + '</td>');
-            newRow.append(`<td class="${(!itemSettings.enable_exp_date)?'d-none':''}">` + expDate + '</td>');
+            // newRow.append(`<td class="${(!itemSettings.enable_serial_tracking)?'d-none':''}">` + serialTracking + hiddenSerialNumbers + '</td>');
+            // newRow.append(`<td class="${(!itemSettings.enable_batch_tracking)?'d-none':''}">` + inputBatchNumber + '</td>');
+            // newRow.append(`<td class="${(!itemSettings.enable_mfg_date)?'d-none':''}">` + mfgDate + '</td>');
+            // newRow.append(`<td class="${(!itemSettings.enable_exp_date)?'d-none':''}">` + expDate + '</td>');
             newRow.append(`<td class="${(!itemSettings.enable_model)?'d-none':''}">` + modelNo + '</td>');
-            newRow.append(`<td class="${(!itemSettings.show_mrp)?'d-none':''}">` + mrp + '</td>');
+            // newRow.append(`<td class="${(!itemSettings.show_mrp)?'d-none':''}">` + mrp + '</td>');
             newRow.append(`<td class="${(!itemSettings.enable_color)?'d-none':''}">` + color + '</td>');
             newRow.append(`<td class="${(!itemSettings.enable_size)?'d-none':''}">` + size + '</td>');
 
@@ -935,7 +935,7 @@
                     batch_no        : (data.tracking_type == 'batch' && data.batch.item_batch_master.batch_no!== null) ? data.batch.item_batch_master.batch_no : '',
                     mfg_date        : (data.tracking_type == 'batch' && data.batch.item_batch_master.mfg_date!== null) ? data.batch.item_batch_master.mfg_date : '',
                     exp_date        : (data.tracking_type == 'batch' && data.batch.item_batch_master.exp_date!== null) ? data.batch.item_batch_master.exp_date : '',
-                    mrp             : (data.tracking_type == 'batch' && data.batch.item_batch_master.mrp!== null) ? data.batch.item_batch_master.mrp : data.mrp,
+                    // mrp             : (data.tracking_type == 'batch' && data.batch.item_batch_master.mrp!== null) ? data.batch.item_batch_master.mrp : data.mrp,
                     model_no        : (data.tracking_type == 'batch' && data.batch.item_batch_master.model_no!== null) ? data.batch.item_batch_master.model_no : '',
                     color           : (data.tracking_type == 'batch' && data.batch.item_batch_master.color!== null) ? data.batch.item_batch_master.color : '',
                     size            : (data.tracking_type == 'batch' && data.batch.item_batch_master.size!== null) ? data.batch.item_batch_master.size : '',

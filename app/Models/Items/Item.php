@@ -47,6 +47,7 @@ class Item extends Model
         'is_wholesale_price_with_tax',
 
         'mrp',
+        'current_stock',
 
         'tracking_type',
         'min_stock',

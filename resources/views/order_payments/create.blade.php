@@ -57,6 +57,9 @@
                                                 <x-input type="number" name="amount" value=""/>
                                                 <span class="input-group-text" id="input-near-focus" role="button">RS</span>
                                             </div>
+                                            @error('amount')
+                                                <span class="text-danger mt-2" >{{$message}}</span>
+                                            @enderror
                                         </div>
                                         <div class="col-md-6">
                                             <x-label for="customer_id" name="{{ __('payment.type') }}" />
@@ -66,6 +69,9 @@
                                                     <i class='text-primary bx bx-plus-circle'></i>
                                                 </button>
                                             </div>
+                                             @error('payment_type_id')
+                                                <span class="text-danger mt-2" >{{$message}}</span>
+                                            @enderror
                                         </div>
                                         <div class="col-md-6">
                                             <label for="payment_date">Payment Date</label>
@@ -73,6 +79,7 @@
                                                 <x-input type="text" additionalClasses="datepicker" name="payment_date" :required="true" value=""/>
                                                 <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
                                             </div>
+                                           
                                         </div>
                                         
                                         <div class="col-md-6">

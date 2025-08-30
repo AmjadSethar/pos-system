@@ -173,7 +173,7 @@ class ItemController extends Controller
 
                 'tracking_type'             =>  $request->tracking_type,
                 'min_stock'                 =>  $request->min_stock,
-                // 'item_location'             =>  $request->item_location,
+                'current_stock'             =>  $request->opening_quantity,
 
                 'status'                    =>  $request->status,
                 'supplier_id'                    =>  $request->supplier,
@@ -463,9 +463,9 @@ class ItemController extends Controller
                     ->addColumn('username', function ($row) {
                         return $row->user->username??'';
                     })
-                    ->addColumn('tracking_type', function ($row) {
-                        return ucfirst($row->tracking_type);
-                    })
+                    // ->addColumn('tracking_type', function ($row) {
+                    //     return ucfirst($row->tracking_type);
+                    // })
                     ->addColumn('sale_price', function ($row) {
                         return $this->formatWithPrecision($row->sale_price);
                     })

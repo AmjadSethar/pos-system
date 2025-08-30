@@ -42,7 +42,7 @@ $(function() {
                 {data: 'sale_price', name: 'sale_price', className: 'text-end'},
                 {data: 'purchase_price', name: 'purchase_price', className: 'text-end'},
                 {data: 'current_stock', name: 'current_stock', className: 'text-end'},
-                {data: 'tracking_type', name: 'tracking_type'},
+                // {data: 'tracking_type', name: 'tracking_type'},
                 {data: 'username', name: 'username'},
                 {data: 'created_at', name: 'created_at'},
 
