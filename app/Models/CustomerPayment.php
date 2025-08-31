@@ -14,9 +14,6 @@ class CustomerPayment extends Model
         'party_id',
         'amount',
         'payment_type',
-        'total_amount',
-        'paid_amount',
-        'remaining_amount',
         'payment_note',
         'payment_date'
     ];

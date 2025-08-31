@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreign('party_id')->references('id')->on('parties')->onDelete('cascade');
             $table->decimal('amount', 20, 2)->default(0);
             $table->string('payment_type');
-            $table->decimal('total_amount',20,2);
-            $table->decimal('paid_amount',20,2);
-            $table->decimal('remaining_amount',20,2);
+            // $table->decimal('total_amount',20,2);
+            // $table->decimal('paid_amount',20,2);
+            // $table->decimal('remaining_amount',20,2);
             $table->string('payment_note')->nullable();
             $table->date('payment_date');
             $table->timestamps();

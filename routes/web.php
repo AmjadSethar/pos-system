@@ -291,6 +291,11 @@ Route::middleware('auth')->group(function () {
          Route::get('/ajax/get-list', [PartyController::class, 'getAjaxSearchBarList']);
 
 
+         Route::get('/history', [PartyController::class, 'customerHistory'])->name('party.history');
+        Route::get('/get-customer-history', [PartyController::class, 'getCustomerHistory'])->name('get.customer.history');//View
+
+
+
 
         
     });
@@ -1403,7 +1408,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [OrderPaymentController::class, 'CustomerOrdersPaymentStore'])->name('order.payment.store');//View
         Route::get('/history', [OrderPaymentController::class, 'CustomerOrdersPaymentHistory'])->name('order.payment.history.list');//View
         Route::get('/datatable-list', [OrderPaymentController::class, 'paymentHistoryDatatable'])->name('order.payment.history');//View
-        Route::post('/delete', [OrderPaymentController::class, 'CustomerOrdersPaymentDelete'])->name('order.payment.delete');//View
+        Route::post('/delete', [OrderPaymentController::class, 'CustomerOrdersPaymentDelete'])->name('order.payment.delete');//delete
+        Route::get('/detail/{id}', [OrderPaymentController::class, 'CustomerOrdersPaymentDetail'])->name('order.payment.view');//View
 
 
 

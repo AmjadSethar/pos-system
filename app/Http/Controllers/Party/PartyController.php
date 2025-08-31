@@ -422,4 +422,33 @@ class PartyController extends Controller
         return json_encode($response);
 
     }
+
+    public function customerHistory()
+    {
+        $customers = DB::table('parties')->where('party_type','customer')->where('status',1)->get();
+
+        return view('party.history',compact('customers'));
+    }
+
+    public function getCustomerHistory(Request $request)
+    {
+        $customerId = $request->customer_id;
+
+        // Fetch customer orders
+        $orders = SaleOrder::with('item')->where('party_id', $customerId)->get();
+
+        // Total order amount
+        $totalOrders = $orders->sum('grand_total');
+
+        // Total paid from payments table
+        $totalPaid = CustomerPayment::where('party_id', $customerId)->sum('paid_amount');
+
+        // Remaining
+        $remaining = $totalOrders - $totalPaid;
+
+        return response()->json([
+            'html' => view('order_payments.partials.customer_orders', compact('orders', 'totalOrders', 'totalPaid', 'remaining'))->render(),
+            'orders' => $orders,
+        ]);
+    }
 }

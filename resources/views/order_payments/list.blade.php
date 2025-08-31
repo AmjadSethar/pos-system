@@ -9,8 +9,8 @@
 		<div class="page-wrapper">
 			<div class="page-content">
 					<x-breadcrumb :langArray="[
-											'order.orders',
-                                            'order.list',
+											'Order Payments',
+                                            'Payment History',
 										]"/>
 
                     <div class="card">
@@ -18,13 +18,13 @@
 					<div class="card-header px-4 py-3 d-flex justify-content-between">
 					    <!-- Other content on the left side -->
 					    <div>
-					    	<h5 class="mb-0 text-uppercase">{{ __('order.list') }}</h5>
+					    	<h5 class="mb-0 text-uppercase">{{ __('Payment History') }}</h5>
 					    </div>
 					    
-					    @can('customer.create')
+					    {{-- @can('customer.create')
 					    <!-- Button pushed to the right side -->
 					    <x-anchor-tag href="{{ route('order.create') }}" text="{{ __('order.create') }}" class="btn btn-primary px-5" />
-					    @endcan
+					    @endcan --}}
 
 					</div>
 					<div class="card-body">
@@ -43,6 +43,7 @@
 										<th>Total Amount</th>
 										<th>Paid Amount</th>
 										<th>Remaining Amount</th>
+										<th>Payment Date</th>
 										<th>Created At</th>
 										<th>Action</th>
 

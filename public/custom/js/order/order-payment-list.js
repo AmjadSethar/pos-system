@@ -50,6 +50,7 @@ $(function() {
                 {data: "total_amount", name: "total_amount"},
                 {data: "paid_amount", name: "paid_amount"},
                 {data: "remaining_amount", name: "remaining_amount"},
+                {data: "payment_date", name: "payment_date"},
                 {data: "created_at", name: "created_at"},
                 {data: "action", name: "action", orderable: false, searchable: false},
             ],
