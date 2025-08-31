@@ -119,8 +119,8 @@
 						{{-- @endcan --}}
 
 						{{-- @can('sale.invoice.view') --}}
-						<li class="{{ request()->is('payment/in') ? 'mm-active' : '' }}">
-											<a href="{{ route('sale.payment.in') }}"><i class='bx bx-radio-circle'></i>{{ __('Payment History') }}</a>
+						<li class="{{ request()->is('order-payment-history') ? 'mm-active' : '' }}">
+											<a href="{{ route('order.payment.history.list') }}"><i class='bx bx-radio-circle'></i>{{ __('Payment History') }}</a>
 										</li>
 						{{-- @endcan --}}
 

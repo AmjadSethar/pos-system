@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Party\Party;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,8 +16,15 @@ class CustomerPayment extends Model
         'payment_type',
         'total_amount',
         'paid_amount',
-        'remainig_amount',
+        'remaining_amount',
         'payment_note',
         'payment_date'
     ];
+
+
+    public function party()
+    {
+        return $this->belongsTo(Party::class, 'party_id', 'id');
+    }
+
 }

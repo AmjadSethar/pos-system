@@ -29,24 +29,23 @@
 					</div>
 					<div class="card-body">
 						<div class="table-responsive">
-                        <form class="row g-3 needs-validation" id="datatableForm" action="{{ route('order.delete') }}" enctype="multipart/form-data">
+                        <form class="row g-3 needs-validation" id="datatableForm" action="{{ route('order.payment.delete') }}" enctype="multipart/form-data">
                             {{-- CSRF Protection --}}
                             @csrf
                             @method('POST')
 							<table class="table table-striped table-bordered border w-100" id="datatable">
 								<thead>
 									<tr>
-										<th class="d-none"><!-- Which Stores ID & it is used for sorting --></th>
-                                        <th><input class="form-check-input row-select" type="checkbox"></th>
-										<th>{{ __('order.code') }}</th>
-										<th>{{ __('app.date') }}</th>
-										<th>{{ __('customer.customer') }}</th>
-										<th>{{ __('app.mobile') }}</th>
-										<th>{{ __('payment.status') }}</th>
-										<th>{{ __('order.status') }}</th>
-										<th>{{ __('app.created_by') }}</th>
-										<th>{{ __('app.created_at') }}</th>
-										<th>{{ __('app.action') }}</th>
+										<th class="d-none"></th> <!-- hidden ID -->
+										<th><input type="checkbox"></th>
+										<th>Customer</th>
+										<th>Mobile</th>
+										<th>Total Amount</th>
+										<th>Paid Amount</th>
+										<th>Remaining Amount</th>
+										<th>Created At</th>
+										<th>Action</th>
+
 									</tr>
 								</thead>
 							</table>
@@ -64,5 +63,6 @@
 <script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ asset('custom/js/common/common.js') }}"></script>
-<script src="{{ asset('custom/js/order/order-list.js') }}"></script>
+{{-- <script src="{{ asset('custom/js/order/order-list.js') }}"></script> --}}
+<script src="{{ asset('custom/js/order/order-payment-list.js') }}"></script>
 @endsection

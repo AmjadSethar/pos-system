@@ -92,7 +92,7 @@ $(function() {
             var formId = formObject.attr("id");
             $("#"+formId)[0].reset();
 
-            partyForm.find(".datepicker")[0]._flatpickr.setDate(new Date());
+            // partyForm.find(".datepicker")[0]._flatpickr.setDate(new Date());
 
         }
     }

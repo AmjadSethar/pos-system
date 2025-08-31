@@ -1401,6 +1401,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [OrderPaymentController::class, 'create'])->name('order-payments.create');//View
         Route::get('/get-customer-orders', [OrderPaymentController::class, 'getCustomerOrders'])->name('get.customer.orders');//View
         Route::post('/store', [OrderPaymentController::class, 'CustomerOrdersPaymentStore'])->name('order.payment.store');//View
+        Route::get('/history', [OrderPaymentController::class, 'CustomerOrdersPaymentHistory'])->name('order.payment.history.list');//View
+        Route::get('/datatable-list', [OrderPaymentController::class, 'paymentHistoryDatatable'])->name('order.payment.history');//View
+        Route::post('/delete', [OrderPaymentController::class, 'CustomerOrdersPaymentDelete'])->name('order.payment.delete');//View
 
 
 
