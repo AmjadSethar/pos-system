@@ -23,7 +23,9 @@
                                     <h5 class="mb-0">{{ __('order.details') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
-                                    
+                                        @if (session('message'))
+                                    <span class="alert alert-danger" >{{session('message')}}</span>
+                                @endif
                                         <div class="col-md-6">
                                                 <x-label for="party_id" name="{{ __('customer.customer') }}" />
                                                 <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Search by name, mobile, phone, whatsApp, email"><i class="fadeIn animated bx bx-info-circle"></i></a>

@@ -26,6 +26,17 @@
 	
 	@include('layouts.script')
 
+	@if(session('info'))
+    <script>
+        iziToast.info({
+            title: 'Info',
+            layout: 2,
+            message: "{{ session('info') }}"
+        });
+    </script>
+@endif
+
+
 </body>
 
 </html>

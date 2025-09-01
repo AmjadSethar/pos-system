@@ -185,7 +185,7 @@ class OrderPaymentController extends Controller
 
         // Check if already fully paid
         if ($remainingBefore <= 0) {
-            return redirect()->back()->with('info', 'Customer has already paid all dues. No remaining balance.');
+            return redirect()->back()->with('message', 'Customer has already paid all dues. No remaining balance.');
         }
 
         // If entered amount is more than remaining, cap it
@@ -209,10 +209,10 @@ class OrderPaymentController extends Controller
 
         // Message if capped
         if ($validated['amount'] > $remainingBefore) {
-            return redirect()->back()->with('warning', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
+            return redirect()->back()->with('message', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
         }
 
-        return redirect()->back()->with('success', 'Payment recorded successfully.');
+        return redirect()->back()->with('message', 'Payment recorded successfully.');
     }
 
 
