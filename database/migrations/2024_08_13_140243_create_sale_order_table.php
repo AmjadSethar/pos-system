@@ -37,6 +37,7 @@ return new class extends Migration
             $table->decimal('round_off', 20, 4)->default(0);
             $table->decimal('grand_total', 20, 4)->default(0);
             $table->decimal('paid_amount', 20, 4)->default(0);
+            $table->decimal('discount', 20, 2)->default(0);
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users'); 

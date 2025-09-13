@@ -37,7 +37,7 @@
 
 						{{-- @can('supplier.view') --}}
 						<li class="{{ request()->is('party/history/*')? 'mm-active' : '' }}">
-						    <a href="{{ route('party.history') }}"><i class='bx bx-radio-circle'></i>{{ __('Customer History') }}</a>
+						    <a href="{{ route('party.page') }}"><i class='bx bx-radio-circle'></i>{{ __('Customer History') }}</a>
 						</li>
 						{{-- @endcan --}}
 						@can('party.category.view')

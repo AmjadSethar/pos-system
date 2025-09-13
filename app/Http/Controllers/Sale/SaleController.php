@@ -93,11 +93,13 @@ class SaleController extends Controller
         $prefix = Prefix::findOrNew($this->companyId);
         $lastCountId = $this->getLastCountId();
         $selectedPaymentTypesArray = json_encode($this->paymentTypeService->selectedPaymentTypesArray());
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
         $data = [
             'prefix_code' => $prefix->sale,
             'count_id' => ($lastCountId+1),
         ];
-        return view('sale.invoice.create',compact('data', 'selectedPaymentTypesArray'));
+
+        return view('sale.invoice.create',compact('data', 'selectedPaymentTypesArray','categories'));
     }
     /**
      * Create a POS sale.
@@ -265,8 +267,10 @@ class SaleController extends Controller
         $paymentHistory = $this->paymentTransactionService->getPaymentRecordsArray($sale);
 
         $taxList = CacheService::get('tax')->toJson();
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+        
 
-        return view('sale.invoice.edit', compact('taxList', 'sale', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory'));
+        return view('sale.invoice.edit', compact('taxList', 'sale', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory','categories'));
     }
 
     /**
@@ -290,7 +294,10 @@ class SaleController extends Controller
         //Batch Tracking Row count for invoice columns setting
         $batchTrackingRowCount = (new GeneralDataService())->getBatchTranckingRowCount();
 
-        return view('sale.invoice.details', compact('sale','selectedPaymentTypesArray', 'batchTrackingRowCount'));
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+        
+
+        return view('sale.invoice.details', compact('sale','selectedPaymentTypesArray', 'batchTrackingRowCount','categories'));
     }
 
     /**

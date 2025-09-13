@@ -32,11 +32,11 @@
                                     <a href="{{ route('purchase.order.edit', ['id' => $order->id]) }}" class="btn btn-outline-primary"><i class="bx bx-edit"></i>{{ __('app.edit') }}</a>
                                     @endcan
 
-                                    <a class="btn btn-outline-dark px-4 notify-through-email" data-model="purchase/order" data-id="{{$order->id}}" role="button">
+                                    {{-- <a class="btn btn-outline-dark px-4 notify-through-email" data-model="purchase/order" data-id="{{$order->id}}" role="button">
                                     </i><i class="bx bx-envelope"></i>{{ __('app.email') }}</a>
 
                                     <a class="btn btn-outline-info px-4 notify-through-sms" data-model="purchase/order" data-id="{{$order->id}}" role="button">
-                                    </i><i class="bx bx-envelope"></i>{{ __('message.sms') }}</a>
+                                    </i><i class="bx bx-envelope"></i>{{ __('message.sms') }}</a> --}}
 
                                     <a href="{{ route('purchase.order.print', ['id' => $order->id]) }}" target="_blank" class="btn btn-outline-secondary px-4"><i class="bx bx-printer mr-1"></i>{{ __("app.print") }}</a>
 
@@ -222,6 +222,10 @@
                                                     <td>{{ $formatNumber->formatWithPrecision($order->round_off) }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td colspan="{{$bottomColumnsCount}}" class="tfoot-first-td">{{ __('Bilty') }}</td>
+                                                    <td>{{ $formatNumber->formatWithPrecision($order->bilty) }}</td>
+                                                </tr>
+                                                <tr>
                                                     <td colspan="{{$bottomColumnsCount}}" class="tfoot-first-td">{{ __('app.grand_total') }}</td>
                                                     <td>{{ $formatNumber->formatWithPrecision($order->grand_total) }}</td>
                                                 </tr>
@@ -229,10 +233,10 @@
                                                     <td colspan="{{$bottomColumnsCount}}" class="tfoot-first-td">{{ __('payment.paid_amount') }}</td>
                                                     <td>{{$formatNumber->formatWithPrecision($order->paid_amount)}}</td>
                                                 </tr>
-                                                <tr>
+                                                {{-- <tr>
                                                     <td colspan="{{$bottomColumnsCount}}" class="tfoot-first-td">{{ __('payment.balance') }}</td>
                                                     <td>{{$formatNumber->formatWithPrecision($order->grand_total - $order->paid_amount)}}</td>
-                                                </tr>
+                                                </tr> --}}
                                             </tfoot>
                                         </table>
                                     </main>

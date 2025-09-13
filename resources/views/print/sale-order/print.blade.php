@@ -231,7 +231,7 @@
                 </tr>
                 <tr>
                     <td colspan="2" class="text-end fw-bold">{{ __('app.discount') }}</td>
-                    <td colspan="1" class="text-end">{{ $formatNumber->formatWithPrecision($discount) }}</td>
+                    <td colspan="1" class="text-end">{{ $formatNumber->formatWithPrecision($order->discount) }}</td>
                 </tr>
                 @if(app('company')['tax_type'] != 'no-tax')
                 <tr>

@@ -52,13 +52,13 @@
 
     });
 
-    function validatePaymentAndInvoiceTotal(){
-        if(_parseFix(calculateTotalPayment()) != getGrandTotal()){
-            iziToast.error({title: 'Warning', layout: 2, message: _lang.paymentAndGrandTotalMismatched});
-            return false;
-        }
-        return true;
-    }
+    // function validatePaymentAndInvoiceTotal(){
+    //     if(_parseFix(calculateTotalPayment()) != getGrandTotal()){
+    //         iziToast.error({title: 'Warning', layout: 2, message: _lang.paymentAndGrandTotalMismatched});
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     $("#invoiceForm").on("submit", function(e) {
         e.preventDefault();
@@ -1105,3 +1105,96 @@
         iziToast.success({title: '', layout: 3, message: `<b>${customerType} Customer Selected</b>`});
 
     });
+
+
+
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const discountInput = document.querySelector('input[name="discount"]');
+    //     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+
+    //     // Example: you might have a hidden base total or another field
+    //     let baseTotal = 1000; // <-- Replace with actual total from backend or another input
+
+    //     function recalculateGrandTotal() {
+    //         let discountPercentage = parseFloat(discountInput.value) || 0;
+    //         discountPercentage = Math.min(Math.max(discountPercentage, 0), 100); // Clamp between 0-100
+
+    //         const discountedTotal = baseTotal - (baseTotal * (discountPercentage / 100));
+    //         // grandTotalInput.value = discountedTotal.toFixed(2);
+    //     }
+
+    //     discountInput.addEventListener("input", recalculateGrandTotal);
+
+    //     // Initial calculation
+    //     recalculateGrandTotal();
+    // });
+
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const discountInput = document.querySelector('input[name="discount"]');
+    //     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+    //     const discountedTotalInput = document.querySelector('input[name="discounted_total"]');
+
+    //     function applyDiscount() {
+    //         const originalTotal = parseFloat(grandTotalInput.value) || 0;
+    //         const discountPercentage = parseFloat(discountInput.value) || 0;
+
+    //         // Clamp between 0–100
+    //         const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+
+    //         const discountAmount = originalTotal * (safeDiscount / 100);
+    //         const finalTotal = originalTotal - discountAmount;
+
+    //         discountedTotalInput.value = finalTotal.toFixed(2);
+    //     }
+
+    //     // Apply when discount input changes
+    //     discountInput.addEventListener("input", applyDiscount);
+
+    //     // Apply also when grand_total changes dynamically (e.g., from item selection)
+    //     grandTotalInput.addEventListener("input", applyDiscount);
+
+    //     // Initial run in case values are pre-filled
+    //     applyDiscount();
+    // });
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const discountInput = document.querySelector('input[name="discount"]');
+        const grandTotalInput = document.querySelector('input[name="grand_total"]');
+        const discountedTotalInput = document.querySelector('input[name="discounted_total"]');
+
+        const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+        const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+        function applyDiscount() {
+            const originalTotal = parseFloat(grandTotalInput.value) || 0;
+            const discountPercentage = parseFloat(discountInput.value) || 0;
+
+            const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+            const discountAmount = originalTotal * (safeDiscount / 100);
+            const finalTotal = originalTotal - discountAmount;
+            const finalFormatted = finalTotal.toFixed(2);
+
+            // Update discounted total input
+            if (discountedTotalInput) discountedTotalInput.value = finalFormatted;
+
+            // Update payment_amount[0]
+            if (paymentAmountInput) paymentAmountInput.value = finalFormatted;
+
+            // Update sum_of_total <td>
+            if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+        }
+
+        // Event listeners
+        discountInput.addEventListener("input", applyDiscount);
+        grandTotalInput.addEventListener("input", applyDiscount);
+
+        // Initial run
+        applyDiscount();
+    });
+
+

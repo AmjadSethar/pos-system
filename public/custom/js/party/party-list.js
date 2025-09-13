@@ -25,7 +25,7 @@ $(function() {
             ajax: {
                     url: baseURL+'/party/'+partyType+'/datatable-list',
                     data:{
-                            is_wholesale_customer : isWholesaleCustomer(),
+                            customer_category : customerCategory(),
                         },
                 },
             columns: [
@@ -380,19 +380,19 @@ $(function() {
         loadDatatables();
     }
 
-    function isWholesaleCustomer() {
+    function customerCategory() {
 
-        if(partyType != 'customer'){
-            return 0;//0 retail
-        }
+        // if(partyType != 'customer'){
+        //     return 0;//0 retail
+        // }
         
         /**
          * @return 0 if wholesaler else 0 for retailer
          * */
-        return $("#customer_type").val();
+        return $("#customer_category").val();
     }
 
-    $(document).on("change", '#customer_type', function function_name() {
+    $(document).on("change", '#customer_category', function function_name() {
         loadDatatables();
     });
 });

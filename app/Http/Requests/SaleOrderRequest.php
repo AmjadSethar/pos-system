@@ -40,11 +40,13 @@ class SaleOrderRequest extends FormRequest
             'prefix_code'          => ['nullable', 'string','max:250'],
             'order_code'           => ['required', 'string','max:50'],
             'count_id'             => ['required', 'numeric'],
-            'round_off'            => ['nullable',Rule::requiredIf( fn () => empty($this->input('round_off'))),'numeric',],
+            // 'round_off'            => ['nullable',Rule::requiredIf( fn () => empty($this->input('round_off'))),'numeric',],
             'grand_total'          => ['required', 'numeric'],
             'note'                 => ['nullable', 'string','max:250'],
             'state_id'             => ['nullable', 'integer', Rule::exists('states', 'id')],
             'row_count'            => ['required', 'integer', 'min:1'],
+            'discount'            => ['required', 'numeric'],
+            'discounted_total'     => ['nullable', 'numeric'],
         ];
 
         if ($this->isMethod('PUT')) {

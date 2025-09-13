@@ -18,10 +18,15 @@ use App\Services\PartyTransactionService;
 use App\Services\PartyService;
 use App\Models\Party\Party;
 use App\Models\Party\PartyTransaction;
+use App\Models\Party\PartyCategory;
 
 use App\Enums\AccountUniqueCode;
 use App\Models\Accounts\AccountGroup;
 use App\Models\Accounts\Account;
+use App\Models\Sale\SaleOrder;
+use App\Models\CustomerPayment;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class PartyController extends Controller
 {
@@ -247,89 +252,167 @@ class PartyController extends Controller
      * */
     public function list($partyType) : View {
         $lang = $this->getLang($partyType);
-        return view('party.list', compact('lang'));
+        $customerCategories = PartyCategory::all();
+        // dd($customerCategories);
+        return view('party.list', compact('lang','customerCategories'));
     }
 
-    public function datatableList(Request $request, $partyType){
-        /**
-         * party_type == customer then filter wholesale or retail customer
-         * */
-        $isWholesaleCustomer = $request->input('is_wholesale_customer');
+    // public function datatableList(Request $request, $partyType){
+    //     /**
+    //      * party_type == customer then filter wholesale or retail customer
+    //      * */
+    //     $category = $request->input('customer_category');
 
+    //     $data = Party::query()->where('party_type', $partyType);
+    //     return DataTables::of($data)
+    //                 ->filter(function ($query) use ($request, $category) {
+    //                     if ($request->has('search')) {
+    //                         log::info('Category Filter:', ['category' => $category]);
+
+    //                         $searchTerm = $request->search['value'];
+    //                         $query->where(function ($q) use ($searchTerm) {
+    //                             $q->where('first_name', 'like', "%{$searchTerm}%")
+    //                               ->orWhere('last_name', 'like', "%{$searchTerm}%")
+    //                               ->orWhere('whatsapp', 'like', "%{$searchTerm}%")
+    //                               ->orWhere('phone', 'like', "%{$searchTerm}%")
+    //                               ->orWhere('email', 'like', "%{$searchTerm}%")
+    //                               ;
+    //                         });
+    //                     }
+    //                     if($category!==null){
+    //                         $query->where('category', $category);
+    //                         log::info('Category Filter:', ['category' => $category]);
+
+    //                     }
+    //                 })
+                    
+    //                 ->addIndexColumn()
+    //                 ->addColumn('created_at', function ($row) {
+    //                     return $row->created_at->format(app('company')['date_format']);
+    //                 })
+    //                 ->addColumn('name', function ($row) {
+    //                     return $row->first_name." ".$row->last_name;
+    //                 })
+    //                 ->addColumn('username', function ($row) {
+    //                     return $row->user->username??'';
+    //                 })
+    //                 ->addColumn('credit_limit', function ($row) {
+    //                     // Store the balance data in the row
+    //                     // $row->balanceData = $this->partyService->getPartyBalance($row->id);
+
+    //                     // Return the formatted balance
+    //                     return $row->credit_limit;
+    //                 })
+    //                 // ->addColumn('balance_type', function ($row) {
+    //                 //     // Return the status using the stored balance data
+    //                 //     return $row->balanceData['status'];
+    //                 // })
+    //                 ->addColumn('action', function($row) use ($partyType){
+    //                         $id = $row->id;
+
+    //                         $editUrl = route('party.edit', ['id' => $id, 'partyType' => $partyType]);
+    //                         $deleteUrl = route('party.delete', ['id' => $id, 'partyType' => $partyType]);
+    //                         $transactionUrl = route('party.transaction.list', ['id' => $id, 'partyType' => $partyType]);
+    //                         $paymentUrl = route('party.payment.create', ['id' => $id, 'partyType' => $partyType]);
+
+    //                         $actionBtn = '<div class="dropdown ms-auto">
+    //                         <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //                         </a>
+    //                         <ul class="dropdown-menu">
+
+    //                             <li>
+    //                                 <a class="dropdown-item" href="' . $editUrl . '"><i class="bi bi-trash"></i><i class="bx bx-edit"></i> '.__('app.edit').'</a>
+    //                             </li>
+    //                             <li>
+    //                                 <a class="dropdown-item" href="' . $paymentUrl . '"><i class="bi bi-trash"></i><i class="bx bx-money"></i> '.__('payment.payment').'</a>
+    //                             </li>
+    //                             <li>
+    //                                 <a class="dropdown-item party-payment-history" data-party-id="' . $id . '" role="button"></i><i class="bx bx-table"></i> '.__('payment.history').'</a>
+    //                             </li>
+    //                             <li>
+    //                                 <a class="dropdown-item" href="' . $transactionUrl . '"><i class="bi bi-trash"></i><i class="bx bx-transfer-alt"></i> '.__('app.transactions').'</a>
+    //                             </li>
+    //                             <li>
+    //                                 <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'><i class="bx bx-trash"></i> '.__('app.delete').'</button>
+    //                             </li>
+    //                         </ul>
+    //                     </div>';
+    //                         return $actionBtn;
+    //                 })
+    //                 ->rawColumns(['action'])
+    //                 ->make(true);
+    // }
+
+
+
+    public function datatableList(Request $request, $partyType)
+    {
+        $category = $request->input('customer_category');
+
+        // Start base query
         $data = Party::query()->where('party_type', $partyType);
+
+        // Filter by user role
+        $user = Auth::user();
+        if ($user->role_id == 2) {
+            // Salesman: show only customers created by them
+            $data->where('created_by', $user->id);
+        }
+
         return DataTables::of($data)
-                    ->filter(function ($query) use ($request, $isWholesaleCustomer) {
-                        if ($request->has('search')) {
-                            $searchTerm = $request->search['value'];
-                            $query->where(function ($q) use ($searchTerm) {
-                                $q->where('first_name', 'like', "%{$searchTerm}%")
-                                  ->orWhere('last_name', 'like', "%{$searchTerm}%")
-                                  ->orWhere('whatsapp', 'like', "%{$searchTerm}%")
-                                  ->orWhere('phone', 'like', "%{$searchTerm}%")
-                                  ->orWhere('email', 'like', "%{$searchTerm}%")
-                                  ;
-                            });
-                        }
-                        if($isWholesaleCustomer!==null){
-                            $query->where('is_wholesale_customer', $isWholesaleCustomer);
-                        }
-                    })
-                    ->addIndexColumn()
-                    ->addColumn('created_at', function ($row) {
-                        return $row->created_at->format(app('company')['date_format']);
-                    })
-                    ->addColumn('name', function ($row) {
-                        return $row->first_name." ".$row->last_name;
-                    })
-                    ->addColumn('username', function ($row) {
-                        return $row->user->username??'';
-                    })
-                    ->addColumn('credit_limit', function ($row) {
-                        // Store the balance data in the row
-                        // $row->balanceData = $this->partyService->getPartyBalance($row->id);
+            ->filter(function ($query) use ($request, $category) {
+                if ($request->has('search')) {
+                    $searchTerm = $request->search['value'];
+                    $query->where(function ($q) use ($searchTerm) {
+                        $q->where('first_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('last_name', 'like', "%{$searchTerm}%")
+                        ->orWhere('whatsapp', 'like', "%{$searchTerm}%")
+                        ->orWhere('phone', 'like', "%{$searchTerm}%")
+                        ->orWhere('email', 'like', "%{$searchTerm}%");
+                    });
+                }
 
-                        // Return the formatted balance
-                        return $row->credit_limit;
-                    })
-                    // ->addColumn('balance_type', function ($row) {
-                    //     // Return the status using the stored balance data
-                    //     return $row->balanceData['status'];
-                    // })
-                    ->addColumn('action', function($row) use ($partyType){
-                            $id = $row->id;
+                if (!is_null($category)) {
+                    $query->where('category', $category);
+                }
+            })
+            ->addIndexColumn()
+            ->addColumn('created_at', function ($row) {
+                return $row->created_at->format(app('company')['date_format']);
+            })
+            ->addColumn('name', function ($row) {
+                return $row->first_name . " " . $row->last_name;
+            })
+            ->addColumn('username', function ($row) {
+                return $row->user->username ?? '';
+            })
+            ->addColumn('credit_limit', function ($row) {
+                return $row->credit_limit;
+            })
+            ->addColumn('action', function ($row) use ($partyType) {
+                $id = $row->id;
 
-                            $editUrl = route('party.edit', ['id' => $id, 'partyType' => $partyType]);
-                            $deleteUrl = route('party.delete', ['id' => $id, 'partyType' => $partyType]);
-                            $transactionUrl = route('party.transaction.list', ['id' => $id, 'partyType' => $partyType]);
-                            $paymentUrl = route('party.payment.create', ['id' => $id, 'partyType' => $partyType]);
+                $editUrl = route('party.edit', ['id' => $id, 'partyType' => $partyType]);
+                $deleteUrl = route('party.delete', ['id' => $id, 'partyType' => $partyType]);
+                $transactionUrl = route('party.transaction.list', ['id' => $id, 'partyType' => $partyType]);
+                $paymentUrl = route('party.payment.create', ['id' => $id, 'partyType' => $partyType]);
 
-                            $actionBtn = '<div class="dropdown ms-auto">
-                            <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-
-                                <li>
-                                    <a class="dropdown-item" href="' . $editUrl . '"><i class="bi bi-trash"></i><i class="bx bx-edit"></i> '.__('app.edit').'</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="' . $paymentUrl . '"><i class="bi bi-trash"></i><i class="bx bx-money"></i> '.__('payment.payment').'</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item party-payment-history" data-party-id="' . $id . '" role="button"></i><i class="bx bx-table"></i> '.__('payment.history').'</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="' . $transactionUrl . '"><i class="bi bi-trash"></i><i class="bx bx-transfer-alt"></i> '.__('app.transactions').'</a>
-                                </li>
-                                <li>
-                                    <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'><i class="bx bx-trash"></i> '.__('app.delete').'</button>
-                                </li>
-                            </ul>
-                        </div>';
-                            return $actionBtn;
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
+                $actionBtn = '<div class="dropdown ms-auto">
+                    <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded font-22 text-option"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="' . $editUrl . '"><i class="bx bx-edit"></i> ' . __('app.edit') . '</a></li>
+                        <li><a class="dropdown-item" href="' . $paymentUrl . '"><i class="bx bx-money"></i> ' . __('payment.payment') . '</a></li>
+                        <li><a class="dropdown-item party-payment-history" data-party-id="' . $id . '" role="button"><i class="bx bx-table"></i> ' . __('payment.history') . '</a></li>
+                        <li><a class="dropdown-item" href="' . $transactionUrl . '"><i class="bx bx-transfer-alt"></i> ' . __('app.transactions') . '</a></li>
+                        <li><button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id="' . $id . '"><i class="bx bx-trash"></i> ' . __('app.delete') . '</button></li>
+                    </ul>
+                </div>';
+                return $actionBtn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
+
 
     public function delete(Request $request) : JsonResponse{
 
@@ -388,47 +471,281 @@ class PartyController extends Controller
      * Ajax Response
      * Search Bar for select2 list
      * */
-    function getAjaxSearchBarList(){
+    // function getAjaxSearchBarList(){
+    //     $search = request('search');
+    //     $partyType = request('party_type');
+
+    //     $parties = Party::where(function($query) use ($search) {
+    //                     $query->where('first_name', 'LIKE', "%{$search}%")
+    //                           ->orWhere('last_name', 'LIKE', "%{$search}%")
+    //                           ->orWhere('mobile', 'LIKE', "%{$search}%")
+    //                           ->orWhere('phone', 'LIKE', "%{$search}%")
+    //                           ->orWhere('email', 'LIKE', "%{$search}%");
+    //                 })
+    //                 ->select('id', 'first_name', 'last_name', 'mobile', 'is_wholesale_customer', 'to_pay', 'to_receive')
+    //                 ->where('party_type', $partyType)
+    //                 ->limit(8)
+    //                 ->get();
+
+    //     $response = [
+    //         'results' => $parties->map(function ($party) {
+    //             $partyBalance = $this->partyService->getPartyBalance($party->id);
+
+    //             return [
+    //                 'id' => $party->id,
+    //                 'text' => $party->getFullName(),
+    //                 'mobile' => $party->mobile,
+    //                 'is_wholesale_customer' => $party->is_wholesale_customer,
+    //                 'to_pay' => $partyBalance['status']=='you_pay' ? $partyBalance['balance'] : 0,
+    //                 'to_receive' => $partyBalance['status']=='you_collect' ? $partyBalance['balance'] : 0,
+    //             ];
+    //         })->toArray(),
+    //     ];
+
+    //     return json_encode($response);
+
+    // }
+
+
+
+    // function getAjaxSearchBarList()
+    // {
+    //     $search = request('search');
+    //     $partyType = request('party_type');
+
+    //     $user = Auth::user();
+
+    //     $parties = Party::where(function($query) use ($search) {
+    //                         $query->where('first_name', 'LIKE', "%{$search}%")
+    //                             ->orWhere('last_name', 'LIKE', "%{$search}%")
+    //                             ->orWhere('mobile', 'LIKE', "%{$search}%")
+    //                             ->orWhere('phone', 'LIKE', "%{$search}%")
+    //                             ->orWhere('email', 'LIKE', "%{$search}%");
+    //                     })
+    //                     ->where('party_type', $partyType)
+    //                     ->when($user->role_id == 2, function ($query) use ($user) {
+    //                         // Only apply this condition for salesmen
+    //                         $query->where('created_by', $user->id);
+    //                     })
+    //                     ->select('id', 'first_name', 'last_name', 'mobile', 'is_wholesale_customer', 'to_pay', 'to_receive')
+    //                     ->limit(8)
+    //                     ->get();
+
+    //     $response = [
+    //         'results' => $parties->map(function ($party) {
+    //             $partyBalance = $this->partyService->getPartyBalance($party->id);
+
+    //             return [
+    //                 'id' => $party->id,
+    //                 'text' => $party->getFullName(),
+    //                 'mobile' => $party->mobile,
+    //                 'is_wholesale_customer' => $party->is_wholesale_customer,
+    //                 'to_pay' => $partyBalance['status'] === 'you_pay' ? $partyBalance['balance'] : 0,
+    //                 'to_receive' => $partyBalance['status'] === 'you_collect' ? $partyBalance['balance'] : 0,
+    //             ];
+    //         })->toArray(),
+    //     ];
+
+    //     return response()->json($response);
+    // }
+
+    function getAjaxSearchBarList()
+    {
         $search = request('search');
         $partyType = request('party_type');
 
+        $user = Auth::user();
+
         $parties = Party::where(function($query) use ($search) {
-                        $query->where('first_name', 'LIKE', "%{$search}%")
-                              ->orWhere('last_name', 'LIKE', "%{$search}%")
-                              ->orWhere('mobile', 'LIKE', "%{$search}%")
-                              ->orWhere('phone', 'LIKE', "%{$search}%")
-                              ->orWhere('email', 'LIKE', "%{$search}%");
-                    })
-                    ->select('id', 'first_name', 'last_name', 'mobile', 'is_wholesale_customer', 'to_pay', 'to_receive')
-                    ->where('party_type', $partyType)
-                    ->limit(8)
-                    ->get();
+                            $query->where('first_name', 'LIKE', "%{$search}%")
+                                ->orWhere('last_name', 'LIKE', "%{$search}%")
+                                ->orWhere('mobile', 'LIKE', "%{$search}%")
+                                ->orWhere('phone', 'LIKE', "%{$search}%")
+                                ->orWhere('email', 'LIKE', "%{$search}%");
+                        })
+                        ->where('party_type', $partyType)
+                        ->when($user->role_id == 2, function ($query) use ($user) {
+                            $query->where('created_by', $user->id);
+                        })
+                        ->select('id', 'first_name', 'last_name', 'mobile', 'is_wholesale_customer')
+                        ->withSum('saleOrders', 'grand_total')
+                        ->withSum('customerPayments', 'amount')
+                        ->limit(8)
+                        ->get();
 
         $response = [
             'results' => $parties->map(function ($party) {
-                $partyBalance = $this->partyService->getPartyBalance($party->id);
+                $totalSales = $party->sale_orders_sum_grand_total ?? 0;
+                $totalPayments = $party->customer_payments_sum_amount ?? 0;
+
+                $remainingToPay = max(0, $totalSales - $totalPayments); // prevent negative
 
                 return [
                     'id' => $party->id,
                     'text' => $party->getFullName(),
                     'mobile' => $party->mobile,
                     'is_wholesale_customer' => $party->is_wholesale_customer,
-                    'to_pay' => $partyBalance['status']=='you_pay' ? $partyBalance['balance'] : 0,
-                    'to_receive' => $partyBalance['status']=='you_collect' ? $partyBalance['balance'] : 0,
+                    'to_pay' => $remainingToPay,
+                    'to_receive' => 0, // You can customize this if needed
                 ];
             })->toArray(),
         ];
 
-        return json_encode($response);
-
+        return response()->json($response);
     }
 
-    public function customerHistory()
+
+
+
+    public function customerHistoryPage()
     {
-        $customers = DB::table('parties')->where('party_type','customer')->where('status',1)->get();
-
-        return view('party.history',compact('customers'));
+        // just return the Blade view with the table
+        return view('party.history');
     }
+
+    // public function customerHistory(Request $request)
+    // {
+    //     // $customers = DB::table('parties')->where('party_type','customer')->where('status',1)->get();
+
+    //     // return view('party.history',compact('customers'));
+
+    //     $data = Party::where('party_type','customer')->get();
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('customer_name', function ($row) {
+    //             return $row->first_name . ' ' . $row->last_name;
+    //         })
+    //         ->addColumn('mobile', function ($row) {
+    //             return $row->mobile ?? '';
+    //         })
+    //         ->addColumn('paid_amount', function ($row) {
+    //             // This row's payment (atomic transaction)
+    //             return number_format($row->amount, 2);
+    //         })
+    //         ->addColumn('total_amount', function ($row) {
+    //             // Sum all orders for this customer
+    //             return number_format(
+    //                 SaleOrder::where('party_id', $row->party_id)->sum('grand_total'),
+    //                 2
+    //             );
+    //         })
+    //         ->addColumn('remaining_amount', function ($row) {
+    //             $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+    //             $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+    //             $remaining   = $totalOrders - $totalPaid;
+    //             return number_format(max($remaining, 0), 2);
+    //         })
+    //         ->addColumn('created_at', function ($row) {
+    //             return $row->created_at->format(app('company')['date_format']);
+    //         })
+    //         ->addColumn('payment_date', function ($row) {
+    //             return $row->payment_date;
+    //         })
+    //         // ->addColumn('action', function ($row) {
+    //         //     $id = $row->id;
+    //         //     $deleteUrl = route('order.payment.delete', ['id' => $id]);
+
+    //         //     $actionBtn = '<div class="dropdown ms-auto">
+    //         //         <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+    //         //             <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //         //         </a>
+    //         //         <ul class="dropdown-menu">
+    //         //             <li>
+    //         //                 <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
+    //         //                     <i class="bx bx-trash"></i> '.__('app.delete').'
+    //         //                 </button>
+    //         //             </li>
+    //         //         </ul>
+    //         //     </div>';
+    //         //     return $actionBtn;
+    //         // })
+    //         // ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+    // public function customerHistory(Request $request)
+    // {
+    //     $customers = Party::where('party_type', 'customer')->with('user')->get();
+
+    //     return DataTables::of($customers)
+    //         ->addIndexColumn()
+    //         ->addColumn('customer_name', function ($row) {
+    //             return $row->first_name . ' ' . $row->last_name;
+    //         })
+    //         ->addColumn('mobile', function ($row) {
+    //             return $row->mobile ?? '';
+    //         })
+    //         ->addColumn('total_amount', function ($row) {
+    //             $totalOrders = SaleOrder::where('party_id', $row->id)->sum('grand_total');
+    //             return number_format($totalOrders, 2);
+    //         })
+    //         ->addColumn('paid_amount', function ($row) {
+    //             $totalPaid = CustomerPayment::where('party_id', $row->id)->sum('amount');
+    //             return number_format($totalPaid, 2);
+    //         })
+    //         ->addColumn('remaining_amount', function ($row) {
+    //             $totalOrders = SaleOrder::where('party_id', $row->id)->sum('grand_total');
+    //             $totalPaid   = CustomerPayment::where('party_id', $row->id)->sum('amount');
+    //             $remaining   = $totalOrders - $totalPaid;
+    //             return number_format(max($remaining, 0), 2);
+    //         })
+    //         ->addColumn('created_at', function ($row) {
+    //             return $row->created_at->format(app('company')['date_format']);
+    //         })
+    //         ->addColumn('created_by', function ($row) {
+    //             return $row->created_at->format(app('company')['date_format']);
+    //         })
+    //         ->when(auth()->user()->role_id != 1, function ($query) {
+    //                         return $query->where('created_by', auth()->user()->id);
+    //                     })
+    //         ->make(true);
+    // }
+
+
+    public function customerHistory(Request $request)
+    {
+        $query = Party::where('party_type', 'customer')->with('user');
+
+        // Apply role-based restriction BEFORE get()
+        if (auth()->user()->role_id != 1) {
+            $query->where('created_by', auth()->user()->id);
+        }
+
+        $customers = $query->get();
+
+        return DataTables::of($customers)
+            ->addIndexColumn()
+            ->addColumn('customer_name', function ($row) {
+                return $row->first_name . ' ' . $row->last_name;
+            })
+            ->addColumn('mobile', function ($row) {
+                return $row->mobile ?? '';
+            })
+            ->addColumn('total_amount', function ($row) {
+                $totalOrders = SaleOrder::where('party_id', $row->id)->sum('grand_total');
+                return number_format($totalOrders, 2);
+            })
+            ->addColumn('paid_amount', function ($row) {
+                $totalPaid = CustomerPayment::where('party_id', $row->id)->sum('amount');
+                return number_format($totalPaid, 2);
+            })
+            ->addColumn('remaining_amount', function ($row) {
+                $totalOrders = SaleOrder::where('party_id', $row->id)->sum('grand_total');
+                $totalPaid   = CustomerPayment::where('party_id', $row->id)->sum('amount');
+                $remaining   = $totalOrders - $totalPaid;
+                return number_format(max($remaining, 0), 2);
+            })
+            ->addColumn('created_at', function ($row) {
+                return $row->created_at->format(app('company')['date_format']);
+            })
+            ->addColumn('created_by', function ($row) {
+                return $row->user->username ?? ''; // Showing creator's name
+            })
+            ->make(true);
+    }
+
+
 
     public function getCustomerHistory(Request $request)
     {

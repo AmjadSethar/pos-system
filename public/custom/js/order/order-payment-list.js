@@ -16,25 +16,17 @@ $(function() {
         processing: true,
         serverSide: true,
         method: 'get',
-        ajax: baseURL + '/order-payments/datatable-list',
-        // columns: [
-        //     {targets: 0, data:'id', orderable:true, visible:false},
-        //     {
-        //         data: 'id',
-        //         orderable: false,
-        //         className: 'text-center',
-        //         render: function(data, type, full, meta) {
-        //             return '<input type="checkbox" class="form-check-input row-select" name="record_ids[]" value="' + data + '">';
-        //         }
-        //     },
-        //     {data: "customer_name", name: "customer_name"},
-        //     {data: "mobile", name: "mobile"},
-        //     {data: "paid_amount", name: "paid_amount"},
-        //     {data: "remaining_amount", name: "remaining_amount"},
-        //     {data: "username", name: "username"},
-        //     {data: "created_at", name: "created_at"},
-        //     {data: "action", name: "action", orderable: false, searchable: false},
-        // ],
+        ajax:{
+           url: baseURL + '/order-payments/datatable-list',
+           data:{
+                    user_id : $('#user_id').val(),
+                    
+                    from_date : $('input[name="from_date"]').val(),
+                    to_date : $('input[name="to_date"]').val(),
+                },
+        }, 
+            
+       
         columns: [
                 {targets: 0, data:'id', orderable:true, visible:false},   // hidden id
                 {
@@ -50,6 +42,7 @@ $(function() {
                 {data: "total_amount", name: "total_amount"},
                 {data: "paid_amount", name: "paid_amount"},
                 {data: "remaining_amount", name: "remaining_amount"},
+                {data: "credit_limit", name: "credit_limit"},
                 {data: "payment_date", name: "payment_date"},
                 {data: "created_at", name: "created_at"},
                 {data: "action", name: "action", orderable: false, searchable: false},
@@ -393,5 +386,9 @@ $(function() {
         //Load Datatable
         loadDatatables();
 	} );
+
+    $(document).on("change", '#user_id, input[name="from_date"], input[name="to_date"]', function function_name(e) {
+        loadDatatables();
+    });
 
 });

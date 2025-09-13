@@ -346,6 +346,13 @@ class PurchaseController extends Controller
 
             if($request->operation == 'save' || $request->operation == 'convert'){
                 // Create a new purchase record using Eloquent and save it
+                $bilty = $request->bilty ?? 0;
+
+                // 👇 Add bilty to grand_total
+                $validatedData['grand_total'] += $bilty;
+
+                // 👇 Save bilty separately
+                $validatedData['bilty'] = $bilty;
                 $newPurchase = Purchase::create($validatedData);
 
                 $request->request->add(['purchase_id' => $newPurchase->id]);

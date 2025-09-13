@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\User;
 use App\Models\Party\PartyTransaction;
+use App\Models\Sale\SaleOrder;
 use App\Services\PartyService;
 
 class Party extends Model
@@ -88,4 +89,15 @@ class Party extends Model
         $partyBalance = new PartyService();
         return $partyBalance->getPartyBalance($this->id);
     }
+
+    public function saleOrders()
+    {
+        return $this->hasMany(SaleOrder::class, 'party_id');
+    }
+
+    public function customerPayments()
+    {
+        return $this->hasMany(\App\Models\CustomerPayment::class, 'party_id');
+    }
+
 }

@@ -87,11 +87,13 @@ class SaleReturnController extends Controller
         $prefix = Prefix::findOrNew($this->companyId);
         $lastCountId = $this->getLastCountId();
         $selectedPaymentTypesArray = json_encode($this->paymentTypeService->selectedPaymentTypesArray());
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+        
         $data = [
             'prefix_code' => $prefix->sale_return,
             'count_id' => ($lastCountId+1),
         ];
-        return view('sale.return.create',compact('data', 'selectedPaymentTypesArray'));
+        return view('sale.return.create',compact('data', 'selectedPaymentTypesArray','categories'));
     }
 
     /**

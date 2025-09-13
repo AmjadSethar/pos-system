@@ -211,7 +211,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="{{ $columnCount }}" class="tfoot-first-td">{{ __('app.discount') }}(-)</td>
-                                                    <td>{{ $formatNumber->formatWithPrecision($discount) }}</td>
+                                                    <td>{{ $formatNumber->formatWithPrecision($order->discount) }}%</td>
                                                 </tr>
                                                 <tr class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                     <td colspan="{{ $columnCount }}" class="tfoot-first-td">{{ __('tax.tax') }}</td>

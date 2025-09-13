@@ -292,6 +292,7 @@ Route::middleware('auth')->group(function () {
 
 
          Route::get('/history', [PartyController::class, 'customerHistory'])->name('party.history');
+         Route::get('/history-page', [PartyController::class, 'customerHistoryPage'])->name('party.page');
         Route::get('/get-customer-history', [PartyController::class, 'getCustomerHistory'])->name('get.customer.history');//View
 
 

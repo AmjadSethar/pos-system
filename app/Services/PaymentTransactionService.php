@@ -41,7 +41,7 @@ class PaymentTransactionService{
                     'transaction_date'          =>  $this->toSystemDateFormat($data['transaction_date']),
                     'payment_type_id'           =>  $data['payment_type_id'],
                     'amount'                    =>  $data['amount'],
-                    'note'                      =>  $data['note'],
+                    // 'note'                      =>  $data['note'],
                     'reference_no'              =>  $data['reference_no']??null,
                     'payment_from_unique_code'  =>  $data['payment_from_unique_code']??null,
                 ]

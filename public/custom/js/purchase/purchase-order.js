@@ -1070,3 +1070,108 @@
         $('#payments-table tr#'+id).remove();
 
     }
+
+
+// function applyBilty() {
+//     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+//     const biltyInput = document.querySelector('input[name="bilty"]');
+//     const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+//     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+//     const originalTotal = parseFloat(grandTotalInput?.value) || 0;
+//     const biltyAmount = parseFloat(biltyInput?.value) || 0;
+
+//     const finalTotal = originalTotal + biltyAmount;
+//     const finalFormatted = finalTotal.toFixed(2);
+
+//     if (paymentAmountInput) paymentAmountInput.value = finalFormatted;
+//     if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+
+
+//     applyBilty();
+// }
+
+
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+    //     const biltylInput = document.querySelector('input[name="bilty"]');
+
+    //     const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+    //     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+    //     function applyDiscount() {
+    //         const originalTotal = parseFloat(grandTotalInput.value) || 0;
+    //         const biltyAmount = parseFloat(biltylInput.value) || 0;
+
+           
+    //         const finalTotal = originalTotal + biltyAmount;
+    //         const finalFormatted = finalTotal.toFixed(2);
+
+    //         // Update discounted total input
+    //         if (discountedTotalInput) discountedTotalInput.value = finalFormatted;
+
+    //         // Update payment_amount[0]
+    //         if (paymentAmountInput) paymentAmountInput.value = finalFormatted;
+
+    //         // Update sum_of_total <td>
+    //         if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+    //     }
+
+    //     // Event listeners
+    //     biltylInput.addEventListener("input", applyDiscount);
+    //     grandTotalInput.addEventListener("input", applyDiscount);
+
+    //     // Initial run
+    //     applyDiscount();
+    // });
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+//     const biltyInput = document.querySelector('input[name="bilty"]');
+//     const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+//     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+//     // 👇 Store the ORIGINAL grand total before bilty is applied
+//     let originalGrandTotal = parseFloat(grandTotalInput.value) || 0;
+
+//     function applyBilty() {
+//         const biltyAmount = parseFloat(biltyInput.value) || 0;
+
+//         // 👇 Add bilty to original (not already-adjusted) grand total
+//         const finalTotal = originalGrandTotal + biltyAmount;
+//         const finalFormatted = finalTotal.toFixed(2);
+
+//         // Update fields
+//         grandTotalInput.value = finalFormatted;
+//         if (paymentAmountInput) paymentAmountInput.value = finalFormatted;
+//         if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+//     }
+
+//     // 👇 Update originalGrandTotal again if system recalculates it
+//     const observer = new MutationObserver(() => {
+//         originalGrandTotal = parseFloat(grandTotalInput.value) || 0;
+//         applyBilty(); // Reapply bilty if needed
+//     });
+
+//     observer.observe(grandTotalInput, {
+//         attributes: true,
+//         childList: true,
+//         characterData: true,
+//         subtree: true
+//     });
+
+//     // Apply when bilty changes
+//     biltyInput.addEventListener("input", applyBilty);
+
+//     // Initial apply
+//     applyBilty();
+// });
+
+
+
+
+

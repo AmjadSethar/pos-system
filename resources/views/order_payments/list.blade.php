@@ -15,17 +15,46 @@
 
                     <div class="card">
 
-					<div class="card-header px-4 py-3 d-flex justify-content-between">
+					<div class="card-header px-4 py-3">
 					    <!-- Other content on the left side -->
-					    <div>
-					    	<h5 class="mb-0 text-uppercase">{{ __('Payment History') }}</h5>
-					    </div>
+						<div class="row">
+							<div class="col-md-12">
+								<div>
+									<h5 class="mb-0 text-uppercase">{{ __('Payment History') }}</h5>
+								</div>
+							</div>
+						</div>
+					    
 					    
 					    {{-- @can('customer.create')
 					    <!-- Button pushed to the right side -->
 					    <x-anchor-tag href="{{ route('order.create') }}" text="{{ __('order.create') }}" class="btn btn-primary px-5" />
 					    @endcan --}}
-
+						@if(auth()->user()->role_id ==1)
+						<div class="row g-3 mt-3">
+                            
+                            <div class="col-md-4">
+                                <x-label for="user_id" name="{{ __('user.user') }}" />
+                                <x-dropdown-user selected="" :showOnlyUsername='true' />
+                            </div>
+                            <div class="col-md-4">
+                                <x-label for="from_date" name="{{ __('app.from_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="from_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <x-label for="to_date" name="{{ __('app.to_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="to_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+						@endif
 					</div>
 					<div class="card-body">
 						<div class="table-responsive">
@@ -43,6 +72,7 @@
 										<th>Total Amount</th>
 										<th>Paid Amount</th>
 										<th>Remaining Amount</th>
+										<th>Credit Limit</th>
 										<th>Payment Date</th>
 										<th>Created At</th>
 										<th>Action</th>

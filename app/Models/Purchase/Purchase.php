@@ -42,6 +42,7 @@ class Purchase extends Model
         'round_off',
         'grand_total',
         'paid_amount',
+        'bilty',
     ];
 
     /**

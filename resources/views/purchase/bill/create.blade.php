@@ -152,6 +152,19 @@
                                                         </td>
                                                       </tr>
                                                       <tr>
+                                                        <td><span class="fw-bold">{{ __('Bilty Expense') }}</span></td>
+                                                        <td>
+                                                            <x-input 
+                                                                type="number" 
+                                                                additionalClasses="text-end bilty-input" 
+                                                                name="bilty" 
+                                                                :required="false" 
+                                                                placeholder="Bilty" 
+                                                                value="0"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                      <tr>
                                                          <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
                                                          <td>
                                                             <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>

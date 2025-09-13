@@ -69,6 +69,19 @@
                                                     <x-input type="text" name="count_id" :required="true" placeholder="Serial Number" value="{{ $data['count_id'] }}"/>
                                                 </div>
                                             </div>
+                                            @if(auth()->user()->role_id == 1)
+                                            <div class="col-md-6">
+                                                {{-- <label for="order_code">Select Salesman</label> --}}
+                                                 <x-label for="state_id" name="{{ __('Select Salesman') }}" />
+                                                <!--  -->
+                                                <select class="form-select single-select-clear-field" id="user" name="user" data-placeholder="Choose one thing">
+                                                    <option></option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            @endif
                                             @if(app('company')['tax_type'] == 'gst')
                                             <div class="col-md-4">
                                                 <x-label for="state_id" name="{{ __('app.state_of_supply') }}" />
@@ -138,22 +151,31 @@
                                                     </tfoot>
                                                 </table>
                                             </div>
-                                            <div class="col-md-8">
+                                            {{-- <div class="col-md-8">
                                                 <x-label for="note" name="{{ __('app.note') }}" />
                                                 <x-textarea name='note' value=''/>
-                                            </div>
+                                            </div> --}}
                                             <div class="col-md-4 mt-4">
                                                 <table class="table mb-0 table-striped">
                                                    <tbody>
-                                                      <tr>
+                                                      <tr class="d-none">
                                                          <td class="w-50">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" id="round_off_checkbox">
-                                                                <label class="form-check-label fw-bold cursor-pointer" for="round_off_checkbox">{{ __('app.round_off') }}</label>
+                                                                <label class="form-check-label fw-bold cursor-pointer" for="round_off_checkbox">{{ __('Discount') }}</label>
                                                             </div>
                                                         </td>
                                                          <td class="w-50">
-                                                            <x-input type="text" additionalClasses="text-end cu_numeric round_off " name="round_off" :required="false" placeholder="Round-Off" value="0"/>
+                                                            <x-input type="integer" additionalClasses="text-end cu_numeric round_off " name="round_off" :required="false" placeholder="Round-Off" value="0"/>
+                                                        </td>
+                                                      </tr>
+                                                      {{-- <tr class="">
+                                                         <td class="w-50">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label fw-bold cursor-pointer" for="discount">{{ __('Discount') }}</label>
+                                                            </div>
+                                                        </td>
+                                                         <td class="w-50">
+                                                            <x-input type="integer" additionalClasses="text-end " name="discount" :required="false" placeholder="Discount" value="0"/>
                                                         </td>
                                                       </tr>
                                                       <tr>
@@ -161,14 +183,57 @@
                                                          <td>
                                                             <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
                                                         </td>
-                                                      </tr>
+                                                      </tr> --}}
+                                                        <tr>
+                                                        <td class="w-50">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label fw-bold cursor-pointer" for="discount">{{ __('Discount (%)') }}</label>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-50 position-relative">
+                                                            <x-input 
+                                                                type="number" 
+                                                                additionalClasses="text-end pe-4" 
+                                                                name="discount" 
+                                                                :required="true" 
+                                                                placeholder="0%" 
+                                                                value="0"
+                                                                min="0" 
+                                                                max="100"
+                                                            />
+                                                            <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted">%</span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                                                                            <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
+                                                                                                            <td>
+                                                                                                                <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
+                                                                                                            </td>
+                                                                                                        </tr> 
+
+                                                    <tr>
+                                                        <td><span class="fw-bold">{{ __('Discounted Total') }}</span></td>
+                                                        <td>
+                                                            <x-input 
+                                                                type="text" 
+                                                                additionalClasses="text-end text-success grand_total" 
+                                                                readonly=true 
+                                                                name="discounted_total" 
+                                                                placeholder="0.00" 
+                                                                value="0"
+                                                            />
+                                                        </td>
+                                                    </tr>
+
+
                                                    </tbody>
                                                 </table>
                                             </div>
                                     </div>
-                                    <div class="card-header px-4 py-3">
+                                    {{-- <div class="card-header px-4 py-3">
                                         <h5 class="mb-0">{{ __('payment.payment') }}</h5>
-                                    </div>
+                                    </div> --}}
                                     <div class="card-body p-4 row g-3 ">
                                         <div class="payment-container">
                                             <div class="row payment-type-row-0 py-3 ">
@@ -179,7 +244,7 @@
                                                         <span class="input-group-text" id="input-near-focus" role="button">RS</span>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                {{-- <div class="col-md-6">
                                                     <x-label for="payment_type" id="payment_type_lang" name="{{ __('payment.type') }}" />
                                                     <div class="input-group">
                                                         <select class="form-select select2 payment-type-ajax" name="payment_type_id[0]" data-placeholder="Choose one thing">
@@ -189,16 +254,16 @@
                                                             <i class='text-primary bx bx-plus-circle'></i>
                                                         </button>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-6">
+                                                </div> --}}
+                                                {{-- <div class="col-md-6">
                                                     <x-label for="payment_note" id="payment_note_lang" name="{{ __('payment.note') }}" />
                                                     <x-textarea name="payment_note[0]" value=""/>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        {{-- <div class="col-md-4">
                                             <x-anchor-tag class="add_payment_type" href="javascript:;" text="<div class='d-flex align-items-center'><i class='fadeIn animated bx bx-plus font-30 text-primary'></i><div class=''>{{ __('payment.add_payment_type') }}</div></div>" />
-                                        </div>
+                                        </div> --}}
                                     </div>
 
                                     <div class="card-header px-4 py-3"></div>

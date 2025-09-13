@@ -98,6 +98,7 @@ class SaleOrderController extends Controller
         $prefix = Prefix::findOrNew($this->companyId);
         // $lang = $this->getLang($p);
         $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+        $users = DB::table('users')->where('status', 1)->get();
 
         $lastCountId = $this->getLastCountId();
         $selectedPaymentTypesArray = json_encode($this->paymentTypeService->selectedPaymentTypesArray());
@@ -105,7 +106,7 @@ class SaleOrderController extends Controller
             'prefix_code' => $prefix->sale_order,
             'count_id' => ($lastCountId+1),
         ];
-        return view('sale.order.create',compact('data', 'selectedPaymentTypesArray', 'categories'));
+        return view('sale.order.create',compact('data', 'selectedPaymentTypesArray', 'categories','users'));
     }
 
     /**
@@ -178,7 +179,11 @@ class SaleOrderController extends Controller
 
         $taxList = CacheService::get('tax')->toJson();
 
-        return view('sale.order.edit', compact('taxList', 'order', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory'));
+
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
+
+
+        return view('sale.order.edit', compact('taxList', 'order', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory','categories'));
     }
 
     /**
@@ -266,12 +271,26 @@ class SaleOrderController extends Controller
      * Store Records
      * */
     public function store(SaleOrderRequest $request) : JsonResponse  {
-        try {
+        // try {
+        //  dd($request->all());
             DB::beginTransaction();
             // Get the validated data from the expenseRequest
             $validatedData = $request->validated();
 
             if($request->operation == 'save'){
+                // $discount = $validatedData['discount'] ?? 0;
+                $grandTotal = $validatedData['discounted_total'];
+
+                // Apply discount
+                // $finalTotal = $grandTotal - $discount;
+
+                // // Prevent negative values, if needed
+                // if ($finalTotal < 0) {
+                //     $finalTotal = 0;
+                // }
+
+                // Update the grand_total in the validated data to be saved
+                 $validatedData['grand_total'] = $grandTotal;
                 // Create a new expense record using Eloquent and save it
                 $newSaleOrder = SaleOrder::create($validatedData);
 
@@ -286,7 +305,7 @@ class SaleOrderController extends Controller
                     'count_id'              => $validatedData['count_id'],
                     'order_code'            => $validatedData['order_code'],
                     'note'                  => $validatedData['note'],
-                    'round_off'             => $validatedData['round_off'],
+                    // 'round_off'             => $validatedData['round_off'],
                     'grand_total'           => $validatedData['grand_total'],
                     'state_id'              => $validatedData['state_id'],
                 ];
@@ -340,9 +359,9 @@ class SaleOrderController extends Controller
             /**
              * Paid amount should not be greater than grand total
              * */
-            if($paidAmount > $newSaleOrder->grand_total){
-                throw new \Exception(__('payment.payment_should_not_be_greater_than_grand_total')."<br>Paid Amount : ". $this->formatWithPrecision($paidAmount)."<br>Grand Total : ". $this->formatWithPrecision($newSaleOrder->grand_total). "<br>Difference : ".$this->formatWithPrecision($paidAmount-$newSaleOrder->grand_total));
-            }
+            // if($paidAmount > $newSaleOrder->grand_total){
+            //     throw new \Exception(__('payment.payment_should_not_be_greater_than_grand_total')."<br>Paid Amount : ". $this->formatWithPrecision($paidAmount)."<br>Grand Total : ". $this->formatWithPrecision($newSaleOrder->grand_total). "<br>Difference : ".$this->formatWithPrecision($paidAmount-$newSaleOrder->grand_total));
+            // }
 
             /**
              * Update Sale Order Model
@@ -374,7 +393,7 @@ class SaleOrderController extends Controller
 
             ]);
 
-        } catch (\Exception $e) {
+        // } catch (\Exception $e) {
                 DB::rollback();
 
                 return response()->json([
@@ -382,9 +401,13 @@ class SaleOrderController extends Controller
                     'message' => $e->getMessage(),
                 ], 409);
 
-        }
+        // }
 
     }
+
+
+
+    
 
 
 
@@ -407,18 +430,18 @@ class SaleOrderController extends Controller
             $amount           = $request->payment_amount[$i];
 
             if($amount > 0){
-                if(!isset($request->payment_type_id[$i])){
-                        return [
-                            'status' => false,
-                            'message' => __('payment.missed_to_select_payment_type')."#".$i,
-                        ];
-                }
+                // if(!isset($request->payment_type_id[$i])){
+                //         return [
+                //             'status' => false,
+                //             'message' => __('payment.missed_to_select_payment_type')."#".$i,
+                //         ];
+                // }
 
                 $paymentsArray = [
                     'transaction_date'          => $request->order_date,
                     'amount'                    => $amount,
-                    'payment_type_id'           => $request->payment_type_id[$i],
-                    'note'                      => $request->payment_note[$i],
+                    'payment_type_id'           => 1,
+                    // 'note'                      => $request->payment_note[$i],
                 ];
 
                 if(!$transaction = $this->paymentTransactionService->recordPayment($request->modelName, $paymentsArray)){
@@ -580,7 +603,7 @@ class SaleOrderController extends Controller
                         ->when($request->to_date, function ($query) use ($request) {
                             return $query->where('order_date', '<=', $this->toSystemDateFormat($request->to_date));
                         })
-                        ->when(!auth()->user()->hasPermissionTo('sale.order.can.view.other.users.sale.orders'), function ($query) use ($request) {
+                        ->when(auth()->user()->role_id != 1, function ($query) {
                             return $query->where('created_by', auth()->user()->id);
                         });
 
@@ -667,9 +690,7 @@ class SaleOrderController extends Controller
                                 <li>
                                     <a class="dropdown-item" href="' . $editUrl . '"><i class="bx bx-edit"></i> '.__('app.edit').'</a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="' . $convertToSale . '"><i class="bx bx-'.$convertToSaleIcon.'"></i> '.$convertToSaleText.'</a>
-                                </li>
+                                
                                 <li>
                                     <a class="dropdown-item" href="' . $detailsUrl . '"></i><i class="bx bx-show-alt"></i> '.__('app.details').'</a>
                                 </li>

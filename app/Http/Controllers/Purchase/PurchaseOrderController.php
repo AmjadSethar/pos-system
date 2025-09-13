@@ -154,8 +154,9 @@ class PurchaseOrderController extends Controller
         $paymentHistory = $this->paymentTransactionService->getPaymentRecordsArray($order);
 
         $taxList = CacheService::get('tax')->toJson();
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
 
-        return view('purchase.order.edit', compact('taxList', 'order', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory'));
+        return view('purchase.order.edit', compact('taxList', 'order', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory','categories'));
     }
 
     /**
@@ -250,6 +251,13 @@ class PurchaseOrderController extends Controller
 
             if($request->operation == 'save'){
                 // Create a new expense record using Eloquent and save it
+                 $bilty = $request->bilty ?? 0;
+
+                // 👇 Add bilty to grand_total
+                $validatedData['grand_total'] += $bilty;
+
+                // 👇 Save bilty separately
+                $validatedData['bilty'] = $bilty;
                 $newPurchaseOrder = PurchaseOrder::create($validatedData);
 
                 $request->request->add(['purchase_order_id' => $newPurchaseOrder->id]);

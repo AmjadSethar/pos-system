@@ -6,14 +6,14 @@ use App\Enums\App;
 use App\Models\CustomerPayment;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Models\Party\Party;
 use App\Models\Prefix;
 use App\Models\Sale\SaleOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\JsonResponse;
-
-
+use Illuminate\Support\Carbon;
 
 class OrderPaymentController extends Controller
 {
@@ -185,7 +185,7 @@ class OrderPaymentController extends Controller
 
         // Check if already fully paid
         if ($remainingBefore <= 0) {
-            return redirect()->back()->with('message', 'Customer has already paid all dues. No remaining balance.');
+            return redirect()->back()->with('info', 'Customer has already paid all dues. No remaining balance.');
         }
 
         // If entered amount is more than remaining, cap it
@@ -194,7 +194,7 @@ class OrderPaymentController extends Controller
         // New totals
         $newTotalPaid = $alreadyPaid + $paymentAmount;
         $remainingAmount = $totalAmount - $newTotalPaid;
-
+        $validated['payment_date'] = Carbon::createFromFormat('d/m/Y', $validated['payment_date'])->format('Y-m-d');
         // Save payment
         $payment = CustomerPayment::create([
             'party_id' => $validated['party_id'],
@@ -209,10 +209,10 @@ class OrderPaymentController extends Controller
 
         // Message if capped
         if ($validated['amount'] > $remainingBefore) {
-            return redirect()->back()->with('message', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
+            return redirect()->back()->with('error', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
         }
 
-        return redirect()->back()->with('message', 'Payment recorded successfully.');
+        return redirect()->back()->with('info', 'Payment recorded successfully.');
     }
 
 
@@ -223,23 +223,197 @@ class OrderPaymentController extends Controller
         return view('order_payments.list');
     }
 
+    // public function paymentHistoryDatatable(Request $request)
+    // {
+    //     $data = CustomerPayment::with('party')->get();
+    //     //  dd($data);
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('customer_name', function ($row) {
+    //             return $row->party->first_name .' '. $row->party->last_name ;
+    //         })
+    //         ->addColumn('mobile', function ($row) {
+    //             return $row->party->mobile ?? '';
+    //         })
+    //         ->addColumn('paid_amount', function ($row) {
+    //             return number_format($row->paid_amount, 2);
+    //         })
+    //         ->addColumn('remaining_amount', function ($row) {
+    //             return number_format($row->remaining_amount, 2);
+    //         })
+    //         ->addColumn('created_at', function ($row) {
+    //             return $row->created_at->format(app('company')['date_format']);
+    //         })
+    //         ->addColumn('payment_date', function ($row) {
+    //             return $row->payment_date;
+    //         })
+    //         ->addColumn('total_amount', function ($row) {
+    //             return $row->total_amount ?? '';
+    //         })
+    //         ->addColumn('action', function ($row) {
+    //             $id = $row->id;
+    //             $deleteUrl = route('order.payment.delete', ['id' => $id]);
+    //             // $viewUrl = route('order.payment.view', ['id' => $id]);
+    //             //  <li>
+    //             //         <a class="dropdown-item" href="' . $viewUrl . '"></i><i class="bx bx-show-alt"></i> '.__('Details').'</a>
+    //             //     </li>
+
+    //             $actionBtn = '<div class="dropdown ms-auto">
+    //                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+    //                     <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //                 </a>
+    //                 <ul class="dropdown-menu">
+                   
+    //                     <li>
+    //                         <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
+    //                             <i class="bx bx-trash"></i> '.__('app.delete').'
+    //                         </button>
+    //                     </li>
+    //                 </ul>
+    //             </div>';
+    //             return $actionBtn;
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+
+    // public function paymentHistoryDatatable(Request $request)
+    // {
+    //     $data = CustomerPayment::with('party')->get();
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('customer_name', function ($row) {
+    //             return $row->party->first_name . ' ' . $row->party->last_name;
+    //         })
+    //         ->addColumn('mobile', function ($row) {
+    //             return $row->party->mobile ?? '';
+    //         })
+    //         ->addColumn('paid_amount', function ($row) {
+    //             // This row's payment (atomic transaction)
+    //             return number_format($row->amount, 2);
+    //         })
+    //         ->addColumn('total_amount', function ($row) {
+    //             // Sum all orders for this customer
+    //             return number_format(
+    //                 SaleOrder::where('party_id', $row->party_id)->sum('grand_total'),
+    //                 2
+    //             );
+    //         })
+    //         ->addColumn('remaining_amount', function ($row) {
+    //             $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+    //             $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+    //             $remaining   = $totalOrders - $totalPaid;
+    //             return number_format(max($remaining, 0), 2);
+    //         })
+    //         ->addColumn('created_at', function ($row) {
+    //             return $row->created_at->format(app('company')['date_format']);
+    //         })
+    //         ->addColumn('payment_date', function ($row) {
+    //             return $row->payment_date;
+    //         })
+    //         ->addColumn('action', function ($row) {
+    //             $id = $row->id;
+    //             $deleteUrl = route('order.payment.delete', ['id' => $id]);
+
+    //             $actionBtn = '<div class="dropdown ms-auto">
+    //                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+    //                     <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //                 </a>
+    //                 <ul class="dropdown-menu">
+    //                     <li>
+    //                         <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
+    //                             <i class="bx bx-trash"></i> '.__('app.delete').'
+    //                         </button>
+    //                     </li>
+    //                 </ul>
+    //             </div>';
+    //             return $actionBtn;
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+    public function getDateFormats(): array
+    {
+        return ['d-m-Y', 'd/m/Y', 'Y-m-d', 'Y/m/d'];
+    }
+    protected function toSystemDateFormat($dateInput)
+    {
+        foreach ($this->getDateFormats() as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $dateInput);
+                return $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Skip to the next format
+            }
+        }
+
+        return null;
+    }
+
+
     public function paymentHistoryDatatable(Request $request)
     {
-        $data = CustomerPayment::with('party')->get();
-        //  dd($data);
+        $user = auth()->user();
+
+        // Base query
+        $query = CustomerPayment::with('party');
+
+        // ✅ If the user is a salesman (role_id == 2), filter only their customers
+        if ($user->role_id == 2) {
+            $query->whereHas('party', function ($q) use ($user) {
+                $q->where('created_by', $user->id);
+            });
+        }
+
+         // 🧠 Filter by user_id (only for admins)
+        if ($request->filled('user_id') && $user->role_id == 1) {
+            $query->whereHas('party', function ($q) use ($request) {
+                $q->where('created_by', $request->user_id);
+            });
+        }
+
+        // 📅 Filter by from_date
+        if ($request->filled('from_date')) {
+            $query->whereDate('payment_date', '>=', $this->toSystemDateFormat($request->from_date));
+        }
+
+        // 📅 Filter by to_date
+        if ($request->filled('to_date')) {
+            $query->whereDate('payment_date', '<=', $this->toSystemDateFormat($request->to_date));
+        }
+
+        $data = $query->get();
+
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('customer_name', function ($row) {
-                return $row->party->first_name .' '. $row->party->last_name ;
+                return $row->party->first_name . ' ' . $row->party->last_name;
             })
             ->addColumn('mobile', function ($row) {
                 return $row->party->mobile ?? '';
             })
             ->addColumn('paid_amount', function ($row) {
-                return number_format($row->paid_amount, 2);
+                return number_format($row->amount, 2);
+            })
+            ->addColumn('total_amount', function ($row) {
+                return number_format(
+                    SaleOrder::where('party_id', $row->party_id)->sum('grand_total'),
+                    2
+                );
             })
             ->addColumn('remaining_amount', function ($row) {
-                return number_format($row->remaining_amount, 2);
+                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+                $remaining   = $totalOrders - $totalPaid;
+                return number_format(max($remaining, 0), 2);
+            })
+            ->addColumn('credit_limit', function ($row) {
+                $totalLimit = Party::where('party_type','customer')->where('id', $row->party_id)->sum('credit_limit');
+                $formatted = number_format(max($totalLimit, 0), 2);
+                return '<span style="background-color: #67b0f0; padding: 4px 8px; border-radius: 4px;">' . $formatted . '</span>';
             })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format(app('company')['date_format']);
@@ -247,23 +421,15 @@ class OrderPaymentController extends Controller
             ->addColumn('payment_date', function ($row) {
                 return $row->payment_date;
             })
-            ->addColumn('total_amount', function ($row) {
-                return $row->total_amount ?? '';
-            })
             ->addColumn('action', function ($row) {
                 $id = $row->id;
                 $deleteUrl = route('order.payment.delete', ['id' => $id]);
-                // $viewUrl = route('order.payment.view', ['id' => $id]);
-                //  <li>
-                //         <a class="dropdown-item" href="' . $viewUrl . '"></i><i class="bx bx-show-alt"></i> '.__('Details').'</a>
-                //     </li>
 
-                $actionBtn = '<div class="dropdown ms-auto">
+                return '<div class="dropdown ms-auto">
                     <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                         <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
                     </a>
                     <ul class="dropdown-menu">
-                   
                         <li>
                             <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
                                 <i class="bx bx-trash"></i> '.__('app.delete').'
@@ -271,11 +437,12 @@ class OrderPaymentController extends Controller
                         </li>
                     </ul>
                 </div>';
-                return $actionBtn;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['credit_limit','action'])
             ->make(true);
     }
+
+
 
     public function CustomerOrdersPaymentDelete(Request $request) : JsonResponse
     {

@@ -153,6 +153,19 @@
                                                         </td>
                                                       </tr>
                                                       <tr>
+                                                        <td><span class="fw-bold">{{ __('Bilty Expense') }}</span></td>
+                                                        <td>
+                                                            <x-input 
+                                                                type="number" 
+                                                                additionalClasses="text-end bilty-input" 
+                                                                name="bilty" 
+                                                                :required="false" 
+                                                                placeholder="Bilty" 
+                                                                value="0"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                      <tr>
                                                          <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
                                                          <td>
                                                             <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
@@ -172,7 +185,7 @@
                                                     <x-label for="amount" id="amount_lang" labelDataName="{{ __('payment.amount') }}" name="<strong>#1</strong> {{ __('payment.amount') }}" />
                                                     <div class="input-group mb-3">
                                                         <x-input type="text" additionalClasses="cu_numeric" name="payment_amount[0]" value=""/>
-                                                        <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-dollar"></i></span>
+                                                        <span class="input-group-text" id="input-near-focus" role="button">RS</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">

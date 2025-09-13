@@ -43,6 +43,7 @@ class SaleOrder extends Model
         'round_off',
         'grand_total',
         'paid_amount',
+        'discount',
     ];
 
     /**
@@ -53,8 +54,12 @@ class SaleOrder extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = auth()->id();
-            $model->updated_by = auth()->id();
+             $createdBy = request()->has('user') ? request()->input('user') : auth()->id();
+
+            $model->created_by = $createdBy;
+            $model->updated_by = $createdBy;
+            // $model->created_by = auth()->id();
+            // $model->updated_by = auth()->id();
         });
 
         static::updating(function ($model) {

@@ -38,10 +38,11 @@
 						<div class="row g-3">
 							<div class="col-md-3">
                                 <x-label for="customer_type" name="{{ __('customer.type') }}" />
-                                <select class="form-select single-select-clear-field" id="customer_type" name="customer_type" data-placeholder="Choose one thing">
+                                <select class="form-select single-select-clear-field" id="customer_category" name="customer_category" data-placeholder="Choose one thing">
 								    <option></option>
-								    <option value='1'>{{ __('party.wholesalers') }}</option>
-								    <option value='0'>{{ __('party.retailers') }}</option>
+									@foreach ($customerCategories as  $category)
+										<option value="{{ $category->name }}">{{ $category->name }}</option>
+									@endforeach
 								</select>
                             </div>
                         </div>
