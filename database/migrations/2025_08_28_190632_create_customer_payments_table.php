@@ -22,6 +22,10 @@ return new class extends Migration
             // $table->decimal('remaining_amount',20,2);
             $table->string('payment_note')->nullable();
             $table->date('payment_date');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->foreign('created_by')->references('id')->on('users'); 
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users'); 
             $table->timestamps();
         });
     }

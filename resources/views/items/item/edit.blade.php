@@ -130,7 +130,7 @@
                                                 <div class="col-md-4">
                                                     <x-label for="opening_quantity" name="{{ __('item.opening_quantity') }}" />
                                                     <div class="input-group mb-3">
-                                                        <x-input type="text" additionalClasses="cu_numeric" name="opening_quantity" :required="false" value="{{ ($transaction)?$formatNumber->formatQuantity($transaction->quantity):0 }}"/>
+                                                        <x-input type="text" additionalClasses="cu_numeric" name="opening_quantity" :required="false" value="{{ $formatNumber->formatQuantity($item->current_stock)??0 }}"/>
 
                                                     </div>
                                                 </div>

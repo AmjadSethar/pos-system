@@ -23,6 +23,7 @@ $(function() {
                     
                     from_date : $('input[name="from_date"]').val(),
                     to_date : $('input[name="to_date"]').val(),
+                    reached_credit_limit : $('input[name="reached_credit_limit"]').val(),
                 },
         }, 
             
@@ -44,6 +45,7 @@ $(function() {
                 {data: "remaining_amount", name: "remaining_amount"},
                 {data: "credit_limit", name: "credit_limit"},
                 {data: "payment_date", name: "payment_date"},
+                {data: "created_by", name: "created_by"},
                 {data: "created_at", name: "created_at"},
                 {data: "action", name: "action", orderable: false, searchable: false},
             ],

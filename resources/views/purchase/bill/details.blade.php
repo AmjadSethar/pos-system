@@ -26,11 +26,11 @@
                                     <a href="{{ route('purchase.bill.edit', ['id' => $purchase->id]) }}" class="btn btn-outline-primary"><i class="bx bx-edit"></i>{{ __('app.edit') }}</a>
                                     @endcan
 
-                                    <a class="btn btn-outline-dark px-4 notify-through-email" data-model="purchase/bill" data-id="{{$purchase->id}}" role="button">
+                                    {{-- <a class="btn btn-outline-dark px-4 notify-through-email" data-model="purchase/bill" data-id="{{$purchase->id}}" role="button">
                                     </i><i class="bx bx-envelope"></i>{{ __('app.email') }}</a>
 
                                     <a class="btn btn-outline-info px-4 notify-through-sms" data-model="purchase/bill" data-id="{{$purchase->id}}" role="button">
-                                    </i><i class="bx bx-envelope"></i>{{ __('message.sms') }}</a>
+                                    </i><i class="bx bx-envelope"></i>{{ __('message.sms') }}</a> --}}
 
                                     <a href="{{ route('purchase.bill.print', ['id' => $purchase->id]) }}" target="_blank" class="btn btn-outline-secondary px-4"><i class="bx bx-printer mr-1"></i>{{ __("app.print") }}</a>
 
@@ -92,7 +92,7 @@
                                                 <tr class="text-uppercase">
                                                     <th>#</th>
                                                     <th class="text-left">{{ __('item.item') }}</th>
-                                                    <th class="text-left">{{ __('item.hsn') }}</th>
+                                                    {{-- <th class="text-left">{{ __('item.hsn') }}</th> --}}
                                                     @if($isHasBatchItem)
 
                                                         <th class="{{ !app('company')['enable_batch_tracking'] ? 'd-none':'' }}">{{ __('item.batch_no') }}</th>
@@ -106,7 +106,7 @@
                                                     <th class="text-left">{{ __('app.qty') }}</th>
                                                     <th class="text-end">{{ __('app.price_per_unit') }}</th>
                                                     <th scope="col" class="text-end {{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th>
-                                                    <th class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">{{ __('tax.tax') }}</th>
+                                                    {{-- <th class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">{{ __('tax.tax') }}</th> --}}
                                                     <th class="text-end">{{ __('app.total') }}</th>
                                                 </tr>
                                             </thead>
@@ -133,9 +133,9 @@
                                                             @endif
                                                         </small>
                                                    </td>
-                                                   <td>
+                                                   {{-- <td>
                                                        {{ $transaction->item->hsn }}
-                                                   </td>
+                                                   </td> --}}
                                                    @if($isHasBatchItem)
                                                         <td class="{{ !app('company')['enable_batch_tracking'] ? 'd-none':'' }}">
                                                             {{ $transaction->batch ? $transaction->batch->itemBatchMaster->batch_no : '' }}
@@ -173,10 +173,10 @@
                                                                 {{ ($transaction->discount_type == 'fixed') ? '$' : '%' }})
                                                         </small>
                                                     </td>
-                                                    <th scope="col" class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
+                                                    {{-- <th scope="col" class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                         {{ $formatNumber->formatWithPrecision($transaction->tax_amount) }}<br>
                                                         <small>({{ $transaction->tax->rate }}%)</small>
-                                                    </td>
+                                                    </td> --}}
                                                     <td class="unit">
                                                         {{ $formatNumber->formatWithPrecision($transaction->total) }}
                                                     </td>
@@ -212,14 +212,18 @@
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('app.discount') }}(-)</td>
                                                     <td>{{ $formatNumber->formatWithPrecision($discount) }}</td>
                                                 </tr>
-                                                <tr class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
+                                                {{-- <tr class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('tax.tax') }}</td>
                                                     <td>{{ $formatNumber->formatWithPrecision($taxAmount) }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('app.round_off') }}</td>
                                                     <td>{{ $formatNumber->formatWithPrecision($purchase->round_off) }}</td>
-                                                </tr>
+                                                </tr> --}}
+                                                <tr>
+                                                    <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('Bilty') }}</td>
+                                                    <td>{{ $formatNumber->formatWithPrecision($purchase->bilty) }}</td>
+                                                </tr> 
                                                 <tr>
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('app.grand_total') }}</td>
                                                     <td>{{ $formatNumber->formatWithPrecision($purchase->grand_total) }}</td>

@@ -129,7 +129,7 @@
                                             <x-input type="text" additionalClasses="cu_numeric" name="min_stock" :required="false" value=""/>
                                         </div>
                                     </div>
-                                        <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         <label for="supplier" class="form-label">Supplier</label>
                                         <select class="form-select single-select-clear-field" id="supplier" name="supplier" data-placeholder="Choose Supplier">
                                             <option></option>
@@ -137,7 +137,7 @@
                                                 <option value="{{ $sup->id }}">{{ $sup->first_name }} {{ $sup->first_name }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    </div> --}}
                                                 
                                     <div class="col-md-6">
                                         <x-label for="description" name="{{ __('app.description') }}" />

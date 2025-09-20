@@ -23,8 +23,11 @@
                                     <h5 class="mb-0">{{ __('order.details') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
-                                        @if (session('message'))
-                                    <span class="alert alert-danger" >{{session('message')}}</span>
+                                        @if (session('info'))
+                                    <span class="alert alert-success" >{{session('info')}}</span>
+                                @endif
+                                  @if (session('error'))
+                                    <span class="alert alert-danger" >{{session('error')}}</span>
                                 @endif
                                         <div class="col-md-6">
                                                 <x-label for="party_id" name="{{ __('customer.customer') }}" />
@@ -83,6 +86,23 @@
                                             </div>
                                            
                                         </div>
+                                        {{-- <div class="col-md-6">
+                                            <x-label for="payment_note" name="{{ __('payment.note') }}" />
+                                            <x-textarea name="payment_note" value=""/>
+                                        </div> --}}
+                                         @if(auth()->user()->role_id == 1)
+                                            <div class="col-md-6">
+                                                {{-- <label for="order_code">Select Salesman</label> --}}
+                                                 <x-label for="state_id" name="{{ __('Select Salesman') }}" />
+                                                <!--  -->
+                                                <select class="form-select single-select-clear-field" id="user" name="user" data-placeholder="Choose one thing">
+                                                    <option></option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            @endif
                                         
                                         <div class="col-md-6">
                                             <x-label for="payment_note" name="{{ __('payment.note') }}" />

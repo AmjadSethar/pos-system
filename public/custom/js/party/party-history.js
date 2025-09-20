@@ -54,7 +54,17 @@ $(function() {
         processing: true,
         serverSide: true,
         method: 'get',
-        ajax: baseURL + '/party/history',
+        // ajax: baseURL + '/party/history',
+        ajax:{
+           url: baseURL + '/party/history',
+           data:{
+                    // user_id : $('#user_id').val(),
+                    
+                    // from_date : $('input[name="from_date"]').val(),
+                    // to_date : $('input[name="to_date"]').val(),
+                    reached_credit_limit : $('input[name="reached_credit_limit"]').val(),
+                },
+        }, 
         // columns: [
         //     {targets: 0, data:'id', orderable:true, visible:false},
         //     {
@@ -88,7 +98,9 @@ $(function() {
                 {data: "total_amount", name: "total_amount"},
                 {data: "paid_amount", name: "paid_amount"},
                 {data: "remaining_amount", name: "remaining_amount"},
+                {data: "credit_limit", name: "credit_limit"},
                  {data: "created_by", name: "created_by"},
+                 {data: "total_orders", name: "total_orders"},
                 {data: "created_at", name: "created_at"},
                 // {data: "action", name: "action", orderable: false, searchable: false},
             ],
@@ -383,6 +395,11 @@ $(function() {
     }
 
     $(document).on("change", '#customer_type', function function_name() {
+        loadDatatables();
+    });
+
+
+    $(document).on("change", 'input[name="reached_credit_limit"]', function function_name(e) {
         loadDatatables();
     });
 });

@@ -245,8 +245,9 @@ class PurchaseController extends Controller
         $paymentHistory = $this->paymentTransactionService->getPaymentRecordsArray($purchase);
 
         $taxList = CacheService::get('tax')->toJson();
+        $categories = DB::table('party_categories')->where('status', 1)->pluck('name', 'id');
 
-        return view('purchase.bill.edit', compact('taxList', 'purchase', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory'));
+        return view('purchase.bill.edit', compact('taxList', 'purchase', 'itemTransactionsJson','selectedPaymentTypesArray', 'paymentHistory','categories'));
     }
 
     /**
@@ -802,13 +803,7 @@ class PurchaseController extends Controller
                                 <li>
                                     <a class="dropdown-item payment-history" data-invoice-id="' . $id . '" role="button"></i><i class="bx bx-table"></i> '.__('payment.history').'</a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item notify-through-email" data-model="purchase/bill" data-id="' . $id . '" role="button"></i><i class="bx bx-envelope"></i> '.__('app.send_email').'</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item notify-through-sms" data-model="purchase/bill" data-id="' . $id . '" role="button"></i><i class="bx bx-envelope"></i> '.__('app.send_sms').'</a>
-                                </li>
-                                <li>
+                                
                                     <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'><i class="bx bx-trash"></i> '.__('app.delete').'</button>
                                 </li>
                             </ul>

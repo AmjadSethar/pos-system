@@ -272,22 +272,16 @@ class SaleOrderController extends Controller
      * */
     public function store(SaleOrderRequest $request) : JsonResponse  {
         // try {
-        //  dd($request->all());
+            // dd($request->all());
+        //    $item = Item::find($request->item_id);
+        //    dd($item);
             DB::beginTransaction();
             // Get the validated data from the expenseRequest
             $validatedData = $request->validated();
 
             if($request->operation == 'save'){
-                // $discount = $validatedData['discount'] ?? 0;
                 $grandTotal = $validatedData['discounted_total'];
 
-                // Apply discount
-                // $finalTotal = $grandTotal - $discount;
-
-                // // Prevent negative values, if needed
-                // if ($finalTotal < 0) {
-                //     $finalTotal = 0;
-                // }
 
                 // Update the grand_total in the validated data to be saved
                  $validatedData['grand_total'] = $grandTotal;
@@ -339,6 +333,69 @@ class SaleOrderController extends Controller
             if(!$saleOrderItemsArray['status']){
                 throw new \Exception($saleOrderItemsArray['message']);
             }
+
+            $items = [];
+
+            $itemIds = $request->item_id;
+            $quantities = $request->quantity;
+
+            if (is_array($itemIds)) {
+                foreach ($itemIds as $index => $itemId) {
+                    $items[] = [
+                        'item_id' => $itemId,
+                        'qty' => $quantities[$index] ?? 0,
+                    ];
+                }
+            }
+
+
+
+
+        // foreach ($items as $itemRow) {
+        //     $item = Item::find($itemRow['item_id'])->fresh();
+
+        //     if (!$item) {
+        //         throw new \Exception("Item not found.");
+        //     }
+
+        //     $requestedQty = $itemRow['qty'];
+
+        //     if ($item->current_stock < $requestedQty) {
+        //         throw new \Exception("Not enough stock for item: {$item->name}. Available: {$item->current_stock}, Requested: {$requestedQty}");
+        //     }
+
+        //     $item->current_stock -= $requestedQty;
+        //     $item->save();
+        // }
+
+        foreach ($items as $itemRow) {
+            $item = Item::find($itemRow['item_id'])->fresh();
+
+            if (!$item) {
+                throw new \Exception("Item not found (ID: {$itemRow['item_id']}).");
+            }
+
+            $requestedQty = $itemRow['qty'];
+
+            if ($requestedQty <= 0) {
+                throw new \Exception("Invalid quantity for item: {$item->name}.");
+            }
+
+            if ($item->current_stock < $requestedQty) {
+                throw new \Exception("Not enough stock for item: {$item->name}. Available: {$item->current_stock}, Requested: {$requestedQty}");
+            }
+
+            // ✅ Check if after deduction, stock falls below min_stock
+            $remainingStock = $item->current_stock - $requestedQty;
+            if ($remainingStock < $item->min_stock) {
+                throw new \Exception("Cannot proceed with sale. Deducting {$requestedQty} units of '{$item->name}' will reduce stock below the minimum allowed ({$item->min_stock}). Remaining would be: {$remainingStock}");
+            }
+
+            $item->current_stock = $remainingStock;
+            $item->save();
+        }
+
+
 
             /**
              * Save Expense Payment Records
@@ -469,6 +526,7 @@ class SaleOrderController extends Controller
              * Data index start from 0
              * */
             $itemDetails = Item::find($request->item_id[$i]);
+            // dd($itemDetails);
             $itemName           = $itemDetails->name;
 
             //validate input Quantity
@@ -479,6 +537,28 @@ class SaleOrderController extends Controller
                         'message' => ($itemQuantity<0) ? __('item.item_qty_negative', ['item_name' => $itemName]) : __('item.please_enter_item_quantity', ['item_name' => $itemName]),
                     ];
             }
+
+            // // 🧠 CHECK STOCK BEFORE PROCEEDING
+            // if ($itemDetails->current_stock < $itemQuantity) {
+            //     return [
+            //         'status' => false,
+            //         'message' => "Not enough stock for item: {$itemName}. Available: {$itemDetails->current_stock}, Requested: {$itemQuantity}"
+            //     ];
+            // }
+
+            // // ✅ Reduce stock (if tracking_type is regular)
+            // if ($itemDetails->tracking_type === 'regular') {
+            //     $itemDetails->current_stock -= $itemQuantity;
+            //     $itemDetails->save();
+            // }
+
+            // $itemDetails = Item::find($request->item_id[$i]);
+
+            // $itemName = $itemDetails->name;
+            // $itemQuantity = $request->quantity[$i];
+
+            
+
 
             /**
              *
@@ -497,7 +577,7 @@ class SaleOrderController extends Controller
                 'unit_price'                => $request->sale_price[$i],
                 'mrp'                       => $request->mrp[$i]??0,
 
-                'discount'                  => $request->discount[$i],
+                // 'discount'                  => $request->discount[$i],
                 'discount_type'             => $request->discount_type[$i],
                 'discount_amount'           => $request->discount_amount[$i],
 

@@ -129,18 +129,18 @@ class ItemTransactionService{
         /**
          * Record Item All
          * */
-        $updateQuantityWarehouseWise = $this->updateItemGeneralQuantityWarehouseWise($itemId);
-        if(!$updateQuantityWarehouseWise){
-            throw new \Exception('Failed to record General Items Stock Warehouse Wise!');
-        }
+        // $updateQuantityWarehouseWise = $this->updateItemGeneralQuantityWarehouseWise($itemId);
+        // if(!$updateQuantityWarehouseWise){
+        //     throw new \Exception('Failed to record General Items Stock Warehouse Wise!');
+        // }
 
         /**
          * Update Item Master Stock
          * */
-        $updateStock = $this->itemService->updateItemStock($itemId);
-        if(!$updateStock){
-            throw new \Exception('Failed to update Item Master Stock!!');
-        }
+        // $updateStock = $this->itemService->updateItemStock($itemId);
+        // if(!$updateStock){
+        //     throw new \Exception('Failed to update Item Master Stock!!');
+        // }
 
         return $transaction;
     }
@@ -328,26 +328,26 @@ class ItemTransactionService{
         if (in_array($uniqueCode, [ItemTransactionUniqueCode::SALE->value])) {
 
             //If negative stck is not allowed
-            if(!$this->canAllowNegativeStockBilling){
+            // if(!$this->canAllowNegativeStockBilling){
 
-                if($itemDetails->tracking_type === 'regular' && !$itemDetails->is_service){
+            //     if($itemDetails->tracking_type === 'regular' && !$itemDetails->is_service){
 
-                    $itemGeneralQuantity = ItemGeneralQuantity::where('item_id', $itemDetails->id)
-                        ->where('warehouse_id', $warehouseId)
-                        ->first();
+            //         $itemGeneralQuantity = ItemGeneralQuantity::where('item_id', $itemDetails->id)
+            //             ->where('warehouse_id', $warehouseId)
+            //             ->first();
 
-                    if($itemGeneralQuantity){
-                        if($itemGeneralQuantity->quantity < 0){
-                            throw new \Exception('Stock not available for the item: ' . $itemDetails->name . '<br>Warehouse: '. $itemGeneralQuantity->warehouse->name. '<br>Quantity: '. $this->formatQuantity($itemGeneralQuantity->quantity));
-                        }
-                        if($itemGeneralQuantity->quantity < $saleQuantity){
-                            throw new \Exception('Stock not available for the item: ' . $itemDetails->name . '<br>Warehouse: '. $itemGeneralQuantity->warehouse->name. '<br>Quantity: '. $this->formatQuantity($itemGeneralQuantity->quantity));
-                        }
-                    }
-                }
+            //         if($itemGeneralQuantity){
+            //             if($itemGeneralQuantity->quantity < 0){
+            //                 throw new \Exception('Stock not available for the item: ' . $itemDetails->name . '<br>Warehouse: '. $itemGeneralQuantity->warehouse->name. '<br>Quantity: '. $this->formatQuantity($itemGeneralQuantity->quantity));
+            //             }
+            //             if($itemGeneralQuantity->quantity < $saleQuantity){
+            //                 throw new \Exception('Stock not available for the item: ' . $itemDetails->name . '<br>Warehouse: '. $itemGeneralQuantity->warehouse->name. '<br>Quantity: '. $this->formatQuantity($itemGeneralQuantity->quantity));
+            //             }
+            //         }
+            //     }
 
 
-            }
+            // }
         }
         return true;
     }

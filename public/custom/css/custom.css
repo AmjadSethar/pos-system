@@ -128,3 +128,43 @@ text-transform: none;
     padding-right: 0rem;
     font-size: 18px;
 }
+
+
+@media (max-width: 768px) {
+  #invoiceItemsTable input.form-control {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  h5{
+    font-size: 11px;
+  }
+
+  .btn-outline-primary{
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+
+    font-size: 13px;
+    margin: 8px;
+    margin-left: 5px;
+
+  }
+
+   .btn-primary{
+    padding-right: 4px !important;
+    padding-left: 4px !important;
+    font-size: 13px;
+    margin: 8px;
+    margin-left: 5px;
+  }
+
+  .ms-2{
+    margin-right: -15px !important;
+    
+  }
+
+  .dt-buttons button{
+    font-size: 15px !important;
+  }
+}

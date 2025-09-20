@@ -37,9 +37,22 @@ class OrderPaymentController extends Controller
             'prefix_code' => $prefix->order,
             'count_id' => ($lastCountId+1),
         ];
-        $customers = DB::table('parties')->where('party_type','customer')->where('status',1)->get();
-        
-        return view('order_payments.create',compact('data','categories','customers'));
+        // $customers = DB::table('parties')->where('party_type','customer')->where('status',1)->get();
+        $user = auth()->user();
+
+        $customersQuery = DB::table('parties')
+            ->where('party_type', 'customer')
+            ->where('status', 1);
+
+        if ($user->role_id != 1) {
+            // Not admin, so only get customers created by this user
+            $customersQuery->where('created_by', $user->id);
+        }
+
+        $customers = $customersQuery->get();
+
+        $users = DB::table('users')->where('status', 1)->get();
+        return view('order_payments.create',compact('data','categories','customers','users'));
     }
 
     // public function getCustomerOrders(Request $request)
@@ -171,6 +184,7 @@ class OrderPaymentController extends Controller
             'payment_type_id' => 'required',
             'payment_note' => 'nullable|string|max:255',
             'payment_date' => 'required',
+            'user' => 'nullable',
         ]);
 
         // Get all orders of customer
@@ -194,7 +208,7 @@ class OrderPaymentController extends Controller
         // New totals
         $newTotalPaid = $alreadyPaid + $paymentAmount;
         $remainingAmount = $totalAmount - $newTotalPaid;
-        $validated['payment_date'] = Carbon::createFromFormat('d/m/Y', $validated['payment_date'])->format('Y-m-d');
+        // $validated['payment_date'] = Carbon::createFromFormat('d/m/Y', $validated['payment_date'])->format('Y-m-d');
         // Save payment
         $payment = CustomerPayment::create([
             'party_id' => $validated['party_id'],
@@ -205,6 +219,8 @@ class OrderPaymentController extends Controller
             'remaining_amount' => $remainingAmount,
             'payment_note' => $validated['payment_note'],
             'payment_date' => $validated['payment_date'],
+            'created_by' => $validated['user'] ?? auth()->id(),
+            'updated_by' => $validated['user'] ?? auth()->id(),
         ]);
 
         // Message if capped
@@ -212,7 +228,7 @@ class OrderPaymentController extends Controller
             return redirect()->back()->with('error', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
         }
 
-        return redirect()->back()->with('info', 'Payment recorded successfully.');
+        return redirect()->route('order.payment.history.list')->with('info', 'Payment recorded successfully.');
     }
 
 
@@ -360,19 +376,18 @@ class OrderPaymentController extends Controller
 
         // Base query
         $query = CustomerPayment::with('party');
+        // dd($query);
 
-        // ✅ If the user is a salesman (role_id == 2), filter only their customers
-        if ($user->role_id == 2) {
-            $query->whereHas('party', function ($q) use ($user) {
-                $q->where('created_by', $user->id);
-            });
+
+        if ($user->role_id == 1 && $request->filled('user_id')) {
+            $salesmanId = $request->input('user_id');
+
+            // ✅ Filtering directly on CustomerPayment.created_by
+            $query->where('created_by', $salesmanId);
         }
 
-         // 🧠 Filter by user_id (only for admins)
-        if ($request->filled('user_id') && $user->role_id == 1) {
-            $query->whereHas('party', function ($q) use ($request) {
-                $q->where('created_by', $request->user_id);
-            });
+        if ($user->role_id != 1) {
+            $query->where('created_by', auth()->user()->id);
         }
 
         // 📅 Filter by from_date
@@ -386,6 +401,20 @@ class OrderPaymentController extends Controller
         }
 
         $data = $query->get();
+
+        // Optional filter: show only customers who reached credit limit
+        if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
+            $data = $data->filter(function ($row) {
+                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+                $remaining   = $totalOrders - $totalPaid;
+
+                $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
+
+                return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
+            });
+        }
+
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -411,9 +440,20 @@ class OrderPaymentController extends Controller
                 return number_format(max($remaining, 0), 2);
             })
             ->addColumn('credit_limit', function ($row) {
-                $totalLimit = Party::where('party_type','customer')->where('id', $row->party_id)->sum('credit_limit');
-                $formatted = number_format(max($totalLimit, 0), 2);
-                return '<span style="background-color: #67b0f0; padding: 4px 8px; border-radius: 4px;">' . $formatted . '</span>';
+               $totalLimit = Party::where('party_type', 'customer')
+                ->where('id', $row->party_id)
+                ->sum('credit_limit');
+
+            if ($totalLimit == 0) {
+                return '<span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">No credit limit</span>';
+            } else {
+                $formatted = number_format($totalLimit, 2);
+                return '<span style="background-color: #67b0f0; color: #fff; padding: 4px 8px; border-radius: 4px;">' . $formatted . '</span>';
+            }
+
+            })
+            ->addColumn('created_by', function ($row) {
+                return $row->createdBy->username ?? '—';
             })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format(app('company')['date_format']);

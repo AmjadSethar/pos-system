@@ -14,7 +14,12 @@
 										]"/>
 
                     <div class="card">
-
+						@if (session('info'))
+							<span class="alert alert-success" >{{session('info')}}</span>
+						@endif
+						@if (session('error'))
+							<span class="alert alert-danger" >{{session('error')}}</span>
+						@endif
 					<div class="card-header px-4 py-3">
 					    <!-- Other content on the left side -->
 						<div class="row">
@@ -32,7 +37,13 @@
 					    @endcan --}}
 						@if(auth()->user()->role_id ==1)
 						<div class="row g-3 mt-3">
-                            
+                            @if(auth()->user()->role_id == 1)
+							<label>
+								<input type="checkbox" name="reached_credit_limit" value="1" {{ request('reached_credit_limit') ? 'checked' : '' }}>
+								Show customers who reached credit limit
+							</label>
+						@endif
+
                             <div class="col-md-4">
                                 <x-label for="user_id" name="{{ __('user.user') }}" />
                                 <x-dropdown-user selected="" :showOnlyUsername='true' />
@@ -74,6 +85,7 @@
 										<th>Remaining Amount</th>
 										<th>Credit Limit</th>
 										<th>Payment Date</th>
+										<th>Created By</th>
 										<th>Created At</th>
 										<th>Action</th>
 

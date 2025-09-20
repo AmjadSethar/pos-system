@@ -5,7 +5,14 @@
 		<!--start page wrapper -->
 		<div class="page-wrapper">
 			<div class="page-content">
-
+				{{-- <li class="{{ request()->is(['party/customer/*', 'party/payment/customer/*'])? 'mm-active' : '' }}"> --}}
+					{{-- @if (auth()->user()->role_id == 2) --}}
+						  <a href="{{ route('party.list', ['partyType' => 'customer']) }}"><i class='bx bx-radio-circle'></i> <button class="btn btn-primary mb-3" >Customer List</button></a>
+						  <br>
+						   <a class="mt-3" href="{{ route('party.page') }}"><i class='bx bx-radio-circle'></i> <button class="btn btn-primary mb-3" >Customer History</button></a>
+					{{-- @endif --}}
+						  
+						{{-- </li> --}}
                 @can('dashboard.can.view.widget.cards')
 				<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4">
                    <div class="col">
@@ -244,9 +251,12 @@
 
 
 			</div>
+
+			
 		</div>
 		<!--end page wrapper -->
-		@endsection
+
+		
 
 @section('js')
 <script src="{{ global_asset('custom/js/dashboard.js') }}"></script>

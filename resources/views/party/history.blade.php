@@ -23,6 +23,12 @@
 					   
 					</div>
 					<div class="card-body">
+						@if(auth()->user()->role_id == 1)
+							<label>
+								<input type="checkbox" name="reached_credit_limit" value="1" {{ request('reached_credit_limit') ? 'checked' : '' }}>
+								Show customers who reached credit limit
+							</label>
+						@endif
 						<div class="table-responsive">
                         <form class="row g-3 needs-validation" id="datatableForm" action="{{ route('order.payment.delete') }}" enctype="multipart/form-data">
                             {{-- CSRF Protection --}}
@@ -38,7 +44,9 @@
 										<th>Total Amount</th>
 										<th>Paid Amount</th>
 										<th>Remaining Amount</th>
+										<th>Credit Limit</th>
 										<th>Created By</th>
+										<th>Total Orders</th>
 										<th>Created At</th>
 										{{-- <th>Action</th> --}}
 

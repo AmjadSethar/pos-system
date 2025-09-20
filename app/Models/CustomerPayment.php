@@ -15,7 +15,9 @@ class CustomerPayment extends Model
         'amount',
         'payment_type',
         'payment_note',
-        'payment_date'
+        'payment_date',
+        'created_by',
+        'updated_by'
     ];
 
 
@@ -23,5 +25,11 @@ class CustomerPayment extends Model
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
     }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
+    }
+
 
 }

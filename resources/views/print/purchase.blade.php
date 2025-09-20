@@ -52,7 +52,7 @@
                 <tr>
                     <th>#</th>
                     <th>{{ __('item.item') }}</th>
-                    <th>{{ __('item.hsn') }}</th>
+                    {{-- <th>{{ __('item.hsn') }}</th> --}}
                     @if($isHasBatchItem)
                         @if(app('company')['enable_batch_tracking'])
                         <th>{{ __('item.batch_no') }}</th>
@@ -74,17 +74,17 @@
                         <th>{{ __('item.size') }}</th>
                         @endif
                     @endif
-                    @if(app('company')['show_mrp'])
+                    {{-- @if(app('company')['show_mrp'])
                     <th>{{ __('item.mrp') }}</th>
-                    @endif
+                    @endif --}}
                     <th>{{ __('app.qty') }}</th>
                     <th>{{ __('app.price_per_unit') }}</th>
                     @if(app('company')['show_discount'])
                     <th>{{ __('app.discount') }}</th>
                     @endif
-                    @if(app('company')['tax_type'] != 'no-tax')
+                    {{-- @if(app('company')['tax_type'] != 'no-tax')
                     <th>{{ __('tax.tax') }}</th>
-                    @endif
+                    @endif --}}
                     <th>{{ __('app.total') }}</th>
                 </tr>
             </thead>
@@ -107,9 +107,9 @@
                             @endif
                         </small>
                    </td>
-                   <td>
+                   {{-- <td>
                        {{ $transaction->item->hsn }}
-                   </td>
+                   </td> --}}
                    @if($isHasBatchItem)
 
                        @if(app('company')['enable_batch_tracking'])
@@ -144,11 +144,11 @@
                        </td>
                        @endif
                    @endif
-                   @if(app('company')['show_mrp'])
+                   {{-- @if(app('company')['show_mrp'])
                    <td>
                        {{ $formatNumber->formatWithPrecision($transaction->batch ? $transaction->batch->itemBatchMaster->mrp : $transaction->mrp)}}
                    </td>
-                   @endif
+                   @endif --}}
                    <td class="text-end">
                         {{ $formatNumber->formatQuantity($transaction->quantity) }}
                     </td>
@@ -165,12 +165,12 @@
                         </small>
                     </td>
                     @endif
-                    @if(app('company')['tax_type'] != 'no-tax')
+                    {{-- @if(app('company')['tax_type'] != 'no-tax')
                     <td class="text-end">
                         {{ $formatNumber->formatWithPrecision($transaction->tax_amount) }}<br>
                         <small>({{ $transaction->tax->rate }}%)</small>
                     </td>
-                    @endif
+                    @endif --}}
                     <td class="text-end">
                         {{ $formatNumber->formatWithPrecision($transaction->total) }}
                     </td>
@@ -244,8 +244,8 @@
                 </tr>
                 @endif
                 <tr>
-                    <td colspan="2" class="text-end fw-bold">{{ __('app.round_off') }}</td>
-                    <td colspan="1" class="text-end">{{ $formatNumber->formatWithPrecision($purchase->round_off) }}</td>
+                    <td colspan="2" class="text-end fw-bold">{{ __('Bilty') }}</td>
+                    <td colspan="1" class="text-end">{{ $formatNumber->formatWithPrecision($purchase->bilty) }}</td>
                 </tr>
                 <tr>
                     <td colspan="{{ $noteColumns }}" rowspan="{{ $amountInWordsRowSpan }}" class="tfoot-first-td">
@@ -263,8 +263,8 @@
                     <td colspan="2" class="text-end fw-bold">{{ __('payment.balance') }}</td>
                     <td colspan="1" class="text-end">{{$formatNumber->formatWithPrecision($purchase->grand_total - $purchase->paid_amount)}}</td>
                 </tr>
-                @if(app('company')['show_mrp'])
-                <tr>
+                {{-- @if(app('company')['show_mrp']) --}}
+                {{-- <tr>
                     @php
                         $savedAmount = $purchase->itemTransaction->sum(function ($transaction) {
                                     if($transaction->mrp > 0){
@@ -277,8 +277,8 @@
                     @endphp
                     <td colspan="2" class="text-end fw-bold">{{ __('app.you_saved') }}</td>
                     <td colspan="1" class="text-end">{{$formatNumber->formatWithPrecision($savedAmount)}}</td>
-                </tr>
-                @endif
+                </tr> --}}
+                {{-- @endif --}}
                 @if(app('company')['show_party_due_payment'])
                 <tr>
                     @php

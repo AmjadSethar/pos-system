@@ -713,6 +713,17 @@ class PartyController extends Controller
         }
 
         $customers = $query->get();
+        if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
+            $data = $customers->filter(function ($row) {
+                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+                $remaining   = $totalOrders - $totalPaid;
+
+                $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
+
+                return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
+            });
+        }
 
         return DataTables::of($customers)
             ->addIndexColumn()
@@ -736,12 +747,27 @@ class PartyController extends Controller
                 $remaining   = $totalOrders - $totalPaid;
                 return number_format(max($remaining, 0), 2);
             })
+            ->addColumn('credit_limit', function ($row) {
+                if ($row->credit_limit == 0) {
+                    return '<span style="background-color: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">No credit limit</span>';
+                } else {
+                    $formatted = number_format($row->credit_limit, 2);
+                    return '<span style="background-color: #67b0f0; padding: 4px 8px; border-radius: 4px;">' . $formatted . '</span>';
+                }
+
+                
+            })
             ->addColumn('created_at', function ($row) {
                 return $row->created_at->format(app('company')['date_format']);
             })
             ->addColumn('created_by', function ($row) {
                 return $row->user->username ?? ''; // Showing creator's name
             })
+            ->addColumn('total_orders', function ($row) {
+                $totalOrders = SaleOrder::where('created_by', $row->user->id)->count();
+                return $totalOrders;
+            })
+             ->rawColumns(['credit_limit'])
             ->make(true);
     }
 
