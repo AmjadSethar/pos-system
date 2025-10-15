@@ -54,11 +54,11 @@ body {
     justify-content: space-between;
     margin-bottom: 20px;
 }
-.company-logo {
+/* .company-logo {
     width: 100px;
-    height: auto;
+    height: 100px;
     order: 1;
-}
+} */
 .company-name {
     text-align: center;
     flex-grow: 1;

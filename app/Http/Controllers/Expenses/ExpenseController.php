@@ -15,13 +15,18 @@ use App\Models\Expenses\ExpenseItemMaster;
 use App\Models\Expenses\ExpenseItem;
 use App\Http\Requests\ExpenseRequest;
 use App\Models\Prefix;
+use App\Models\CustomerPayment;
 use App\Models\PaymentTypes;
 use App\Models\Expenses\ExpenseCategory;
 use App\Enums\App;
+use App\Models\Party\Party;
+use App\Models\Party\PartyPayment;
+use App\Models\Sale\SaleOrder;
 use App\Services\PaymentTransactionService;
 use App\Traits\FormatNumber;
 use App\Services\AccountTransactionService;
 use App\Services\PaymentTypeService;
+use Carbon\Carbon;
 
 class ExpenseController extends Controller
 {
@@ -503,5 +508,287 @@ class ExpenseController extends Controller
 
         return json_encode($response);
     }
+
+    public function total()
+    {
+        // $dailyExpense = Expense::where('create_at')
+        return view('expenses.total.index');
+    }
+
+    public function totalExpenseDatatable(Request $request)
+    {
+         $data = Expense::with('user', 'paymentTransaction.paymentType')
+                        ->when($request->expense_category_id, function ($query) use ($request) {
+                            return $query->where('expense_category_id', $request->expense_category_id);
+                        })
+                        ->when(!auth()->user()->hasPermissionTo('expense.can.view.other.users.expenses'), function ($query) use ($request) {
+                            return $query->where('created_by', auth()->user()->id);
+                        });
+
+        return DataTables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('created_at', function ($row) {
+                        return $row->created_at->format(app('company')['date_format']);
+                    })
+                    ->addColumn('username', function ($row) {
+                        return $row->user->username??'';
+                    })
+                    ->addColumn('expense_date', function ($row) {
+                        return $row->formatted_expense_date;
+                    })
+                    ->addColumn('paid_amount', function ($row) {
+                        return $this->formatWithPrecision($row->paid_amount);
+                    })
+                    ->addColumn('expense_number', function ($row) {
+                        return $row->expense_code;
+                    })
+                    ->addColumn('payment_type', function ($row) {
+                        return $row->paymentTransaction->pluck('paymentType.name')->implode(', ');
+                    })
+                    ->addColumn('expense_category', function ($row) {
+                        return $row->category->name;
+                    })
+                    ->addColumn('action', function($row){
+                            $id = $row->id;
+
+                            $editUrl = route('expense.edit', ['id' => $id]);
+                            $deleteUrl = route('expense.delete', ['id' => $id]);
+                            $printUrl = route('expense.print', ['id' => $id]);
+
+                            $actionBtn = '<div class="dropdown ms-auto">
+                            <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="' . $editUrl . '"><i class="bi bi-trash"></i><i class="bx bx-edit"></i> '.__('app.edit').'</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="' . $printUrl . '"></i><i class="bx bx-receipt"></i> '.__('app.print').'</a>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'><i class="bx bx-trash"></i> '.__('app.delete').'</button>
+                                </li>
+                            </ul>
+                        </div>';
+                            return $actionBtn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+    }
+
+
+    // function supplierExpenseDatabtable()
+    // {
+    //     try{
+    //         $transactions = PartyPayment::with('party', 'paymentType')->get();
+
+    //         // Check if the transactions collection is empty
+    //         if ($transactions->isEmpty()) {
+    //             throw new \Exception('No Payment (Manual) History found!!');
+    //         }
+
+    //         $firstTransaction = $transactions->first();
+
+    //         $balance = $this->partyService->getPartyBalance($firstTransaction->party->id);
+
+    //         $data = [
+    //             'party_id' => $firstTransaction->party->id,
+    //             'party_name' => $firstTransaction->party->getFullName(),
+    //             'balance' => $balance['balance'],
+    //             'balance_type' => $balance['status'],
+
+    //             'partyPayments' => $transactions->map(function ($transaction) {
+    //                 return [
+    //                     'payment_id' => $transaction->id,
+    //                     'payment_direction' => $transaction->payment_direction=='pay' ? 'You Paid' : 'You Received',
+    //                     'color' => $transaction->payment_direction=='pay' ? 'danger' : 'success',
+    //                     'transaction_date' => $this->toUserDateFormat($transaction->transaction_date),
+    //                     'reference_no' => $transaction->reference_no ?? '',
+    //                     'payment_type' => $transaction->paymentType->name,
+    //                     'amount' => $this->formatWithPrecision($transaction->amount),
+    //                 ];
+    //             })->toArray(),
+    //         ];
+
+    //         return $data;
+    //     } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => $e->getMessage(),
+    //             ], 409);
+
+    //     }
+    // }
+
+
+    public function supplierExpenseDatabtable(Request $request)
+    {
+        $data = PartyPayment::with('party', 'paymentType')
+                    ->when($request->party_id, function ($query) use ($request) {
+                        return $query->where('party_id', $request->party_id);
+                    });
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('party_name', function ($row) {
+                return $row->party->getFullName();
+            })
+            ->addColumn('transaction_date', function ($row) {
+                // return $this->toUserDateFormat($row->transaction_date);
+              return   $row->transaction_date;
+            })
+            ->addColumn('payment_direction', function ($row) {
+                return $row->payment_direction === 'pay' ? 'You Paid' : 'You Received';
+            })
+            ->addColumn('color', function ($row) {
+                return $row->payment_direction === 'pay' ? 'danger' : 'success';
+            })
+            ->addColumn('reference_no', function ($row) {
+                return $row->reference_no ?? '';
+            })
+            ->addColumn('payment_type', function ($row) {
+                return $row->paymentType->name ?? '';
+            })
+            ->addColumn('amount', function ($row) {
+                return $this->formatWithPrecision($row->amount);
+            })
+            ->addColumn('action', function ($row) {
+                // Optional: Define actions if needed (Edit, Delete, etc.)
+                return ''; // Or build HTML like in your previous method
+            })
+            ->rawColumns(['action']) // If you're adding HTML in action
+            ->make(true);
+    }
+
+
+    public function CashInPage()
+    {
+        // $dailyExpense = Expense::where('create_at')
+        return view('expenses.expense.cash-in');
+    }
+
+
+
+    public function getDateFormats(): array
+    {
+        return ['d-m-Y', 'd/m/Y', 'Y-m-d', 'Y/m/d'];
+    }
+    protected function toSystemDateFormat($dateInput)
+    {
+        foreach ($this->getDateFormats() as $format) {
+            try {
+                $date = Carbon::createFromFormat($format, $dateInput);
+                return $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                // Skip to the next format
+            }
+        }
+
+        return null;
+    }
+
+
+    public function CashInDatatable(Request $request)
+    {
+        $user = auth()->user();
+
+        // Base query
+        $query = CustomerPayment::with('party');
+        // dd($query);
+
+
+        if ($user->role_id == 1 && $request->filled('user_id')) {
+            $salesmanId = $request->input('user_id');
+
+            // ✅ Filtering directly on CustomerPayment.created_by
+            $query->where('created_by', $salesmanId);
+        }
+
+        if ($user->role_id != 1) {
+            $query->where('created_by', auth()->user()->id);
+        }
+
+        // 📅 Filter by from_date
+        if ($request->filled('from_date')) {
+            $query->whereDate('payment_date', '>=', $this->toSystemDateFormat($request->from_date));
+        }
+
+        // 📅 Filter by to_date
+        if ($request->filled('to_date')) {
+            $query->whereDate('payment_date', '<=', $this->toSystemDateFormat($request->to_date));
+        }
+
+        $data = $query->get();
+
+        // Optional filter: show only customers who reached credit limit
+        if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
+            $data = $data->filter(function ($row) {
+                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+                $remaining   = $totalOrders - $totalPaid;
+
+                $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
+
+                return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
+            });
+        }
+
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            // ->addColumn('customer_name', function ($row) {
+            //     return $row->party->first_name . ' ' . $row->party->last_name;
+            // })
+            ->addColumn('created_by', function ($row) {
+                return $row->createdBy->username ?? '—';
+            })
+            
+            ->addColumn('paid_amount', function ($row) {
+                // return number_format($row->amount, 2);
+                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->where('created_at',Carbon::today())->sum('amount');
+                return  number_format($totalPaid, 2);
+
+            })
+            // ->addColumn('total_amount', function ($row) {
+            //     return number_format(
+            //         SaleOrder::where('party_id', $row->party_id)->sum('grand_total'),
+            //         2
+            //     );
+            // })
+            // ->addColumn('remaining_amount', function ($row) {
+            //     $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+            //     $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+            //     $remaining   = $totalOrders - $totalPaid;
+            //     return number_format(max($remaining, 0), 2);
+            // })
+            
+            
+            // ->addColumn('created_at', function ($row) {
+            //     return $row->created_at->format(app('company')['date_format']);
+            // })
+            ->addColumn('payment_date', function ($row) {
+                return $row->payment_date;
+            })
+            ->addColumn('action', function ($row) {
+                $id = $row->id;
+                $deleteUrl = route('order.payment.delete', ['id' => $id]);
+
+                return '<div class="dropdown ms-auto">
+                    <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                        <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
+                                <i class="bx bx-trash"></i> '.__('app.delete').'
+                            </button>
+                        </li>
+                    </ul>
+                </div>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
 
 }

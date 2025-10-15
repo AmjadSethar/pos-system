@@ -18,7 +18,7 @@
                                 $companyLogo = url('/company/getimage/'.app('company')['colored_logo']);
                             }
                         @endphp
-                        <img src="{{ $companyLogo }}" alt="Logo" class="company-logo">
+                        <img src="{{ $companyLogo }}" alt="Logo" class="company-logo" style="width: 120px; height:70px" >
                     </td>
                     <td class="company-info">
                         <span class="company-name" >{{ app('company')['name'] }}</span>
@@ -26,8 +26,8 @@
                         @if(app('company')['tax_number']!= '' && app('company')['tax_type'] != 'no-tax')
                             {{ app('company')['tax_type'] == 'gst' ? 'GST:' : __('tax.tax') . ':' }} {{ app('company')['tax_number'] }}<br>
                         @endif
-                        @if(app('company')['mobile'] || app('company')['email'])
-                        {{ app('company')['mobile'] ? 'M: '. app('company')['mobile'] : ''}}{{ app('company')['email'] ? ', Mail: '.app('company')['email'] : '' }}
+                        @if(app('company')['mobile'] )
+                        {{ app('company')['mobile'] ? 'M: '. app('company')['mobile'] : ''}} 03323737702
                         @endif
                         </p>
                     </td>

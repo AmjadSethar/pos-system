@@ -157,5 +157,7 @@ class SaleOrder extends Model
     {
         return $this->order_code;
     }
+
+    
     
 }

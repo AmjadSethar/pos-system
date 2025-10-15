@@ -23,9 +23,9 @@ use App\Models\Party\Party;
 use App\Models\Party\PartyTransaction;
 use App\Models\Party\PartyPayment;
 use App\Models\Expenses\Expense;
+use App\Models\Items\Item;
 use App\Models\Items\ItemTransaction;
-
-
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -72,12 +72,39 @@ class DashboardController extends Controller
                                                 ->sum('grand_total');
         $totalExpense         = $this->formatWithPrecision($totalExpense);
 
-        $recentInvoices       = Sale::when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
-                                                    return $query->where('created_by', auth()->user()->id);
-                                                })
-                                                ->orderByDesc('id')
-                                                ->limit(10)
-                                                ->get();
+        // $recentInvoices       = Sale::when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
+        //                                             return $query->where('created_by', auth()->user()->id);
+        //                                         })
+        //                                         ->orderByDesc('id')
+        //                                         ->limit(10)
+        //                                         ->get();
+
+        //  $lowStock       = Item::when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
+        //                                             return $query->where('min_stock', auth()->user()->id);
+        //                                         })
+        //                                         ->orderByDesc('id')
+        //                                         ->paginate(5);
+
+        $lowStock = Item::whereColumn('current_stock', '<=', 'min_stock') // compare current stock to min stock
+        ->when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
+            return $query->where('user_id', auth()->user()->id); // filter to user's items if needed
+        })
+
+        
+
+    ->orderByDesc('id')
+    ->paginate(5);
+
+    $sales = SaleOrder::with([
+        'party',
+        'itemTransaction.item',
+       
+        ])->where('created_at', '>=', Carbon::now('UTC')->subDay())
+    ->get();
+
+    // dd($sales);
+
+
 
         $saleVsPurchase       = $this->saleVsPurchase();
         $trendingItems        = $this->trendingItems();
@@ -97,7 +124,8 @@ class DashboardController extends Controller
 
                                             'saleVsPurchase',
                                             'trendingItems',
-                                            'recentInvoices',
+                                            'lowStock',
+                                            'sales'
                                         ));
     }
 
@@ -146,25 +174,52 @@ class DashboardController extends Controller
         return $saleVsPurchase;
     }
 
-    public function trendingItems() : array
+    // public function trendingItems() : array
+    // {
+    //     // Get top 4 trending items (adjust limit as needed)
+    //     return ItemTransaction::query()
+    //         ->select([
+    //             'items.name',
+    //             DB::raw('SUM(item_transactions.quantity) as total_quantity')
+    //         ])
+    //         ->join('items', 'items.id', '=', 'item_transactions.item_id')
+    //         ->where('item_transactions.transaction_type', getMorphedModelName(Sale::class))
+    //         ->when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
+    //             return $query->where('item_transactions.created_by', auth()->user()->id);
+    //         })
+    //         ->groupBy('item_transactions.item_id', 'items.name')
+    //         ->orderByDesc('total_quantity')
+    //         ->limit(4)
+    //         ->get()
+    //         ->toArray();
+    // }
+
+//     use Illuminate\Support\Facades\DB;
+// use App\Models\ItemTransaction;
+// use App\Models\Sale;
+// use Carbon\Carbon;
+
+    public function trendingItems(): array
     {
-        // Get top 4 trending items (adjust limit as needed)
         return ItemTransaction::query()
             ->select([
-                'items.name',
+                'items.name as name',
                 DB::raw('SUM(item_transactions.quantity) as total_quantity')
             ])
             ->join('items', 'items.id', '=', 'item_transactions.item_id')
-            ->where('item_transactions.transaction_type', getMorphedModelName(Sale::class))
+            // ->where('item_transactions.transaction_type', getMorphedModelName(Sale::class))
             ->when(auth()->user()->hasPermissionTo('dashboard.can.view.self.dashboard.details.only'), function ($query) {
-                return $query->where('item_transactions.created_by', auth()->user()->id);
+            
             })
-            ->groupBy('item_transactions.item_id', 'items.name')
+            // Optional: limit to recent X days (for trending logic)
+            // ->where('item_transactions.created_at', '>=', Carbon::now()->subDays(30))
+            ->groupBy('items.name')
             ->orderByDesc('total_quantity')
-            ->limit(4)
+            ->limit(20)
             ->get()
             ->toArray();
     }
+
 
 
 

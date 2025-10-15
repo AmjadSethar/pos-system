@@ -184,7 +184,7 @@
                                                             <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
                                                         </td>
                                                       </tr> --}}
-                                                        <tr>
+                                                    <tr>
                                                         <td class="w-50">
                                                             <div class="form-check">
                                                                 <label class="form-check-label fw-bold cursor-pointer" for="discount">{{ __('Discount (%)') }}</label>

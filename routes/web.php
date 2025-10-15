@@ -999,6 +999,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/list', [ExpenseController::class, 'list'])
                 ->middleware('can:expense.view')
                 ->name('expense.list'); //List
+                Route::get('/total', [ExpenseController::class, 'total'])
+                ->middleware('can:expense.view')
+                ->name('expense.total'); //List
+
+        Route::get('/total-list', [ExpenseController::class, 'totalExpenseDatatable'])
+                ->middleware('can:expense.view')
+                ->name('expense.total.list'); //List
+
+        Route::get('/supplier-expense-list', [ExpenseController::class, 'supplierExpenseDatabtable'])
+        ->middleware('can:expense.view')
+                ->name('expense.total.list'); //List;
+        Route::get('/cash-in-list', [ExpenseController::class, 'CashInDatatable'])
+        ->middleware('can:expense.view')
+                ->name('expense.cash_in');
+                Route::get('/cash-in-page', [ExpenseController::class, 'CashInPage'])
+        ->middleware('can:expense.view')
+                ->name('expense.cash_in_page');
+
+
+
         Route::get('/print/{id}', [ExpenseController::class, 'print'])
                     ->middleware('can:expense.view')
                     ->name('expense.print');

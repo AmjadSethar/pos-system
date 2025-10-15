@@ -80,7 +80,7 @@
                                                 <x-dropdown-general optionNaming="amountOrPercentage" selected="" dropdownName='sale_price_discount_type'/>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                    <div class="col-md-4">
                                         <x-label for="item_category_id" name="{{ __('item.category.category') }}" />
                                         <x-dropdown-item-category selected="" :isMultiple=false />
                                     </div>

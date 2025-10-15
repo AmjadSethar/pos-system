@@ -147,9 +147,9 @@
 						
 
 						{{-- @can('sale.return.view') --}}
-						{{-- <li class="{{ request()->is('sale/return/*') ? 'mm-active' : '' }}">
+						<li class="{{ request()->is('sale/return/*') ? 'mm-active' : '' }}">
 											<a href="{{ route('sale.return.list') }}"><i class='bx bx-radio-circle'></i>{{ __('sale.return.return') }}</a>
-										</li> --}}
+										</li>
 						{{-- @endcan --}}
 					</ul>
 				</li>
@@ -173,7 +173,7 @@
 										</li>
 						@endcan
 
-						@can('purchase.bill.view')
+						{{-- @can('purchase.bill.view')
 						<li class="{{ request()->is('payment/out') ? 'mm-active' : '' }}">
 											<a href="{{ route('purchase.payment.out') }}"><i class='bx bx-radio-circle'></i>{{ __('payment.payment_out') }}</a>
 										</li>
@@ -189,7 +189,7 @@
 						<li class="{{ request()->is('purchase/return/*') ? 'mm-active' : '' }}">
 											<a href="{{ route('purchase.return.list') }}"><i class='bx bx-radio-circle'></i>{{ __('purchase.return.return') }}</a>
 										</li>
-						@endcan
+						@endcan --}}
 					</ul>
 				</li>
 				@endcanany
@@ -260,7 +260,15 @@
 					<ul>
 						@can('expense.view')
 						<li class="{{ request()->is('expense/list', 'expense/create','expense/edit*', 'expense/print/*') ? 'mm-active' : '' }}">
-											<a href="{{ route('expense.list') }}"><i class='bx bx-radio-circle'></i>{{ __('expense.list') }}</a>
+											<a href="{{ route('expense.list') }}"><i class='bx bx-radio-circle'></i>{{ __('Daily Expense') }}</a>
+										</li>
+
+										<li class="{{ request()->is('expense/list', 'expense/create','expense/edit*', 'expense/print/*') ? 'mm-active' : '' }}">
+											<a href="{{ route('expense.total') }}"><i class='bx bx-radio-circle'></i>{{ __('Cash Out') }}</a>
+										</li>
+
+										<li class="{{ request()->is('expense/list', 'expense/create','expense/edit*', 'expense/print/*') ? 'mm-active' : '' }}">
+											<a href="{{ route('expense.cash_in_page') }}"><i class='bx bx-radio-circle'></i>{{ __('Cash In') }}</a>
 										</li>
 						@endcan
 						@can('expense.category.view')

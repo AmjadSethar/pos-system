@@ -165,6 +165,13 @@
                                                             <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
                                                         </td>
                                                       </tr>
+                                                      <tr>
+                                                            <td><span class="fw-bold">{{ __('Final Total') }}</span></td>
+                                                            <td>
+                                                                <x-input type="text" additionalClasses="text-end final_total" readonly=true name="final_total" :required="true" placeholder="Final Total" value="0" />
+                                                            </td>
+                                                        </tr>
+
                                                    </tbody>
                                                 </table>
                                             </div>

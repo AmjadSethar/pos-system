@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Route;
 use App\Services\CacheService;
 use App\Enums\App;
 use App\Models\Party\PartyPayment;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
@@ -74,6 +75,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrap();
+
         if(env('INSTALLATION_STATUS')){
             //Twilio::observe(TwilioObserver::class);
 

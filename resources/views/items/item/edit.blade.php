@@ -63,10 +63,7 @@
                                         <label class="primary unit-label"></label>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <x-label for="description" name="{{ __('app.description') }}" />
-                                        <x-textarea name="description" value="{{ $item->description }}"/>
-                                    </div>
+                                    
 
                                     <div class="col-md-4 d-none">
                                         <x-label for="status" name="{{ __('app.status') }}" />
@@ -89,12 +86,30 @@
                                                         <x-dropdown-general optionNaming="amountOrPercentage" selected="{{ $item->sale_price_discount_type }}" dropdownName='sale_price_discount_type'/>
                                                     </div>
                                                 </div>
-                                                @if(app('company')['show_mrp'])
+                                                {{-- @if(app('company')['show_mrp'])
                                                 <div class="col-md-4">
                                                     <x-label for="mrp" name="{{ __('item.mrp') }}" />
                                                     <x-input type="text" name="mrp" :required="false" additionalClasses='cu_numeric' value="{{ $formatNumber->formatWithPrecision($item->mrp, comma:false) }}"/>
                                                 </div>
-                                                @endif
+                                                @endif --}}
+                                                 {{-- <div class="col-md-4">
+                                                    <x-label for="item_category_id" name="{{ __('item.category.category') }}" />
+                                                    <x-dropdown-item-category selected="" :isMultiple=false />
+                                                </div> --}}
+                                                <div class="col-md-4">
+                                                    <label for="item_category_id" class="form-label">{{ __('item.category.category') }}</label>
+
+                                                    <select class="form-select" id="item_category_id" name="item_category_id">
+                                                        <option value="">-- Select Category --</option>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}"
+                                                                {{ $item->item_category_id == $category->id ? 'selected' : '' }}>
+                                                                {{ $category->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -143,8 +158,11 @@
 
                                            </div>
                                          
-
-                                            <div class="col-md-12">
+                                           <div class="col-md-6">
+                                        <x-label for="description" name="{{ __('app.description') }}" />
+                                        <x-textarea name="description" value="{{ $item->description }}"/>
+                                    </div>
+                                            <div class="col-md-6">
                                                 <x-label for="picture" name="{{ __('app.image') }}" />
                                                 <x-browse-image
                                                     src="{{ url('/item/getimage/' . $item->image_path) }}"

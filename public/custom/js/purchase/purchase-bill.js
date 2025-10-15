@@ -582,7 +582,7 @@
 
         //Set Grand Total
         $(".grand_total").val(_parseFix(sumOfTotalColumn));
-
+updateFinalTotalWithBilty()
         autoFillPaymentInputBox();
     }
 
@@ -590,10 +590,29 @@
         return parseFloat($(".grand_total").val());
     }
 
+    function updateFinalTotalWithBilty() {
+    var grandTotal = getGrandTotal(); // Gets value from .grand_total
+    var bilty = parseFloat($(".bilty-input").val()) || 0;
+
+    var finalTotal = parseFloat(grandTotal) + parseFloat(bilty);
+
+    // Option 1: Set to a new "Final Total" field
+    $(".final_total").val(_parseFix(finalTotal));
+
+    // Option 2: Overwrite existing grand_total (if you prefer that)
+    // $(".grand_total").val(_parseFix(finalTotal));
+}
+$(document).on("input", ".bilty-input", function () {
+    updateFinalTotalWithBilty();
+});
+
+
+
+
     function autoFillPaymentInputBox(){
         if(operation == 'save'){
             var grandTotal = getGrandTotal();
-            $("input[name='payment_amount[0]']").val(grandTotal);
+            // $("input[name='payment_amount[0]']").val(grandTotal);
         }
     }
     /**
@@ -1000,6 +1019,8 @@
     $('[name^="payment_amount"]').on('keyup', function() {
         calulateBalance();
     });
+
+    
 
     $(document).on('click', '.delete-payment', function() {
         var paymentId = $(this).closest('tr').attr('id');

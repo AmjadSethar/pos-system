@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Items\Item;
+use App\Models\Items\ItemCategory;
 use App\Models\Items\ItemSerial;
 use App\Models\Items\ItemBatchTransaction;
 use App\Models\Items\ItemTransaction;
@@ -110,14 +111,16 @@ class ItemController extends Controller
          * Todays Date
          * */
         $todaysDate = $this->toUserDateFormat(now());
+        $categories = ItemCategory::all();
 
-        return view('items.item.edit', compact('item', 'transaction', 'batchJson', 'serviceJson', 'todaysDate'));
+        return view('items.item.edit', compact('item', 'transaction', 'batchJson', 'serviceJson', 'todaysDate','categories'));
     }
 
     /**
      * Return JsonResponse
      * */
     public function store(ItemRequest $request)  {
+        // dd($request->all());
         try {
 
             DB::beginTransaction();
