@@ -93,52 +93,93 @@ $(function() {
         });
     }
 
-    function formAdjustIfSaveOperation(response){
-        var tableBody = tableId.find('tbody');
+    // function formAdjustIfSaveOperation(response){
+    //     var tableBody = tableId.find('tbody');
 
-        var id = 1;
-        var tr = "";
+    //     var id = 1;
+    //     var tr = "";
         
-        var totalGrandTotal = parseFloat(0);
-        var totalPaidAmount = parseFloat(0);
-        var totalBalance = parseFloat(0);
+    //     var totalGrandTotal = parseFloat(0);
+    //     var totalPaidAmount = parseFloat(0);
+    //     var totalBalance = parseFloat(0);
         
-        $.each(response.data, function(index, item) {
-            totalGrandTotal += parseFloat(item.grand_total);
-            totalPaidAmount += parseFloat(item.paid_amount);
-            totalBalance += parseFloat(item.balance);
+    //     $.each(response.data, function(index, item) {
+    //         totalGrandTotal += parseFloat(item.grand_total);
+    //         totalPaidAmount += parseFloat(item.paid_amount);
+    //         totalBalance += parseFloat(item.balance);
 
-            tr  +=`
-                <tr>
-                    <td>${id++}</td>
-                    <td>${item.sale_date}</td>
-                    <td>${item.invoice_or_bill_code}</td>
-                    <td>${item.party_name}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.grand_total)}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.paid_amount)}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.balance)}</td>
-                </tr>
-            `;
-        });
+    //         tr  +=`
+    //             <tr>
+    //                 <td>${id++}</td>
+    //                 <td>${item.sale_date}</td>
+    //                 <td>${item.invoice_or_bill_code}</td>
+    //                 <td>${item.party_name}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.grand_total)}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.paid_amount)}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.balance)}</td>
+    //             </tr>
+    //         `;
+    //     });
+
+    //     tr  +=`
+    //         <tr class='fw-bold'>
+    //             <td colspan='0' class='text-end tfoot-first-td'>${_lang.total}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalGrandTotal)}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalPaidAmount)}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalBalance)}</td>
+    //         </tr>
+    //     `;
+
+    //     // Clear existing rows:
+    //     tableBody.empty();
+    //     tableBody.append(tr);
+
+    //     /**
+    //      * Set colspan of the table bottom
+    //      * */
+    //     $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(3));
+    // }
+
+
+function formAdjustIfSaveOperation(response){
+    var tableBody = tableId.find('tbody');
+
+    var id = 1;
+    var tr = "";
+
+    var totalGrandTotal = parseFloat(0);
+
+    $.each(response.data, function(index, item) {
+        totalGrandTotal += parseFloat(item.total_purchase);
 
         tr  +=`
-            <tr class='fw-bold'>
-                <td colspan='0' class='text-end tfoot-first-td'>${_lang.total}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalGrandTotal)}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalPaidAmount)}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalBalance)}</td>
+            <tr>
+                <td>${id++}</td>
+               
+                <td>${item.party_name}</td>
+                <td class='text-start'>${_formatNumber(item.total_purchase)}</td>
+                
             </tr>
         `;
+    });
 
-        // Clear existing rows:
-        tableBody.empty();
-        tableBody.append(tr);
+    tr  +=`
+        <tr class='fw-bold'>
+            <td colspan='4' class='text-end tfoot-first-td'>-</td>
+            <td class='text-end'>${_lang.total}</td>
+             <td colspan='4' class='text-end tfoot-first-td'>-</td>
+            <td class='text-end'>${_formatNumber(totalGrandTotal)}</td>
+           
+        </tr>
+    `;
 
-        /**
-         * Set colspan of the table bottom
-         * */
-        $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(3));
-    }
+    // Clear existing rows:
+    tableBody.empty();
+    tableBody.append(tr);
+
+    $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(3));
+}
+
 
     function showNoRecordsMessageOnTableBody() {
         var tableBody = tableId.find('tbody');

@@ -39,18 +39,18 @@
                                                 <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        {{-- <div class="col-md-6 mb-3">
                                             <x-label for="party_id" name="{{ __('customer.customer') }}" />
                                             <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id"></select>
-                                        </div>
+                                        </div> --}}
                                         <div class="col-md-6 mb-3">
                                             <x-label for="item_id" name="{{ __('item.item_name') }}" />
                                             <select class="item-ajax form-select" data-placeholder="Select Item" id="item_id" name="item_id"></select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        {{-- <div class="col-md-6 mb-3">
                                             <x-label for="warehouse_id" name="{{ __('warehouse.warehouse') }}" />
                                             <select class="warehouse-ajax form-select" data-placeholder="Select Warehouse" id="warehouse_id" name="warehouse_id"></select>
-                                        </div>
+                                        </div> --}}
                                 </div>
 
                                 <div class="card-body p-4 row g-3">
@@ -70,7 +70,7 @@
                                         <div class="col-6">
                                             <h5 class="mb-0">{{ __('app.records') }}</h5>
                                         </div>
-                                        <div class="col-6 text-end">
+                                        {{-- <div class="col-6 text-end">
                                             <div class="btn-group">
                                             <button type="button" class="btn btn-outline-success">{{ __('app.export') }}</button>
                                             <button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false"> <span class="visually-hidden">Toggle Dropdown</span>
@@ -80,12 +80,12 @@
                                                 <li><button type='button' class="dropdown-item" id="generate_pdf"><i class="bx bx-file mr-1"></i>{{ __('app.pdf') }}</button></li>
                                             </ul>
                                         </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                         <div class="col-md-12 table-responsive">
-                                            <table class="table table-bordered" id="itemSaleReport">
+                                            {{-- <table class="table table-bordered" id="itemSaleReport">
                                                 <thead>
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
@@ -104,7 +104,18 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
+                                            </table> --}}
+                                            <table class="table table-bordered" id="itemSaleReport">
+                                                <thead>
+                                                    <tr class="text-uppercase">
+                                                        <th>#</th>
+                                                        <th>{{ __('item.item_name') }}</th>
+                                                        <th>{{ __('item.quantity') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
                                             </table>
+
                                         </div>
                                 </div>
                             </div>

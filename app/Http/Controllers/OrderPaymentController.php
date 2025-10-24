@@ -186,6 +186,8 @@ class OrderPaymentController extends Controller
             'payment_date' => 'required',
             'user' => 'nullable',
         ]);
+        try {
+        DB::beginTransaction();
 
         // Get all orders of customer
         $orders = SaleOrder::where('party_id', $validated['party_id'])->get();
@@ -199,6 +201,7 @@ class OrderPaymentController extends Controller
 
         // Check if already fully paid
         if ($remainingBefore <= 0) {
+             DB::rollBack();
             return redirect()->back()->with('info', 'Customer has already paid all dues. No remaining balance.');
         }
 
@@ -223,12 +226,18 @@ class OrderPaymentController extends Controller
             'updated_by' => $validated['user'] ?? auth()->id(),
         ]);
 
+          DB::commit();
+
         // Message if capped
         if ($validated['amount'] > $remainingBefore) {
             return redirect()->back()->with('error', 'Customer tried to pay more than remaining. Only ' . number_format($remainingBefore, 2) . ' was accepted.');
         }
 
         return redirect()->route('order.payment.history.list')->with('info', 'Payment recorded successfully.');
+         } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+    }
     }
 
 
@@ -434,10 +443,10 @@ class OrderPaymentController extends Controller
                 );
             })
             ->addColumn('remaining_amount', function ($row) {
-                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
-                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
-                $remaining   = $totalOrders - $totalPaid;
-                return number_format(max($remaining, 0), 2);
+                // $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+                // $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+                // $remaining   = $totalOrders - $totalPaid;
+                return number_format(max($row->remaining_amount, 0), 2);
             })
             ->addColumn('credit_limit', function ($row) {
                $totalLimit = Party::where('party_type', 'customer')

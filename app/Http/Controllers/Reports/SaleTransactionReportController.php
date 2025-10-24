@@ -14,6 +14,8 @@ use App\Models\Items\ItemTransaction;
 // use App\Models\Items\ItemSerialTransaction;
 use App\Models\Sale\Sale;
 use App\Enums\ItemTransactionUniqueCode;
+use App\Models\Sale\SaleOrder;
+use Carbon\Carbon;
 
 class SaleTransactionReportController extends Controller
 {
@@ -21,74 +23,401 @@ class SaleTransactionReportController extends Controller
 
     use FormatNumber;
 
-    public function getSaleRecords(Request $request) : JsonResponse{
-        try{
-            // Validation rules
-            $rules = [
-                'from_date'         => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
-                'to_date'           => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
-            ];
+    // public function getSaleRecords(Request $request) : JsonResponse{
+    //     try{
+    //         // Validation rules
+    //         $rules = [
+    //             'from_date'         => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //             'to_date'           => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //         ];
 
-            $validator = Validator::make($request->all(), $rules);
+    //         $validator = Validator::make($request->all(), $rules);
 
-            if ($validator->fails()) {
-                throw new \Exception($validator->errors()->first());
-            }
+    //         if ($validator->fails()) {
+    //             throw new \Exception($validator->errors()->first());
+    //         }
 
-            $fromDate           = $request->input('from_date');
-            $fromDate           = $this->toSystemDateFormat($fromDate);
-            $toDate             = $request->input('to_date');
-            $toDate             = $this->toSystemDateFormat($toDate);
-            $partyId             = $request->input('party_id');
+    //         $fromDate           = $request->input('from_date');
+    //         $fromDate           = $this->toSystemDateFormat($fromDate);
+    //         $toDate             = $request->input('to_date');
+    //         $toDate             = $this->toSystemDateFormat($toDate);
+    //         $partyId             = $request->input('party_id');
 
-            $preparedData = Sale::with('party')
-                                                ->when($partyId, function ($query) use ($partyId) {
-                                                    return $query->where('party_id', $partyId);
-                                                })
-                                                ->whereBetween('sale_date', [$fromDate, $toDate])
-                                                ->get();
+    //         $preparedData = Sale::with('party')
+    //                                             ->when($partyId, function ($query) use ($partyId) {
+    //                                                 return $query->where('party_id', $partyId);
+    //                                             })
+    //                                             ->whereBetween('sale_date', [$fromDate, $toDate])
+    //                                             ->get();
 
             
-            if($preparedData->count() == 0){
-                throw new \Exception('No Records Found!!');
-            }
+    //         if($preparedData->count() == 0){
+    //             throw new \Exception('No Records Found!!');
+    //         }
 
-            $recordsArray = [];
+    //         $recordsArray = [];
 
-            foreach ($preparedData as $data) {
-                $recordsArray[] = [  
-                                    'sale_date'         => $this->toUserDateFormat($data->sale_date),
-                                    'invoice_or_bill_code'  => $data->sale_code,
-                                    'party_name'            => $data->party->getFullName(),
-                                    'grand_total'           => $this->formatWithPrecision($data->grand_total, comma:false),
-                                    'paid_amount'           => $this->formatWithPrecision($data->paid_amount, comma:false),
-                                    'balance'               => $this->formatWithPrecision($data->grand_total - $data->paid_amount , comma:false),
-                                ];
-            }
+    //         foreach ($preparedData as $data) {
+    //             $recordsArray[] = [  
+    //                                 'sale_date'         => $this->toUserDateFormat($data->sale_date),
+    //                                 'invoice_or_bill_code'  => $data->sale_code,
+    //                                 'party_name'            => $data->party->getFullName(),
+    //                                 'grand_total'           => $this->formatWithPrecision($data->grand_total, comma:false),
+    //                                 'paid_amount'           => $this->formatWithPrecision($data->paid_amount, comma:false),
+    //                                 'balance'               => $this->formatWithPrecision($data->grand_total - $data->paid_amount , comma:false),
+    //                             ];
+    //         }
             
-            return response()->json([
-                        'status'    => true,
-                        'message' => "Records are retrieved!!",
-                        'data' => $recordsArray,
-                    ]);
-        } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage(),
-                ], 409);
+    //         return response()->json([
+    //                     'status'    => true,
+    //                     'message' => "Records are retrieved!!",
+    //                     'data' => $recordsArray,
+    //                 ]);
+    //     } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => $e->getMessage(),
+    //             ], 409);
 
+    //     }
+    // }
+
+
+
+    // public function getSaleRecords(Request $request) : JsonResponse{
+    //     try{
+    //         // Validation rules
+    //         $rules = [
+    //             'from_date'         => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //             'to_date'           => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //         ];
+
+    //         $validator = Validator::make($request->all(), $rules);
+
+    //         if ($validator->fails()) {
+    //             throw new \Exception($validator->errors()->first());
+    //         }
+
+    //         $fromDate           = $request->input('from_date');
+    //         $fromDate           = $this->toSystemDateFormat($fromDate);
+    //         $toDate             = $request->input('to_date');
+    //         $toDate             = $this->toSystemDateFormat($toDate);
+    //         $partyId             = $request->input('party_id');
+
+    //         $preparedData = SaleOrder::with('party')
+    //                                             ->when($partyId, function ($query) use ($partyId) {
+    //                                                 return $query->where('party_id', $partyId);
+    //                                             })
+    //                                             ->whereBetween('created_at', [$fromDate, $toDate])
+    //                                             ->get();
+
+            
+    //         if($preparedData->count() == 0){
+    //             throw new \Exception('No Records Found!!');
+    //         }
+
+    //         $recordsArray = [];
+
+    //         foreach ($preparedData as $data) {
+    //             $recordsArray[] = [  
+    //                                 'sale_date'         => $this->toUserDateFormat($data->sale_date),
+    //                                 'invoice_or_bill_code'  => $data->sale_code,
+    //                                 'party_name'            => $data->party->getFullName(),
+    //                                 'grand_total'           => $this->formatWithPrecision($data->grand_total, comma:false),
+    //                                 'paid_amount'           => $this->formatWithPrecision($data->paid_amount, comma:false),
+    //                                 'balance'               => $this->formatWithPrecision($data->grand_total - $data->paid_amount , comma:false),
+    //                             ];
+    //         }
+            
+    //         return response()->json([
+    //                     'status'    => true,
+    //                     'message' => "Records are retrieved!!",
+    //                     'data' => $recordsArray,
+    //                 ]);
+    //     } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => $e->getMessage(),
+    //             ], 409);
+
+    //     }
+    // }
+
+    // public function getSaleRecords(Request $request): JsonResponse
+    // {
+    //     try {
+    //         // Validation rules
+    //         $rules = [
+    //             'from_date' => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+    //             'to_date'   => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+    //         ];
+
+    //         $validator = Validator::make($request->all(), $rules);
+
+    //         if ($validator->fails()) {
+    //             throw new \Exception($validator->errors()->first());
+    //         }
+
+    //         $fromDate = $this->toSystemDateFormat($request->input('from_date'));
+    //         $toDate   = $this->toSystemDateFormat($request->input('to_date'));
+
+    //         // Group by party and sum grand_total
+    //         $topCustomers = SaleOrder::select('party_id')
+    //             ->selectRaw('SUM(grand_total) as total_purchase')
+    //             ->with('party')
+    //             ->whereBetween('created_at', [$fromDate, $toDate])
+    //             ->groupBy('party_id')
+    //             ->orderByDesc('total_purchase')
+    //             ->get();
+
+    //         if ($topCustomers->isEmpty()) {
+    //             throw new \Exception('No Records Found!!');
+    //         }
+
+    //         $recordsArray = [];
+
+    //         foreach ($topCustomers as $data) {
+    //             $recordsArray[] = [
+    //                 'party_name'    => $data->party->getFullName(),
+    //                 'total_purchase' => $this->formatWithPrecision($data->total_purchase, comma: false),
+    //             ];
+    //         }
+
+    //         return response()->json([
+    //             'status'  => true,
+    //             'message' => "Top customers retrieved successfully!",
+    //             'data'    => $recordsArray,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status'  => false,
+    //             'message' => $e->getMessage(),
+    //         ], 409);
+    //     }
+    // }
+
+
+    // public function getSaleRecords(Request $request): JsonResponse
+    // {
+    //     try {
+    //         // Validation rules
+    //         $rules = [
+    //             'from_date' => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+    //             'to_date'   => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+    //         ];
+
+    //         $validator = Validator::make($request->all(), $rules);
+
+    //         if ($validator->fails()) {
+    //             throw new \Exception($validator->errors()->first());
+    //         }
+
+    //         $fromDate = Carbon::parse($this->toSystemDateFormat($request->input('from_date')))->startOfDay();
+    //         $toDate   = Carbon::parse($this->toSystemDateFormat($request->input('to_date')))->endOfDay();
+    //         $partyId            = $request->input('party_id');
+    //         // Group by party and sum grand_total
+    //         $topCustomers = SaleOrder::select('party_id')
+    //             ->selectRaw('SUM(grand_total) as total_purchase')
+    //             ->with('party')
+    //             ->whereNotNull('party_id')
+    //             ->whereBetween('order_date', [$fromDate, $toDate])
+    //             ->groupBy('party_id')
+    //             ->orderByDesc('total_purchase')
+    //             ->limit(10) // optional
+    //             ->get();
+
+    //         if ($topCustomers->isEmpty()) {
+    //             throw new \Exception('No Records Found!!');
+    //         }
+
+    //         $recordsArray = [];
+
+    //         foreach ($topCustomers as $data) {
+    //             $recordsArray[] = [
+    //                 'party_name'     => $data->party?->getFullName() ?? 'Unknown',
+    //                 'total_purchase' => $this->formatWithPrecision($data->total_purchase, comma: false),
+    //             ];
+    //         }
+
+    //         return response()->json([
+    //             'status'  => true,
+    //             'message' => "Top customers retrieved successfully!",
+    //             'data'    => $recordsArray,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status'  => false,
+    //             'message' => $e->getMessage(),
+    //         ], 409);
+    //     }
+    // }
+
+    public function getSaleRecords(Request $request): JsonResponse
+{
+    try {
+        // Validation rules
+        $rules = [
+            'from_date' => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+            'to_date'   => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            throw new \Exception($validator->errors()->first());
         }
+
+        $fromDate = Carbon::parse($this->toSystemDateFormat($request->input('from_date')))->startOfDay();
+        $toDate   = Carbon::parse($this->toSystemDateFormat($request->input('to_date')))->endOfDay();
+        $partyId  = $request->input('party_id');
+
+        // Build query
+        $query = SaleOrder::select('party_id')
+            ->selectRaw('SUM(grand_total) as total_purchase')
+            ->with('party')
+            ->whereNotNull('party_id')
+            ->whereBetween('order_date', [$fromDate, $toDate])
+            ->groupBy('party_id')
+            ->orderByDesc('total_purchase');
+
+        // 🔹 Apply party filter if provided
+        if (!empty($partyId)) {
+            $query->where('party_id', $partyId);
+        }
+
+        // Optional: Limit top 10 only if not filtering by one party
+        if (empty($partyId)) {
+            $query->limit(10);
+        }
+
+        $topCustomers = $query->get();
+
+        if ($topCustomers->isEmpty()) {
+            throw new \Exception('No Records Found!!');
+        }
+
+        $recordsArray = [];
+
+        foreach ($topCustomers as $data) {
+            $recordsArray[] = [
+                'party_name'     => $data->party?->getFullName() ?? 'Unknown',
+                'total_purchase' => $this->formatWithPrecision($data->total_purchase, comma: false),
+            ];
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => "Top customers retrieved successfully!",
+            'data'    => $recordsArray,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status'  => false,
+            'message' => $e->getMessage(),
+        ], 409);
     }
+}
+
+
+
 
     /**
      * Item Sale Report
      * */
-    function getSaleItemRecords(Request $request): JsonResponse{
-        try{
-            // Validation rules
+    // function getSaleItemRecords(Request $request): JsonResponse{
+    //     // dd($request->all());
+        
+    //     try{
+    //         // Validation rules
+    //         $rules = [
+    //             'from_date'         => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //             'to_date'           => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+    //         ];
+
+    //         $validator = Validator::make($request->all(), $rules);
+
+    //         if ($validator->fails()) {
+    //             throw new \Exception($validator->errors()->first());
+    //         }
+
+    //         $fromDate           = $request->input('from_date');
+    //         $fromDate           = $this->toSystemDateFormat($fromDate);
+    //         $toDate             = $request->input('to_date');
+    //         $toDate             = $this->toSystemDateFormat($toDate);
+    //         $partyId            = $request->input('party_id');
+    //         $itemId             = $request->input('item_id');
+    //         $warehouseId        = $request->input('warehouse_id');
+
+    //         $preparedData = ItemTransaction::
+    //                                             whereBetween('created_at', [$fromDate, $toDate])
+    //                                             ->when($itemId, function ($query) use ($itemId) {
+    //                                                 return $query->where('item_id', $itemId);
+    //                                             })
+    //                                             ->when($itemId, function ($query) use ($itemId) {
+    //                                                 return $query->whereHas('itemTransaction', function ($query) use ($itemId) {
+    //                                                     return $query->where('item_id', $itemId)
+    //                                                                 ->where('transaction_type', 'Sale Order');
+    //                                                 });
+    //                                             })
+
+    //                                             ->when($warehouseId, function ($query) use ($warehouseId) {
+    //                                                     return $query->whereHas('itemTransaction', function ($query) use ($warehouseId) {
+    //                                                         return $query->where('warehouse_id', $warehouseId);
+    //                                                     });
+    //                                                 })
+    //                                              ->get();
+
+    //                                              dd($preparedData);
+                                                
+        
+    //         if($preparedData->count() == 0){
+    //             throw new \Exception('No Records Found!!');
+    //         }
+    //         $recordsArray = [];
+
+    //         foreach ($preparedData as $data) {
+    //             foreach($data->itemTransaction as $transaction){
+    //                 $recordsArray[] = [  
+    //                                 'sale_date'         => $this->toUserDateFormat($data->sale_date),
+    //                                 'invoice_or_bill_code'  => $data->sale_code,
+    //                                 'party_name'            => $data->party->getFullName(),
+    //                                 'warehouse'             => $transaction->warehouse->name,
+    //                                 'item_name'             => $transaction->item->name,
+    //                                 'unit_price'            => $this->formatWithPrecision($transaction->unit_price, comma:false),
+    //                                 'quantity'              => $this->formatWithPrecision($transaction->quantity, comma:false),
+    //                                 'discount_amount'       => $this->formatWithPrecision($transaction->discount_amount, comma:false),
+    //                                 'tax_amount'            => $this->formatWithPrecision($transaction->tax_amount, comma:false),
+    //                                 'total'                 => $this->formatWithPrecision($transaction->total , comma:false),
+    //                             ];
+
+    //             }
+                
+    //         }
+            
+    //         return response()->json([
+    //                     'status'    => true,
+    //                     'message' => "Records are retrieved!!",
+    //                     'data' => $recordsArray,
+    //                 ]);
+    //     } catch (\Exception $e) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => $e->getMessage(),
+    //             ], 409);
+
+    //     }
+    // }
+
+
+
+    public function getSaleItemRecords(Request $request): JsonResponse
+    {
+        try {
+            // Validate input
             $rules = [
-                'from_date'         => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
-                'to_date'           => ['required', 'date_format:'.implode(',', $this->getDateFormats())],
+                'from_date' => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+                'to_date'   => ['required', 'date_format:' . implode(',', $this->getDateFormats())],
+                'item_id'   => ['required', 'integer'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -97,73 +426,61 @@ class SaleTransactionReportController extends Controller
                 throw new \Exception($validator->errors()->first());
             }
 
-            $fromDate           = $request->input('from_date');
-            $fromDate           = $this->toSystemDateFormat($fromDate);
-            $toDate             = $request->input('to_date');
-            $toDate             = $this->toSystemDateFormat($toDate);
-            $partyId            = $request->input('party_id');
-            $itemId             = $request->input('item_id');
-            $warehouseId        = $request->input('warehouse_id');
+            // Format input
+            $fromDate = Carbon::parse($this->toSystemDateFormat($request->input('from_date')))->startOfDay();
+            $toDate   = Carbon::parse($this->toSystemDateFormat($request->input('to_date')))->endOfDay();
 
-            $preparedData = Sale::with('party', 'itemTransaction')
-                                                ->whereBetween('sale_date', [$fromDate, $toDate])
-                                                ->when($partyId, function ($query) use ($partyId) {
-                                                    return $query->where('party_id', $partyId);
-                                                })
-                                                ->when($itemId, function ($query) use ($itemId) {
-                                                        return $query->whereHas('itemTransaction', function ($query) use ($itemId) {
-                                                            return $query->where('item_id', $itemId);
-                                                        });
-                                                    })
-                                                ->when($warehouseId, function ($query) use ($warehouseId) {
-                                                        return $query->whereHas('itemTransaction', function ($query) use ($warehouseId) {
-                                                            return $query->where('warehouse_id', $warehouseId);
-                                                        });
-                                                    })
-                                                ->get();
-        
-            if($preparedData->count() == 0){
+            $itemId   = $request->input('item_id');
+
+            // Get only relevant item transactions
+            $transactions = ItemTransaction::where('item_id', $itemId)
+                
+                ->whereBetween('created_at', [$fromDate, $toDate])
+                ->get();
+
+            if ($transactions->isEmpty()) {
                 throw new \Exception('No Records Found!!');
             }
-            $recordsArray = [];
 
-            foreach ($preparedData as $data) {
-                foreach($data->itemTransaction as $transaction){
-                    $recordsArray[] = [  
-                                    'sale_date'         => $this->toUserDateFormat($data->sale_date),
-                                    'invoice_or_bill_code'  => $data->sale_code,
-                                    'party_name'            => $data->party->getFullName(),
-                                    'warehouse'             => $transaction->warehouse->name,
-                                    'item_name'             => $transaction->item->name,
-                                    'unit_price'            => $this->formatWithPrecision($transaction->unit_price, comma:false),
-                                    'quantity'              => $this->formatWithPrecision($transaction->quantity, comma:false),
-                                    'discount_amount'       => $this->formatWithPrecision($transaction->discount_amount, comma:false),
-                                    'tax_amount'            => $this->formatWithPrecision($transaction->tax_amount, comma:false),
-                                    'total'                 => $this->formatWithPrecision($transaction->total , comma:false),
-                                ];
-
-                }
-                
-            }
             
-            return response()->json([
-                        'status'    => true,
-                        'message' => "Records are retrieved!!",
-                        'data' => $recordsArray,
-                    ]);
-        } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage(),
-                ], 409);
+            // Calculate total and get item name
+            $totalQuantity = $transactions->sum('quantity');
+            $itemName = optional($transactions->first()->item)->name ?? 'Unknown Item';
 
+            // Return response
+            return response()->json([
+                'status'  => true,
+                'message' => "Records are retrieved!!",
+                'data'    => [[
+                    'item_name'            => $itemName,
+                    'total_quantity_sold'  => $this->formatWithPrecision($totalQuantity, comma: false),
+                ]],
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ], 409);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Item Sale Report
      * */
     function getSalePaymentRecords(Request $request): JsonResponse{
+
         try{
             // Validation rules
             $rules = [
@@ -232,4 +549,7 @@ class SaleTransactionReportController extends Controller
 
         }
     }
+
+
+    
 }

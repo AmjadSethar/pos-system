@@ -13,6 +13,7 @@ class CustomerPayment extends Model
     protected $fillable = [
         'party_id',
         'amount',
+        'remaining_amount',
         'payment_type',
         'payment_note',
         'payment_date',

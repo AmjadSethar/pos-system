@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
      * Dashboard
      * */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/daily-orders/datatable-list', [DashboardController::class, 'dashboardDataList'])->name('dashboard');
     /**
      * Settings
      */

@@ -23,7 +23,10 @@ $(function() {
             ajax: {
                     url: baseURL+'/expense/supplier-expense-list',
                     data:{
-                            expense_category_id : $('#expense_category_id').val(),
+                          user_id : $('#user_id').val(),
+                    
+                        from_date : $('input[name="from_date"]').val(),
+                        to_date : $('input[name="to_date"]').val(),
                         },
                 },
             columns: [
@@ -259,6 +262,10 @@ $(function() {
 	} );
 
     $(document).on("change", '#expense_category_id', function function_name() {
+        loadDatatables();
+    });
+
+    $(document).on("change", '#user_id, input[name="from_date"], input[name="to_date"]', function function_name(e) {
         loadDatatables();
     });
 

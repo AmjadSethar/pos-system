@@ -120,7 +120,7 @@ class ItemController extends Controller
      * Return JsonResponse
      * */
     public function store(ItemRequest $request)  {
-        // dd($request->all());
+         dd($request->all());
         try {
 
             DB::beginTransaction();

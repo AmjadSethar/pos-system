@@ -524,6 +524,14 @@ class ExpenseController extends Controller
                         ->when(!auth()->user()->hasPermissionTo('expense.can.view.other.users.expenses'), function ($query) use ($request) {
                             return $query->where('created_by', auth()->user()->id);
                         });
+                         if ($request->filled('from_date')) {
+            $data->whereDate('created_at', '>=', $this->toSystemDateFormat($request->from_date));
+        }
+
+        // 📅 Filter by to_date
+        if ($request->filled('to_date')) {
+            $data->whereDate('created_at', '<=', $this->toSystemDateFormat($request->to_date));
+        }
 
         return DataTables::of($data)
                     ->addIndexColumn()
@@ -623,10 +631,20 @@ class ExpenseController extends Controller
 
     public function supplierExpenseDatabtable(Request $request)
     {
+        
         $data = PartyPayment::with('party', 'paymentType')
                     ->when($request->party_id, function ($query) use ($request) {
                         return $query->where('party_id', $request->party_id);
                     });
+
+          if ($request->filled('from_date')) {
+            $data->whereDate('created_at', '>=', $this->toSystemDateFormat($request->from_date));
+        }
+
+        // 📅 Filter by to_date
+        if ($request->filled('to_date')) {
+            $data->whereDate('created_at', '<=', $this->toSystemDateFormat($request->to_date));
+        }          
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -688,99 +706,385 @@ class ExpenseController extends Controller
     }
 
 
+    // public function CashInDatatable(Request $request)
+    // {
+    //     $user = auth()->user();
+
+    //     // Base query
+    //     $query = CustomerPayment::with('party');
+
+    //     if ($user->role_id == 1 && $request->filled('user_id')) {
+    //         $salesmanId = $request->input('user_id');
+
+    //         // ✅ Filtering directly on CustomerPayment.created_by
+    //         $query->where('created_by', $salesmanId);
+    //     }
+
+    //     if ($user->role_id != 1) {
+    //         $query->where('created_by', auth()->user()->id);
+    //     }
+
+    //     // 📅 Filter by from_date
+    //     if ($request->filled('from_date')) {
+    //         $query->whereDate('payment_date', '>=', $this->toSystemDateFormat($request->from_date));
+    //     }
+
+    //     // 📅 Filter by to_date
+    //     if ($request->filled('to_date')) {
+    //         $query->whereDate('payment_date', '<=', $this->toSystemDateFormat($request->to_date));
+    //     }
+
+    //     $data = $query->get();
+
+    //     // Optional filter: show only customers who reached credit limit
+    //     if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
+    //         $data = $data->filter(function ($row) {
+    //             $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+    //             $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+    //             $remaining   = $totalOrders - $totalPaid;
+
+    //             $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
+
+    //             return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
+    //         });
+    //     }
+
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         // ->addColumn('customer_name', function ($row) {
+    //         //     return $row->party->first_name . ' ' . $row->party->last_name;
+    //         // })
+    //         ->addColumn('created_by', function ($row) {
+    //             return $row->createdBy->username ?? '—';
+    //         })
+            
+    //         ->addColumn('paid_amount', function ($row) {
+                
+    //             $totalPaidToday = DB::table('customer_payments')
+    //                 ->whereDate('created_at', Carbon::today())
+    //                 ->sum('amount');
+
+    //             return $totalPaidToday;
+
+    //         })
+            
+    //         ->addColumn('payment_date', function ($row) {
+    //             return $row->payment_date;
+    //         })
+    //         ->addColumn('action', function ($row) {
+    //             $id = $row->id;
+    //             $deleteUrl = route('order.payment.delete', ['id' => $id]);
+
+    //             return '<div class="dropdown ms-auto">
+    //                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+    //                     <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //                 </a>
+    //                 <ul class="dropdown-menu">
+    //                     <li>
+    //                         <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
+    //                             <i class="bx bx-trash"></i> '.__('app.delete').'
+    //                         </button>
+    //                     </li>
+    //                 </ul>
+    //             </div>';
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+
+
+// public function CashInDatatable(Request $request)
+// {
+//     $user = auth()->user();
+//     $today = Carbon::today();
+
+//     // Base query: group payments by created_by and sum today's amounts
+//     $query = DB::table('customer_payments')
+//         ->select('created_by', DB::raw('SUM(amount) as total_paid_today','pyment_date'))
+//         ->whereDate('created_at', $today)
+//         ->groupBy('created_by');
+
+//     // 🔒 If admin and user_id is specified, filter by that user
+//     if ($user->role_id == 1 && $request->filled('user_id')) {
+//         $query->where('created_by', $request->input('user_id'));
+//     }
+
+//     // 🔒 If not admin, show only their own data
+//     if ($user->role_id != 1) {
+//         $query->where('created_by', $user->id);
+//     }
+
+//     // Fetch data
+//     $data = $query->get();
+
+//     return DataTables::of($data)
+//         ->addIndexColumn()
+//         ->addColumn('username', function ($row) {
+//             // Get the username manually from users table
+//             return DB::table('users')->where('id', $row->created_by)->value('username') ?? '—';
+//         })
+//         ->addColumn('paid_amount', function ($row) {
+//             return number_format($row->total_paid_today, 2);
+//         })
+//         ->addColumn('payment_date', function ($row) {
+//                  return $row->payment_date->format(app('company')['date_format']);
+//              })
+//         ->make(true);
+// }
+
+
+// use Illuminate\Support\Carbon;
+// use Illuminate\Support\Facades\DB;
+
+// public function CashInDatatable(Request $request)
+// {
+//     $user = auth()->user();
+//     $today = Carbon::today();
+
+//     // Group payments by user and get total + latest payment date
+//     $query = DB::table('customer_payments')
+//         ->select(
+//             'created_by',
+//             DB::raw('SUM(amount) as total_paid_today'),
+//             DB::raw('MAX(payment_date) as last_payment_date')
+//         )
+//         ->whereDate('created_at', $today)
+//         ->groupBy('created_by');
+
+//     // Admin filter by user
+//     if ($user->role_id == 1 && $request->filled('user_id')) {
+//         $query->where('created_by', $request->input('user_id'));
+//     }
+
+//     // Regular user only sees their own
+//     if ($user->role_id != 1) {
+//         $query->where('created_by', $user->id);
+//     }
+
+//     $data = $query->get();
+
+//     return DataTables::of($data)
+//         ->addIndexColumn()
+//         ->addColumn('username', function ($row) {
+//             return DB::table('users')->where('id', $row->created_by)->value('username') ?? '—';
+//         })
+//         ->addColumn('paid_amount', function ($row) {
+//             return number_format($row->total_paid_today, 2);
+//         })
+//         ->addColumn('payment_date', function ($row) {
+//             return $row->last_payment_date ? date('Y-m-d', strtotime($row->last_payment_date)) : '—';
+//         })
+//         ->make(true);
+// }
+
+
+
+// use Illuminate\Support\Carbon;
+// use Illuminate\Support\Facades\DB;
+
+// public function CashInDatatable(Request $request)
+// {
+//     $user = auth()->user();
+
+//     // Base query
+//     $query = CustomerPayment::with('party');
+
+//     if ($user->role_id == 1 && $request->filled('user_id')) {
+//         $salesmanId = $request->input('user_id');
+
+//         // ✅ Filtering directly on CustomerPayment.created_by
+//         $query->where('created_by', $salesmanId);
+//     }
+
+//     if ($user->role_id != 1) {
+//         $query->where('created_by', auth()->user()->id);
+//     }
+
+//     // 📅 Filter by from_date
+//     if ($request->filled('from_date')) {
+//         $query->whereDate('payment_date', '>=', $this->toSystemDateFormat($request->from_date));
+//     }
+
+//     // 📅 Filter by to_date
+//     if ($request->filled('to_date')) {
+//         $query->whereDate('payment_date', '<=', $this->toSystemDateFormat($request->to_date));
+//     }
+
+//     // ✅ Filter only today's records
+//     $query->whereDate('payment_date', Carbon::today());
+
+//     $data = $query->get();
+
+//     // Optional filter: show only customers who reached credit limit
+//     if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
+//         $data = $data->filter(function ($row) {
+//             $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
+//             $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
+//             $remaining   = $totalOrders - $totalPaid;
+
+//             $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
+
+//             return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
+//         });
+//     }
+
+//     return DataTables::of($data)
+//         ->addIndexColumn()
+//         // ->addColumn('customer_name', function ($row) {
+//         //     return $row->party->first_name . ' ' . $row->party->last_name;
+//         // })
+//         ->addColumn('created_by', function ($row) {
+//             return $row->createdBy->username ?? '—';
+//         })
+//         ->addColumn('paid_amount', function ($row) {
+//             $totalPaidToday = DB::table('customer_payments')
+//                 ->whereDate('created_at', Carbon::today())
+//                 ->sum('amount');
+
+//             return $totalPaidToday;
+//         })
+//         ->addColumn('payment_date', function ($row) {
+//             return $row->payment_date;
+//         })
+//         ->addColumn('action', function ($row) {
+//             $id = $row->id;
+//             $deleteUrl = route('order.payment.delete', ['id' => $id]);
+
+//             return '<div class="dropdown ms-auto">
+//                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+//                     <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+//                 </a>
+//                 <ul class="dropdown-menu">
+//                     <li>
+//                         <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id=' . $id . '>
+//                             <i class="bx bx-trash"></i> ' . __('app.delete') . '
+//                         </button>
+//                     </li>
+//                 </ul>
+//             </div>';
+//         })
+//         ->rawColumns(['action'])
+//         ->make(true);
+// }
+
+
+    // public function CashInDatatable(Request $request)
+    // {
+    //     $user = auth()->user();
+    //     $today = Carbon::today();
+
+    //     // Base query using query builder instead of Eloquent
+    //     $query = DB::table('customer_payments')
+    //         ->select(
+    //             'created_by',
+    //             DB::raw('SUM(amount) as total_paid'),
+    //             DB::raw('MAX(payment_date) as latest_payment_date'),
+    //         )
+    //         // ->whereDate('payment_date', $today)
+    //         ->groupBy('created_by');
+
+    //     // Admin: filter by selected user
+    //     if ($user->role_id == 1 && $request->filled('user_id')) {
+    //         $query->where('created_by', $request->input('user_id'));
+    //     }
+
+    //     // Non-admin: restrict to own records
+    //     if ($user->role_id != 1) {
+    //         $query->where('created_by', $user->id);
+    //     }
+
+    //     $data = $query->get();
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //          ->addColumn('id', function ($row) {
+    //     return $row->created_by;
+    //     })
+    //         ->addColumn('created_by', function ($row) {
+    //             return DB::table('users')->where('id', $row->created_by)->value('username') ?? '—';
+    //         })
+    //         ->addColumn('paid_amount', function ($row) {
+    //             return number_format($row->total_paid, 2);
+    //         })
+    //         ->addColumn('payment_date', function ($row) {
+    //             return $row->latest_payment_date ?? '—';
+    //         })
+    //         ->addColumn('action', function ($row) {
+    //             return '<div class="dropdown ms-auto">
+    //                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+    //                     <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
+    //                 </a>
+    //                 <ul class="dropdown-menu">
+    //                     <li>
+    //                         <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id="' . $row->created_by . '">
+    //                             <i class="bx bx-trash"></i> ' . __('app.delete') . '
+    //                         </button>
+    //                     </li>
+    //                 </ul>
+    //             </div>';
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+
     public function CashInDatatable(Request $request)
     {
         $user = auth()->user();
 
-        // Base query
-        $query = CustomerPayment::with('party');
-        // dd($query);
+        // Base query using query builder
+        $query = DB::table('customer_payments')
+            ->select(
+                'created_by',
+                DB::raw('SUM(amount) as total_paid'),
+                DB::raw('MAX(payment_date) as latest_payment_date')
+            )
+            ->groupBy('created_by');
 
+        // 🔹 Exclude admins from results
+        $query->whereIn('created_by', function ($sub) {
+            $sub->select('id')
+                ->from('users')
+                ->where('role_id', '!=', 1);
+        });
 
+        // 🔹 If current user is admin, optionally filter by selected user
         if ($user->role_id == 1 && $request->filled('user_id')) {
-            $salesmanId = $request->input('user_id');
-
-            // ✅ Filtering directly on CustomerPayment.created_by
-            $query->where('created_by', $salesmanId);
+            $query->where('created_by', $request->input('user_id'));
         }
 
+        // 🔹 If current user is not admin, show only their own records
         if ($user->role_id != 1) {
-            $query->where('created_by', auth()->user()->id);
-        }
-
-        // 📅 Filter by from_date
-        if ($request->filled('from_date')) {
-            $query->whereDate('payment_date', '>=', $this->toSystemDateFormat($request->from_date));
-        }
-
-        // 📅 Filter by to_date
-        if ($request->filled('to_date')) {
-            $query->whereDate('payment_date', '<=', $this->toSystemDateFormat($request->to_date));
+            $query->where('created_by', $user->id);
         }
 
         $data = $query->get();
 
-        // Optional filter: show only customers who reached credit limit
-        if ($request->filled('reached_credit_limit') && $request->reached_credit_limit == true) {
-            $data = $data->filter(function ($row) {
-                $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
-                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
-                $remaining   = $totalOrders - $totalPaid;
-
-                $creditLimit = Party::where('id', $row->party_id)->value('credit_limit');
-
-                return $remaining >= $creditLimit; // or $remaining > $creditLimit based on your preference
-            });
-        }
-
-
         return DataTables::of($data)
             ->addIndexColumn()
-            // ->addColumn('customer_name', function ($row) {
-            //     return $row->party->first_name . ' ' . $row->party->last_name;
-            // })
+            ->addColumn('id', function ($row) {
+                return $row->created_by; // Add unique ID column for DataTables
+            })
             ->addColumn('created_by', function ($row) {
-                return $row->createdBy->username ?? '—';
+                return DB::table('users')->where('id', $row->created_by)->value('username') ?? '—';
             })
-            
             ->addColumn('paid_amount', function ($row) {
-                // return number_format($row->amount, 2);
-                $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->where('created_at',Carbon::today())->sum('amount');
-                return  number_format($totalPaid, 2);
-
+                return number_format($row->total_paid, 2);
             })
-            // ->addColumn('total_amount', function ($row) {
-            //     return number_format(
-            //         SaleOrder::where('party_id', $row->party_id)->sum('grand_total'),
-            //         2
-            //     );
-            // })
-            // ->addColumn('remaining_amount', function ($row) {
-            //     $totalOrders = SaleOrder::where('party_id', $row->party_id)->sum('grand_total');
-            //     $totalPaid   = CustomerPayment::where('party_id', $row->party_id)->sum('amount');
-            //     $remaining   = $totalOrders - $totalPaid;
-            //     return number_format(max($remaining, 0), 2);
-            // })
-            
-            
-            // ->addColumn('created_at', function ($row) {
-            //     return $row->created_at->format(app('company')['date_format']);
-            // })
             ->addColumn('payment_date', function ($row) {
-                return $row->payment_date;
+                return $row->latest_payment_date ?? '—';
             })
             ->addColumn('action', function ($row) {
-                $id = $row->id;
-                $deleteUrl = route('order.payment.delete', ['id' => $id]);
-
                 return '<div class="dropdown ms-auto">
                     <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                         <i class="bx bx-dots-vertical-rounded font-22 text-option"></i>
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id='.$id.'>
-                                <i class="bx bx-trash"></i> '.__('app.delete').'
+                            <button type="button" class="dropdown-item text-danger deleteRequest" data-delete-id="' . $row->created_by . '">
+                                <i class="bx bx-trash"></i> ' . __('app.delete') . '
                             </button>
                         </li>
                     </ul>
@@ -789,6 +1093,10 @@ class ExpenseController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+
+
+
 
 
 }

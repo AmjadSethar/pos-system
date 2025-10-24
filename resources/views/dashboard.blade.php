@@ -471,28 +471,30 @@
 
 					<div class="card-body">
 						<div class="table-responsive">
-							<table id="recentSalesTable" class="table align-middle mb-2 p-2">
-								<thead class="table-light">
-									<tr>
-										<th>{{ __('Order Code') }}</th>
-										<th>{{ __('Customer Name') }}</th>
-										<th>{{ __('Item Name') }}</th>
-										<th>{{ __('Created At') }}</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach($sales as $sale)
-										@foreach($sale->itemTransaction as $transaction)
-											<tr>
-												<td>{{ $sale->order_code }}</td>
-												<td>{{ $sale->party->first_name }} {{ $sale->party->last_name }}</td>
-												<td>{{ $transaction->item->name ?? 'N/A' }}</td>
-												<td>{{ $sale->created_at->format('Y-m-d H:i') }}</td>
-											</tr>
-										@endforeach
-									@endforeach
-								</tbody>
-							</table>
+							<form class="row g-3 needs-validation" id="datatableForm" action="{{ route('sale.order.delete') }}" enctype="multipart/form-data">
+                            {{-- CSRF Protection --}}
+                            @csrf
+                            @method('POST')
+                            <input type="hidden" id="base_url" value="{{ url('/') }}">
+                            <div class="">
+                                <table class="table table-striped table-bordered border w-100" id="datatable">
+                                    <thead>
+                                        <tr>
+                                            <th class="d-none"><!-- Which Stores ID & it is used for sorting --></th>
+                                            <th><input class="form-check-input row-select" type="checkbox"></th>
+                                            <th>{{ __('sale.order.code') }}</th>
+                                            <th>{{ __('app.date') }}</th>
+                                            <th>{{ __('app.due_date') }}</th>
+                                            <th>{{ __('customer.customer') }}</th>
+                                            <th>{{ __('app.total') }}</th>
+                                            <th>{{ __('app.created_by') }}</th>
+                                            <th>{{ __('app.created_at') }}</th>
+                                            <th>{{ __('app.action') }}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </form>
 
 							{{-- Pagination if needed --}}
 							{{-- <div class="d-flex justify-content-end mt-3">
@@ -512,6 +514,8 @@
 <script src="{{ global_asset('custom/js/custom.js') }}"></script>
 <script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('custom/js/sale/dashboard-sale-order-list.js') }}"></script>
+
 <script>
 	/*Bar Chart Data*/
 	var chartMonths = @json($saleVsPurchase).map(record => record.label);

@@ -5,8 +5,6 @@ $(function() {
 
     const datatableForm = $("#datatableForm");
 
-    
-
     /**
      *Server Side Datatable Records
     */
@@ -14,20 +12,21 @@ $(function() {
         //Delete previous data
         tableId.DataTable().destroy();
 
-        var exportColumns = [2,3,4,5,6,7,8];//Index Starts from 0
+        var exportColumns = [2,3,4,5,6,7,8,9,10];//Index Starts from 0
 
         var table = tableId.DataTable({
             processing: true,
             serverSide: true,
             method:'get',
             ajax: {
-                    url: baseURL+'/expense/total-list',
+                    url: baseURL+'/dashboard/daily-orders/datatable-list',
                     data:{
-                    user_id : $('#user_id').val(),
-                    
-                    from_date : $('input[name="from_date"]').val(),
-                    to_date : $('input[name="to_date"]').val(),
-                },
+                            party_id : $('#party_id').val(),
+                            user_id : $('#user_id').val(),
+                            
+                            from_date : $('input[name="from_date"]').val(),
+                            to_date : $('input[name="to_date"]').val(),
+                        },
                 },
             columns: [
                 {targets: 0, data:'id', orderable:true, visible:false},
@@ -40,12 +39,13 @@ $(function() {
                       }
                 },
 
-                {data: 'expense_date', name: 'expense_date'},
-                {data: 'expense_category', name: 'expense_category'},
-                {data: 'expense_number', name: 'expense_number'},
-               
-                {data: 'paid_amount'},
-                {data: 'payment_type', name: 'payment_type', orderable: false,},
+                {data: 'order_code', name: 'order_code'},
+                {data: 'order_date', name: 'order_date'},
+                {data: 'due_date', name: 'due_date'},
+                {data: 'party_name', name: 'party_name'},
+                {data: 'grand_total', name: 'grand_total', className: 'text-end'},
+                // {data: 'balance', name: 'balance', className: 'text-end'},
+                
                 {data: 'username', name: 'username'},
                 {data: 'created_at', name: 'created_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
@@ -263,15 +263,8 @@ $(function() {
         loadDatatables();
 	} );
 
-    $(document).on("change", '#expense_category_id', function function_name() {
+    $(document).on("change", '#party_id, #user_id, input[name="from_date"], input[name="to_date"]', function function_name(e) {
         loadDatatables();
     });
-
-
-    $(document).on("change", '#user_id, input[name="from_date"], input[name="to_date"]', function function_name(e) {
-        loadDatatables();
-    });
-
-
 
 });

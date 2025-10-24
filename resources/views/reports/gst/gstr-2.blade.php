@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('sale.sale_report'))
+@section('title', __('item.gstr-2-report'))
 
         @section('content')
         <!--start page wrapper -->
@@ -7,10 +7,11 @@
             <div class="page-content">
                 <x-breadcrumb :langArray="[
                                             'app.reports',
-                                            'sale.sale_report',
+                                            'item.gst',
+                                            'item.gstr-2-report',
                                         ]"/>
                 <div class="row">
-                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.sale.ajax') }}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.gstr-2.ajax') }}" enctype="multipart/form-data">
                         {{-- CSRF Protection --}}
                         @csrf
                         @method('POST')
@@ -21,7 +22,7 @@
                         <div class="col-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header px-4 py-3">
-                                    <h5 class="mb-0">{{ __('Customer Sales Report') }}</h5>
+                                    <h5 class="mb-0">{{ __('item.gstr-2-report') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                     
@@ -38,10 +39,6 @@
                                                 <x-input type="text" additionalClasses="datepicker" name="to_date" :required="true" value=""/>
                                                 <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <x-label for="party_id" name="{{ __('customer.customer') }}" />
-                                            <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id" required></select>
                                         </div>
                                 </div>
 
@@ -77,16 +74,22 @@
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                         <div class="col-md-12 table-responsive">
-                                            <table class="table table-bordered" id="saleReport">
+                                            <table class="table table-bordered" id="gstr2Report">
                                                 <thead>
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
-                                                        {{-- <th>{{ __('app.date') }}</th>
-                                                        <th>{{ __('app.invoice_or_reference_no') }}</th> --}}
-                                                        <th>Customer</th>
-                                                        <th>{{ __('app.grand_total') }}</th>
-                                                        {{-- <th>{{ __('app.paid_amount') }}</th>
-                                                        <th>{{ __('app.balance') }}</th> --}}
+                                                        <th>{{ __('party.gstin') }}</th>
+                                                        <th>{{ __('party.party_name') }}</th>
+                                                        <th>{{ __('item.transaction_type') }}</th>
+                                                        <th>{{ __('sale.invoice_no') }}</th>
+                                                        <th>{{ __('app.date') }}</th>
+                                                        <th>{{ __('sale.invoice_value') }}</th>
+                                                        <th>{{ __('tax.tax_rate') }}</th>
+                                                        <th>{{ __('tax.taxable_value') }}</th>
+                                                        <th>{{ __('tax.cgst') }}</th>
+                                                        <th>{{ __('tax.sgst') }}</th>
+                                                        <th>{{ __('tax.igst') }}</th>
+                                                        <th>{{ __('party.state_of_supply') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -108,6 +111,6 @@
 @section('js')
     @include("plugin.export-table")
     <script src="{{ asset('custom/js/common/common.js') }}"></script>
-    <script src="{{ asset('custom/js/reports/sale/sale.js') }}"></script>
+    <script src="{{ asset('custom/js/reports/gst/gstr-2.js') }}"></script>
     
 @endsection

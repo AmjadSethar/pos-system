@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('sale.sale_report'))
+@section('title', __('item.batch_stock_report'))
 
         @section('content')
         <!--start page wrapper -->
@@ -7,10 +7,10 @@
             <div class="page-content">
                 <x-breadcrumb :langArray="[
                                             'app.reports',
-                                            'sale.sale_report',
+                                            'item.batch_stock_report',
                                         ]"/>
                 <div class="row">
-                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.sale.ajax') }}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.stock_report.item.batch.ajax') }}" enctype="multipart/form-data">
                         {{-- CSRF Protection --}}
                         @csrf
                         @method('POST')
@@ -21,27 +21,22 @@
                         <div class="col-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header px-4 py-3">
-                                    <h5 class="mb-0">{{ __('Customer Sales Report') }}</h5>
+                                    <h5 class="mb-0">{{ __('item.batch_stock_report') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
-                                    
                                         <div class="col-md-6 mb-3">
-                                            <x-label for="from_date" name="{{ __('app.from_date') }}" />
-                                            <div class="input-group">
-                                                <x-input type="text" additionalClasses="datepicker" name="from_date" :required="true" value=""/>
-                                                <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
-                                            </div>
+                                            <x-label for="item_id" name="{{ __('item.item_name') }}" />
+                                            <select class="item-ajax form-select" data-placeholder="Select Item" id="item_id" name="item_id"></select>
                                         </div>
+
                                         <div class="col-md-6 mb-3">
-                                            <x-label for="to_date" name="{{ __('app.to_date') }}" />
-                                            <div class="input-group">
-                                                <x-input type="text" additionalClasses="datepicker" name="to_date" :required="true" value=""/>
-                                                <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
-                                            </div>
+                                            <x-label for="batch_id" name="{{ __('item.batch_number') }}" />
+                                            <select class="item-batch-ajax form-select" data-placeholder="Select Item" id="batch_id" name="batch_id"></select>
                                         </div>
+
                                         <div class="col-md-6 mb-3">
-                                            <x-label for="party_id" name="{{ __('customer.customer') }}" />
-                                            <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id" required></select>
+                                            <x-label for="warehouse_id" name="{{ __('warehouse.warehouse') }}" />
+                                            <select class="warehouse-ajax form-select" data-placeholder="Select Warehouse" id="warehouse_id" name="warehouse_id"></select>
                                         </div>
                                 </div>
 
@@ -77,17 +72,22 @@
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                         <div class="col-md-12 table-responsive">
-                                            <table class="table table-bordered" id="saleReport">
+                                            <table class="table table-bordered" id="batchReport">
                                                 <thead>
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
-                                                        {{-- <th>{{ __('app.date') }}</th>
-                                                        <th>{{ __('app.invoice_or_reference_no') }}</th> --}}
-                                                        <th>Customer</th>
-                                                        <th>{{ __('app.grand_total') }}</th>
-                                                        {{-- <th>{{ __('app.paid_amount') }}</th>
-                                                        <th>{{ __('app.balance') }}</th> --}}
+                                                        <th>{{ __('warehouse.warehouse') }}</th>
+                                                        <th>{{ __('item.item_name') }}</th>
+                                                        <th>{{ __('item.batch_no') }}</th>
+                                                        <th class="{{ !app('company')['enable_mfg_date'] ? 'd-none':'' }}">{{ __('item.mfg_date') }}</th>
+                                                        <th class="{{ !app('company')['enable_exp_date'] ? 'd-none':'' }}">{{ __('item.exp_date') }}</th>
+                                                        <th class="{{ !app('company')['enable_model'] ? 'd-none':'' }}">{{ __('item.model_no') }}</th>
+                                                        <th class="{{ !app('company')['enable_color'] ? 'd-none':'' }}">{{ __('item.color') }}</th>
+                                                        <th class="{{ !app('company')['enable_size'] ? 'd-none':'' }}">{{ __('item.size') }}</th>
+                                                        <th>{{ __('item.days_until_expiry') }}</th>
+                                                        <th>{{ __('item.available_qty') }}</th>
                                                     </tr>
+                                                    
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>
@@ -108,6 +108,6 @@
 @section('js')
     @include("plugin.export-table")
     <script src="{{ asset('custom/js/common/common.js') }}"></script>
-    <script src="{{ asset('custom/js/reports/sale/sale.js') }}"></script>
+    <script src="{{ asset('custom/js/reports/stock/batch.js') }}"></script>
     
 @endsection

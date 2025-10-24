@@ -122,6 +122,11 @@ class SaleOrder extends Model
      *
      * @return MorphMany
      */
+    // public function itemTransaction(): MorphMany
+    // {
+    //     return $this->morphMany(ItemTransaction::class, 'transaction');
+    // }
+
     public function itemTransaction(): MorphMany
     {
         return $this->morphMany(ItemTransaction::class, 'transaction');

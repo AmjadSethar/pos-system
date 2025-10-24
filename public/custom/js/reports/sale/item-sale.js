@@ -93,75 +93,121 @@ $(function() {
         });
     }
 
+    // function formAdjustIfSaveOperation(response){
+    //     var tableBody = tableId.find('tbody');
+
+    //     var id = 1;
+    //     var tr = "";
+        
+    //     var totalQuantity = parseFloat(0);
+    //     var totalSum = parseFloat(0);
+    //     var totalDiscountAmount = parseFloat(0);
+    //     var totalTaxAmount = parseFloat(0);
+        
+    //     $.each(response.data, function(index, item) {
+    //         totalQuantity += parseFloat(item.quantity);
+    //         totalDiscountAmount += parseFloat(item.discount_amount);
+    //         totalTaxAmount += parseFloat(item.tax_amount);
+    //         totalSum += parseFloat(item.total);
+
+    //         tr  +=`
+    //             <tr>
+    //                 <td>${id++}</td>
+    //                 <td>${item.sale_date}</td>
+    //                 <td>${item.invoice_or_bill_code}</td>
+    //                 <td>${item.party_name}</td>
+    //                 <td>${item.warehouse}</td>
+    //                 <td>${item.item_name}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.unit_price)}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.quantity)}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.discount_amount)}</td>
+    //                 <td class='text-end ${noTaxFlag()?'d-none':''}' data-tableexport-celltype="number" >${_formatNumber(item.tax_amount)}</td>
+    //                 <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.total)}</td>
+    //             </tr>
+    //         `;
+    //     });
+
+    //     tr  +=`
+    //         <tr class='fw-bold'>
+    //             <td colspan='0' class='text-end tfoot-first-td'>${_lang.total}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalQuantity)}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalDiscountAmount)}</td>
+    //             <td class='text-end ${noTaxFlag()?'d-none':''}' data-tableexport-celltype="number">${_formatNumber(totalTaxAmount)}</td>
+    //             <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalSum)}</td>
+    //         </tr>
+    //     `;
+
+    //     // Clear existing rows:
+    //     tableBody.empty();
+    //     tableBody.append(tr);
+
+    //     /**
+    //      * Set colspan of the table bottom
+    //      * */
+    //     $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(4-noTaxFlag()));
+    // }
     function formAdjustIfSaveOperation(response){
-        var tableBody = tableId.find('tbody');
+    const tableBody = tableId.find('tbody');
+    let id = 1;
+    let tr = "";
 
-        var id = 1;
-        var tr = "";
-        
-        var totalQuantity = parseFloat(0);
-        var totalSum = parseFloat(0);
-        var totalDiscountAmount = parseFloat(0);
-        var totalTaxAmount = parseFloat(0);
-        
-        $.each(response.data, function(index, item) {
-            totalQuantity += parseFloat(item.quantity);
-            totalDiscountAmount += parseFloat(item.discount_amount);
-            totalTaxAmount += parseFloat(item.tax_amount);
-            totalSum += parseFloat(item.total);
+    let totalQuantity = 0;
 
-            tr  +=`
-                <tr>
-                    <td>${id++}</td>
-                    <td>${item.sale_date}</td>
-                    <td>${item.invoice_or_bill_code}</td>
-                    <td>${item.party_name}</td>
-                    <td>${item.warehouse}</td>
-                    <td>${item.item_name}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.unit_price)}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.quantity)}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.discount_amount)}</td>
-                    <td class='text-end ${noTaxFlag()?'d-none':''}' data-tableexport-celltype="number" >${_formatNumber(item.tax_amount)}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.total)}</td>
-                </tr>
-            `;
-        });
+    $.each(response.data, function(index, item) {
+        const quantity = parseFloat(item.total_quantity_sold);
+        totalQuantity += quantity;
 
-        tr  +=`
-            <tr class='fw-bold'>
-                <td colspan='0' class='text-end tfoot-first-td'>${_lang.total}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalQuantity)}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalDiscountAmount)}</td>
-                <td class='text-end ${noTaxFlag()?'d-none':''}' data-tableexport-celltype="number">${_formatNumber(totalTaxAmount)}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalSum)}</td>
+        tr += `
+            <tr>
+                <td>${id++}</td>
+                <td>${item.item_name}</td>
+                <td class='text-start' data-tableexport-celltype="number">${_formatNumber(quantity)}</td>
             </tr>
         `;
+    });
 
-        // Clear existing rows:
-        tableBody.empty();
-        tableBody.append(tr);
+    // Totals Row
+    tr += `
+        <tr class='fw-bold'>
+            <td class='text-end tfoot-first-td' colspan="2">${_lang.total}</td>
+            <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalQuantity)}</td>
+        </tr>
+    `;
 
-        /**
-         * Set colspan of the table bottom
-         * */
-        $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(4-noTaxFlag()));
-    }
+    tableBody.empty().append(tr);
 
+    // Set correct colspan (3 columns: #, Item Name, Quantity)
+    $('.tfoot-first-td').attr('colspan', 2);
+}
+
+
+    // function showNoRecordsMessageOnTableBody() {
+    //     var tableBody = tableId.find('tbody');
+
+    //     var tr = "<tr class='fw-bold'>";
+    //     tr += `<td colspan='0' class='text-end tfoot-first-td text-center'>${_lang.noRecordsFound}</td>"`;
+    //     tr += "</tr>";
+
+    //     tableBody.empty();
+    //     tableBody.append(tr);
+
+    //     /**
+    //      * Set colspan of the table bottom
+    //      * */
+    //     $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(0));
+    // }
     function showNoRecordsMessageOnTableBody() {
-        var tableBody = tableId.find('tbody');
+    const tableBody = tableId.find('tbody');
 
-        var tr = "<tr class='fw-bold'>";
-        tr += `<td colspan='0' class='text-end tfoot-first-td text-center'>${_lang.noRecordsFound}</td>"`;
-        tr += "</tr>";
+    const tr = `
+        <tr class='fw-bold'>
+            <td colspan='3' class='text-center'>${_lang.noRecordsFound}</td>
+        </tr>
+    `;
 
-        tableBody.empty();
-        tableBody.append(tr);
+    tableBody.empty().append(tr);
+}
 
-        /**
-         * Set colspan of the table bottom
-         * */
-        $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(0));
-    }
     function columnCountWithoutDNoneClass(minusCount) {
         
         return tableId.find('thead > tr:first > th').not('.d-none').length - minusCount;

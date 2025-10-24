@@ -16,6 +16,15 @@
                             <x-dropdown-units selected="" dropdownName='secondary_unit_id'/>
                         </div>
                         <div class="col-md-12">
+                            <x-label for="primary" name="{{ __('Third Unit') }}" />
+                            <select class="form-select" name="third_unit" id="third_unit">
+                                <option>None</option>
+                                <option value="carton">Carton</option>
+                                
+                            </select>
+                            
+                        </div>
+                        <div class="col-md-12">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="base-text"></span>
                                 <input type="text" class="form-control bg-light text-primary cu_numeric " name='conversion_rate' placeholder="Greater then 0" >

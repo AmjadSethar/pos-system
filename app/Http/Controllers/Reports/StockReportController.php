@@ -155,7 +155,7 @@ class StockReportController extends Controller
 
             $preparedData = ItemGeneralQuantity::with('item', 'warehouse')
                                                 ->when($itemId, function ($query) use ($itemId) {
-                                                    return $query->where('item_id', $itemId);
+                                                   return $query->where('item_id', $itemId);
                                                 })
                                                 ->when($warehouseId, function ($query) use ($warehouseId) {
                                                     $query->where('warehouse_id', $warehouseId); // Corrected to 'id'

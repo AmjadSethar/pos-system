@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('sale.sale_report'))
+@section('title', __('expense.item_report'))
 
         @section('content')
         <!--start page wrapper -->
@@ -7,10 +7,10 @@
             <div class="page-content">
                 <x-breadcrumb :langArray="[
                                             'app.reports',
-                                            'sale.sale_report',
+                                            'expense.item_report',
                                         ]"/>
                 <div class="row">
-                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.sale.ajax') }}" enctype="multipart/form-data">
+                    <form class="row g-3 needs-validation" id="reportForm" action="{{ route('report.expense.item.ajax') }}" enctype="multipart/form-data">
                         {{-- CSRF Protection --}}
                         @csrf
                         @method('POST')
@@ -21,7 +21,7 @@
                         <div class="col-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header px-4 py-3">
-                                    <h5 class="mb-0">{{ __('Customer Sales Report') }}</h5>
+                                    <h5 class="mb-0">{{ __('expense.item_report') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                     
@@ -40,8 +40,12 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <x-label for="party_id" name="{{ __('customer.customer') }}" />
-                                            <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id" required></select>
+                                            <x-label for="category_id" name="{{ __('expense.category.category') }}" />
+                                            <x-dropdown-expense-category selected="" />
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <x-label for="expense_item_id" name="{{ __('expense.item') }}" />
+                                            <select class="form-select expense-item-ajax" data-placeholder="Select Item" id="expense_item_id" name="expense_item_id"></select>
                                         </div>
                                 </div>
 
@@ -77,16 +81,17 @@
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                         <div class="col-md-12 table-responsive">
-                                            <table class="table table-bordered" id="saleReport">
+                                            <table class="table table-bordered" id="itemExpenseReport">
                                                 <thead>
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
-                                                        {{-- <th>{{ __('app.date') }}</th>
-                                                        <th>{{ __('app.invoice_or_reference_no') }}</th> --}}
-                                                        <th>Customer</th>
-                                                        <th>{{ __('app.grand_total') }}</th>
-                                                        {{-- <th>{{ __('app.paid_amount') }}</th>
-                                                        <th>{{ __('app.balance') }}</th> --}}
+                                                        <th>{{ __('app.date') }}</th>
+                                                        <th>{{ __('expense.code') }}</th>
+                                                        <th>{{ __('expense.category.category') }}</th>
+                                                        <th>{{ __('item.item_name') }}</th>
+                                                        <th>{{ __('app.unit_price') }}</th>
+                                                        <th>{{ __('item.quantity') }}</th>
+                                                        <th>{{ __('app.total') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -108,6 +113,6 @@
 @section('js')
     @include("plugin.export-table")
     <script src="{{ asset('custom/js/common/common.js') }}"></script>
-    <script src="{{ asset('custom/js/reports/sale/sale.js') }}"></script>
+    <script src="{{ asset('custom/js/reports/expense/item-expense.js') }}"></script>
     
 @endsection

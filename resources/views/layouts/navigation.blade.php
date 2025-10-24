@@ -496,7 +496,7 @@
 										<ul>
 											@can('report.sale')
 											<li class="{{ request()->is('report/sale') ? 'mm-active' : '' }}">
-												<a href="{{ route('report.sale') }}"><i class='bx bx-radio-circle'></i>{{ __('sale.sale') }}</a>
+												<a href="{{ route('report.sale') }}"><i class='bx bx-radio-circle'></i>{{ __('Customer Sale') }}</a>
 											</li>
 											@endcan
 											@can('report.sale.item')

@@ -28,9 +28,25 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-3">
-                                <x-label for="category_id" name="{{ __('expense.category.category') }}" />
-                                <x-dropdown-expense-category selected="" />
+                            {{-- <div class="col-md-4">
+                                <x-label for="user_id" name="{{ __('user.user') }}" />
+                                <x-dropdown-user selected="" :showOnlyUsername='true' />
+                            </div> --}}
+                            <div class="col-md-4">
+                                <x-label for="from_date" name="{{ __('app.from_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="from_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <x-label for="to_date" name="{{ __('app.to_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="to_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
                             </div>
                         </div>
                         <form class="row g-3 needs-validation" id="datatableForm" action="{{ route('expense.delete') }}" enctype="multipart/form-data">
@@ -56,36 +72,31 @@
                                 </table>
                             </div>
                         </form>
-                        {{-- <div class="row">
-                            <div class="col-md-4">
-                                <div  class="shadow-sm">
-                                 <h2>Daily Expense</h2>
-                                 1200
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-
-                                <div  class="shadow-sm">
-                                 <h2>Cash In</h2>
-                                 1200
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-
-                                <div  class="shadow-sm">
-                                 <h2>Cash Out</h2>
-                                 1200
-                                </div>
-                            </div>
-                        </div> --}}
+                        
                         
                     </div>
 
                      <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-3">
-                                <x-label for="category_id" name="{{ __('expense.category.category') }}" />
-                                <x-dropdown-expense-category selected="" />
+                            {{-- <div class="col-md-4">
+                                <x-label for="user_id" name="{{ __('user.user') }}" />
+                                <x-dropdown-user selected="" :showOnlyUsername='true' />
+                            </div> --}}
+                            <div class="col-md-4">
+                                <x-label for="from_date" name="{{ __('app.from_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="from_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <x-label for="to_date" name="{{ __('app.to_date') }}" />
+                                <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>
+                                <div class="input-group mb-3">
+                                    <x-input type="text" additionalClasses="datepicker-edit" name="to_date" :required="true" value=""/>
+                                    <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
+                                </div>
                             </div>
                         </div>
                         <form class="row g-3 needs-validation" id="datatableForm" action="{{ route('expense.delete') }}" enctype="multipart/form-data">

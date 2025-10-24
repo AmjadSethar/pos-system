@@ -21,7 +21,7 @@
                         <div class="col-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header px-4 py-3">
-                                    <h5 class="mb-0">{{ __('Customer Sales Report') }}</h5>
+                                    <h5 class="mb-0">{{ __('sale.sale_report') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                     
@@ -41,7 +41,7 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <x-label for="party_id" name="{{ __('customer.customer') }}" />
-                                            <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id" required></select>
+                                            <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id"></select>
                                         </div>
                                 </div>
 
@@ -81,12 +81,12 @@
                                                 <thead>
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
-                                                        {{-- <th>{{ __('app.date') }}</th>
-                                                        <th>{{ __('app.invoice_or_reference_no') }}</th> --}}
-                                                        <th>Customer</th>
+                                                        <th>{{ __('app.date') }}</th>
+                                                        <th>{{ __('app.invoice_or_reference_no') }}</th>
+                                                        <th>{{ __('supplier.supplier') }}</th>
                                                         <th>{{ __('app.grand_total') }}</th>
-                                                        {{-- <th>{{ __('app.paid_amount') }}</th>
-                                                        <th>{{ __('app.balance') }}</th> --}}
+                                                        <th>{{ __('app.paid_amount') }}</th>
+                                                        <th>{{ __('app.balance') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
