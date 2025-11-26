@@ -64,7 +64,7 @@
 											<th>{{ __('item.sale_price') }}</th>
 											<th>{{ __('item.purchase_price') }}</th>
 											<th>{{ __('item.quantity') }}</th>
-											{{-- <th>{{ __('item.tracking_type') }}</th> --}}
+											<th>Current pieces Stock</th>
 											<th>{{ __('app.created_by') }}</th>
 											<th>{{ __('app.created_at') }}</th>
 											<th>{{ __('app.action') }}</th>

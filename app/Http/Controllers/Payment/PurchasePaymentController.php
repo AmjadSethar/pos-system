@@ -104,7 +104,9 @@ class PurchasePaymentController extends Controller
         $mpdf->Output('Purchase-Bill-Payment-'.$id.'.pdf', 'D');
     }
 
-    function getPurchaseBillPaymentHistoryData($id){
+    function getPurchaseBillPaymentHistoryData($id)
+    {
+        // dd('hello');
         $model = Purchase::with('party','paymentTransaction.paymentType')->find($id);
 
         $data = [
@@ -123,7 +125,7 @@ class PurchasePaymentController extends Controller
                                             'transaction_date' => $this->toUserDateFormat($transaction->transaction_date),
                                             'reference_no' => $transaction->reference_no??'',
                                             'payment_type' => $transaction->paymentType->name, 
-                                            'amount' => $this->formatWithPrecision($transaction->amount),
+                                             'amount' => $this->formatWithPrecision($transaction->amount),
                                         ];
                                     })->toArray(),
         ];
@@ -203,9 +205,11 @@ class PurchasePaymentController extends Controller
 
     public function storePurchaseBillPayment(Request $request)
     {
+        
         try {
             DB::beginTransaction();
 
+            $supplierId          = $request->input('party_id');
             $invoiceId          = $request->input('invoice_id');
             $transactionDate    = $request->input('transaction_date');
             $receiptNo          = $request->input('receipt_no');
@@ -221,7 +225,7 @@ class PurchasePaymentController extends Controller
 
              // Validation rules
             $rules = [
-                'transaction_date'  => 'required|date',
+                'transaction_date'  => 'required',
                 'receipt_no'        => 'nullable|string|max:255',
                 'payment_type_id'   => 'required|integer',
                 'payment'           => 'required|numeric|gt:0',
@@ -243,6 +247,7 @@ class PurchasePaymentController extends Controller
             }
 
             $paymentsArray = [
+                'supplier_id'               => $supplierId,
                 'transaction_date'          => $transactionDate,
                 'amount'                    => $payment,
                 'payment_type_id'           => $paymentTypeId,

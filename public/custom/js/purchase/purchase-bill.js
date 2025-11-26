@@ -582,7 +582,7 @@
 
         //Set Grand Total
         $(".grand_total").val(_parseFix(sumOfTotalColumn));
-updateFinalTotalWithBilty()
+// updateFinalTotalWithBilty()
         autoFillPaymentInputBox();
     }
 
@@ -590,21 +590,21 @@ updateFinalTotalWithBilty()
         return parseFloat($(".grand_total").val());
     }
 
-    function updateFinalTotalWithBilty() {
-    var grandTotal = getGrandTotal(); // Gets value from .grand_total
-    var bilty = parseFloat($(".bilty-input").val()) || 0;
+//     function updateFinalTotalWithBilty() {
+//     var grandTotal = getGrandTotal(); // Gets value from .grand_total
+//     var bilty = parseFloat($(".bilty-input").val()) || 0;
 
-    var finalTotal = parseFloat(grandTotal) + parseFloat(bilty);
+//     var finalTotal = parseFloat(grandTotal) + parseFloat(bilty);
 
-    // Option 1: Set to a new "Final Total" field
-    $(".final_total").val(_parseFix(finalTotal));
+//     // Option 1: Set to a new "Final Total" field
+//     $(".final_total").val(_parseFix(finalTotal));
 
-    // Option 2: Overwrite existing grand_total (if you prefer that)
-    // $(".grand_total").val(_parseFix(finalTotal));
-}
-$(document).on("input", ".bilty-input", function () {
-    updateFinalTotalWithBilty();
-});
+//     // Option 2: Overwrite existing grand_total (if you prefer that)
+//     // $(".grand_total").val(_parseFix(finalTotal));
+// }
+// $(document).on("input", ".bilty-input", function () {
+//     updateFinalTotalWithBilty();
+// });
 
 
 
@@ -1080,3 +1080,195 @@ $(document).on("input", ".bilty-input", function () {
         $('#payments-table tr#'+id).remove();
 
     }
+
+
+
+    // document.addEventListener("DOMContentLoaded", function () {
+
+    //     const discountInput = document.querySelector('input[name="discount"]');
+    //     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+
+    //     const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+    //     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+    //     function applyDiscount() {
+    //         const originalTotal = parseFloat(grandTotalInput.value) || 0;
+    //         const discountPercentage = parseFloat(discountInput.value) || 0;
+
+    //         const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+    //         const discountAmount = originalTotal * (safeDiscount / 100);
+    //         const finalTotal = originalTotal - discountAmount;
+    //         const finalFormatted = finalTotal.toFixed(2);
+
+
+    //         // Update payment_amount[0]
+    //         if (paymentAmountInput) paymentAmountInput.value = finalFormatted;
+
+    //         // Update sum_of_total <td>
+    //         if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+    //     }
+
+    //     // Event listeners
+    //     grandTotalInput.addEventListener("input", applyDiscount);
+
+    //     // Initial run
+    //     applyDiscount();
+    // });
+
+
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     const discountInput = document.querySelector('input[name="discount"]');
+//     const biltyInput = document.querySelector('input[name="bilty"]');
+//     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+//     const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+//     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+//     function calculateFinalAmount() {
+//         // Get the grand total value (keep it unchanged)
+//         const grandTotal = parseFloat(grandTotalInput.value) || 0;
+        
+//         // Get discount percentage and bilty amount
+//         const discountPercentage = parseFloat(discountInput.value) || 0;
+//         const biltyAmount = parseFloat(biltyInput.value) || 0;
+
+//         // Ensure discount is between 0 and 100
+//         const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+
+//         // Calculate discount amount from grand total
+//         const discountAmount = grandTotal * (safeDiscount / 100);
+
+//         // Calculate final payment: Grand Total - Discount + Bilty
+//         const afterDiscount = grandTotal - discountAmount;
+//         const finalPayment = afterDiscount + biltyAmount;
+//         const finalFormatted = finalPayment.toFixed(2);
+
+//         // Update payment_amount[0] (NOT grand_total)
+//         if (paymentAmountInput) {
+//             paymentAmountInput.value = finalFormatted;
+//         }
+
+//         // Update sum_of_total <td>
+//         if (sumOfTotalCell) {
+//             sumOfTotalCell.textContent = finalFormatted;
+//         }
+//     }
+
+//     // Event listeners
+//     if (discountInput) {
+//         discountInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     if (biltyInput) {
+//         biltyInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     if (grandTotalInput) {
+//         grandTotalInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     // Initial calculation
+//     calculateFinalAmount();
+// });
+
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     const discountInput = document.querySelector('input[name="total_discount"]');
+//     const biltyInput = document.querySelector('input[name="bilty"]');
+//     const grandTotalInput = document.querySelector('input[name="grand_total"]');
+//     const finalTotalInput = document.querySelector('input[name="final_total"]');
+//     // const paymentAmountInput = document.querySelector('input[name="payment_amount[0]"]');
+//     const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+//     function calculateFinalAmount() {
+//         // Get the grand total value (keep it unchanged)
+//         const grandTotal = parseFloat(grandTotalInput.value) || 0;
+        
+//         // Get discount percentage and bilty amount
+//         const discountPercentage = parseFloat(discountInput.value) || 0;
+//         const biltyAmount = parseFloat(biltyInput.value) || 0;
+
+//         // Ensure discount is between 0 and 100
+//         const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+
+//         // Calculate discount amount from grand total
+//         const discountAmount = grandTotal * (safeDiscount / 100);
+
+//         // Calculate final payment: Grand Total - Discount + Bilty
+//         const afterDiscount = grandTotal - discountAmount;
+//         const finalPayment = afterDiscount + biltyAmount;
+//         const finalFormatted = finalPayment.toFixed(2);
+
+//         // Update final_total input
+//         if (finalTotalInput) {
+//             finalTotalInput.value = finalFormatted;
+//         }
+
+//         // Update payment_amount[0]
+//         if (paymentAmountInput) {
+//             paymentAmountInput.value = finalFormatted;
+//         }
+
+//         // Update sum_of_total <td>
+//         if (sumOfTotalCell) {
+//             sumOfTotalCell.textContent = finalFormatted;
+//         }
+//     }
+
+//     // Event listeners
+//     if (discountInput) {
+//         discountInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     if (biltyInput) {
+//         biltyInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     if (grandTotalInput) {
+//         grandTotalInput.addEventListener("input", calculateFinalAmount);
+//     }
+
+//     // Initial calculation
+//     calculateFinalAmount();
+// });
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const discountInput = document.querySelector('input[name="total_discount"]');
+    const biltyInput = document.querySelector('input[name="bilty"]');
+    const grandTotalInput = document.querySelector('input[name="grand_total"]');
+    const finalTotalInput = document.querySelector('input[name="final_total"]');
+    const sumOfTotalCell = document.querySelector('.sum_of_total');
+
+    function calculateFinalAmount() {
+        const grandTotal = parseFloat(grandTotalInput.value) || 0;
+        const discountPercentage = parseFloat(discountInput.value) || 0;
+        const biltyAmount = parseFloat(biltyInput.value) || 0;
+
+        // Ensure discount is 0–100
+        const safeDiscount = Math.min(Math.max(discountPercentage, 0), 100);
+
+        // *** NEW: Apply discount on (grand_total + bilty) ***
+        const totalBeforeDiscount = grandTotal + biltyAmount;
+
+        // Discount on both values
+        const discountAmount = totalBeforeDiscount * (safeDiscount / 100);
+
+        // Final Value
+        const finalPayment = totalBeforeDiscount - discountAmount;
+        const finalFormatted = finalPayment.toFixed(2);
+
+        if (finalTotalInput) finalTotalInput.value = finalFormatted;
+        if (sumOfTotalCell) sumOfTotalCell.textContent = finalFormatted;
+    }
+
+    // Listeners
+    if (discountInput) discountInput.addEventListener("input", calculateFinalAmount);
+    if (biltyInput) biltyInput.addEventListener("input", calculateFinalAmount);
+    if (grandTotalInput) grandTotalInput.addEventListener("input", calculateFinalAmount);
+
+    // Start
+    calculateFinalAmount();
+});

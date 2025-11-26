@@ -107,7 +107,7 @@
                                                             <th scope="col">{{ __('app.qty') }}</th>
                                                             <th scope="col">{{ __('unit.unit') }}</th>
                                                             <th scope="col">{{ __('app.price_per_unit') }}</th>
-                                                            <th scope="col" class="{{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th>
+                                                            {{-- <th scope="col" class="{{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th> --}}
                                                             <th scope="col" class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">{{ __('tax.tax') }}</th>
                                                             <th scope="col">{{ __('app.total') }}</th>
                                                         </tr>

@@ -13,7 +13,7 @@
 			<!--navigation-->
 			<ul class="metismenu" id="menu">
 				<li>
-					<a href="{{ route('dashboard') }}">
+					<a href="/dashboard">
 						<div class="parent-icon"><i class='bx bx-home-alt'></i>
 						</div>
 						<div class="menu-title">{{ __('app.dashboard') }}</div>
@@ -168,9 +168,12 @@
 					</a>
 					<ul>
                         @can('purchase.bill.view')
-						<li class="{{ request()->is('purchase/bill/*') ? 'mm-active' : '' }}">
-											<a href="{{ route('purchase.bill.list') }}"><i class='bx bx-radio-circle'></i>{{ __('purchase.bills') }}</a>
-										</li>
+						<li class="{{ request()->is('purchase/bill/list/*') ? 'mm-active' : '' }}">
+							<a href="{{ route('purchase.bill.list') }}"><i class='bx bx-radio-circle'></i>{{ __('purchase.bills') }}</a>
+						</li>
+						<li class="{{ request()->is('purchase/bill/create/*') ? 'mm-active' : '' }}">
+							<a href="{{ route('purchase.bill.create') }}"><i class='bx bx-radio-circle'></i>{{ __('purchase.create') }}</a>
+						</li>
 						@endcan
 
 						{{-- @can('purchase.bill.view')
@@ -422,11 +425,11 @@
                         __('app.reports') }}</div>
                     </a>
                     <ul>
-                    	@can('report.reorder.item')
+                    	{{-- @can('report.reorder.item')
                         <li class="{{ request()->is('report/profit-and-loss') ? 'mm-active' : '' }}">
                                             <a href="{{ route('report.profit_and_loss') }}"><i class='bx bx-radio-circle'></i>{{ __('account.profit_and_loss') }}</a>
                                         </li>
-                        @endcan
+                        @endcan --}}
                     	{{--
                     	@canany(['report.balance_sheet', 'report.trial_balance'])
 							<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>{{ __('account.accounting') }}</a>
@@ -447,7 +450,7 @@
 							</li>
 						@endcanany
 						--}}
-						@canany(['report.item.transaction.batch', 'report.item.transaction.serial', 'report.item.transaction.general'])
+						{{-- @canany(['report.item.transaction.batch', 'report.item.transaction.serial', 'report.item.transaction.general'])
 
 							<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>{{ __('item.item_transaction') }}</a>
 										<ul>
@@ -490,7 +493,7 @@
 											@endcan
 										</ul>
 							</li>
-						@endcanany
+						@endcanany --}}
 						@canany(['report.sale', 'report.sale.item'])
 							<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>{{ __('sale.sale') }}</a>
 										<ul>
@@ -506,7 +509,7 @@
 											@endcan
 											@can('report.sale.payment')
 											<li class="{{ request()->is('report/sale/payment') ? 'mm-active' : '' }}">
-												<a href="{{ route('report.sale.payment') }}"><i class='bx bx-radio-circle'></i>{{ __('app.payment') }}</a>
+												<a href="{{ route('report.sale.payment') }}"><i class='bx bx-radio-circle'></i>{{ __('Total Sales') }}</a>
 											</li>
 											@endcan
 										</ul>
@@ -521,16 +524,16 @@
 												<a href="{{ route('report.customer.due.payment') }}"><i class='bx bx-radio-circle'></i>{{ __('customer.customer') }}</a>
 											</li>
 											@endcan
-											@can('report.supplier.due.payment')
+											{{-- @can('report.supplier.due.payment')
 											<li class="{{ request()->is('report/supplier/due') ? 'mm-active' : '' }}">
 												<a href="{{ route('report.supplier.due.payment') }}"><i class='bx bx-radio-circle'></i>{{ __('supplier.supplier') }}</a>
 											</li>
-											@endcan
+											@endcan --}}
 										</ul>
 							</li>
 						@endcanany
 
-						@canany(['report.expense', 'report.expense.item'])
+						{{-- @canany(['report.expense', 'report.expense.item'])
 							<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>{{ __('expense.expense') }}</a>
 										<ul>
 											@can('report.expense')
@@ -550,9 +553,9 @@
 											@endcan
 										</ul>
 							</li>
-						@endcanany
+						@endcanany --}}
 
-						@canany(['report.transaction.cashflow', 'report.transaction.bank-statement'])
+						{{-- @canany(['report.transaction.cashflow', 'report.transaction.bank-statement'])
 							<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>{{ __('app.transactions') }}</a>
 										<ul>
 											@can('report.transaction.cashflow')
@@ -653,7 +656,7 @@
 	                                            <a href="{{ route('report.job.status') }}"><i class='bx bx-radio-circle'></i>{{ __('order.job-status') }}</a>
 	                                        </li>
 	                        @endcan
-	                    @endif
+	                    @endif --}}
 
                     </ul>
                 </li>

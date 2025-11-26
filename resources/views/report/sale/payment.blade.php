@@ -21,7 +21,7 @@
                         <div class="col-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header px-4 py-3">
-                                    <h5 class="mb-0">{{ __('sale.sale_payment_report') }}</h5>
+                                    <h5 class="mb-0">{{ __('Total Sales Report') }}</h5>
                                 </div>
                                 <div class="card-body p-4 row g-3">
                                     
@@ -39,14 +39,14 @@
                                                 <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-calendar-alt"></i></span>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        {{-- <div class="col-md-6 mb-3">
                                             <x-label for="party_id" name="{{ __('customer.customer') }}" />
                                             <select class="form-select party-ajax" data-party-type='Customer' data-placeholder="Select Customer" id="party_id" name="party_id"></select>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <x-label for="payment_type_id" name="{{ __('payment.payment_type') }}" />
                                             <select class="form-select payment-type-ajax" data-placeholder="Select Supplier" id="payment_type_id" name="payment_type_id"></select>
-                                        </div>
+                                        </div> --}}
                                 </div>
 
                                 <div class="card-body p-4 row g-3">
@@ -86,12 +86,10 @@
                                                     <tr class="text-uppercase">
                                                         <th>#</th>
                                                         <th>{{ __('app.date') }}</th>
-                                                        <th>{{ __('app.invoice_or_reference_no') }}</th>
-                                                        <th>{{ __('supplier.supplier') }}</th>
-                                                        <th>{{ __('payment.payment_type') }}</th>
-                                                        <th>{{ __('app.paid_amount') }}</th>
+                                                        <th>{{ __('Total Sales') }}</th>
                                                     </tr>
                                                 </thead>
+
                                                 <tbody></tbody>
                                             </table>
                                         </div>

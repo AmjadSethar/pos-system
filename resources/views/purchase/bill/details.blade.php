@@ -105,7 +105,7 @@
                                                     @endif
                                                     <th class="text-left">{{ __('app.qty') }}</th>
                                                     <th class="text-end">{{ __('app.price_per_unit') }}</th>
-                                                    <th scope="col" class="text-end {{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th>
+                                                    {{-- <th scope="col" class="text-end {{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th> --}}
                                                     {{-- <th class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">{{ __('tax.tax') }}</th> --}}
                                                     <th class="text-end">{{ __('app.total') }}</th>
                                                 </tr>
@@ -166,13 +166,13 @@
                                                         {{ $formatNumber->formatWithPrecision($transaction->unit_price) }}<br>
                                                         <small>{{ $transaction->unit->name }}</small>
                                                     </td>
-                                                    <td class="unit {{ !app('company')['show_discount'] ? 'd-none':'' }}">
+                                                    {{-- <td class="unit {{ !app('company')['show_discount'] ? 'd-none':'' }}">
                                                         {{ $formatNumber->formatWithPrecision($transaction->discount_amount) }}<br>
                                                         <small>
                                                             ({{ $formatNumber->formatWithPrecision($transaction->discount) }}
                                                                 {{ ($transaction->discount_type == 'fixed') ? '$' : '%' }})
                                                         </small>
-                                                    </td>
+                                                    </td> --}}
                                                     {{-- <th scope="col" class="text-end {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                         {{ $formatNumber->formatWithPrecision($transaction->tax_amount) }}<br>
                                                         <small>({{ $transaction->tax->rate }}%)</small>
@@ -210,7 +210,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('app.discount') }}(-)</td>
-                                                    <td>{{ $formatNumber->formatWithPrecision($discount) }}</td>
+                                                    <td>{{ $formatNumber->formatWithPrecision($purchase->total_discount) }}</td>
                                                 </tr>
                                                 {{-- <tr class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                     <td colspan="{{$columnCount}}" class="tfoot-first-td">{{ __('tax.tax') }}</td>

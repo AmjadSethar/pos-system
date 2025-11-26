@@ -62,6 +62,7 @@
                                                     </a>
                                                 </h2>
                                                 <div>{{ app('company')['address'] }}</div>
+                                                <div class="mt-3 border-l-red-50" >Created by : {{ $order->user->first_name }} {{$order->user->first_name}}</div>
                                             </div>
                                         </div>
                                     </header>
@@ -166,11 +167,8 @@
                                                         {{ $formatNumber->formatWithPrecision($transaction->unit_price) }}
                                                     </td>
                                                     <td class="unit {{ !app('company')['show_discount'] ? 'd-none':'' }}">
-                                                        {{ $formatNumber->formatWithPrecision($transaction->discount_amount) }}<br>
-                                                        <small>
-                                                            ({{ $formatNumber->formatWithPrecision($transaction->discount) }}
-                                                                {{ ($transaction->discount_type == 'fixed') ? '$' : '%' }})
-                                                        </small>
+                                                        {{ $formatNumber->formatWithPrecision($order->discount) }}%<br>
+                                                       
                                                     </td>
                                                     <th scope="col" class="unit {{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">
                                                         {{ $formatNumber->formatWithPrecision($transaction->tax_amount) }}<br>

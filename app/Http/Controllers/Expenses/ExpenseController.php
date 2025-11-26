@@ -21,6 +21,8 @@ use App\Models\Expenses\ExpenseCategory;
 use App\Enums\App;
 use App\Models\Party\Party;
 use App\Models\Party\PartyPayment;
+use App\Models\PaymentTransaction;
+use App\Models\Purchase\Purchase;
 use App\Models\Sale\SaleOrder;
 use App\Services\PaymentTransactionService;
 use App\Traits\FormatNumber;
@@ -629,40 +631,147 @@ class ExpenseController extends Controller
     // }
 
 
+    // public function supplierExpenseDatabtable(Request $request)
+    // {
+    //     // dd()
+        
+    //     // $data = PartyPayment::with('party', 'paymentType')
+    //     $data = PaymentTransaction::with('party')
+    //                 ->when($request->party_id, function ($query) use ($request) {
+    //                     return $query->where('supplier_id', $request->party_id);
+    //                 });
+
+            
+    //     if ($request->filled('from_date') && $request->filled('to_date')) {
+    //         $from = \Carbon\Carbon::createFromFormat('d/m/Y', $request->from_date)->format('Y-m-d');
+    //         $to   = \Carbon\Carbon::createFromFormat('d/m/Y', $request->to_date)->format('Y-m-d');
+    //         $data->whereDate('purchase_date', '>=', $from);
+    //         $data->whereDate('purchase_date', '<=', $to);
+    //     }
+   
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('party_name', function ($row) {
+    //             return $row->party->first_name;
+    //         })
+    //         ->addColumn('transaction_date', function ($row) {
+    //             // return $this->toUserDateFormat($row->transaction_date);
+    //           return   $row->purchase_date;
+    //         })
+    //         ->addColumn('payment_direction', function ($row) {
+    //             return $row->payment_direction = 'You Paid';
+    //         })
+    //         ->addColumn('color', function ($row) {
+    //             return $row->payment_direction = 'success';
+    //         })
+    //         ->addColumn('reference_no', function ($row) {
+    //             return $row->reference_no ?? 'N/A';
+    //         })
+    //         ->addColumn('payment_type', function ($row) {
+    //             return $row->paymentType->name ?? '';
+    //         })
+    //         ->addColumn('amount', function ($row) {
+    //             return $this->formatWithPrecision($row->amount);
+    //         })
+    //         ->addColumn('action', function ($row) {
+    //             // Optional: Define actions if needed (Edit, Delete, etc.)
+    //             return ''; // Or build HTML like in your previous method
+    //         })
+    //         ->rawColumns(['action']) // If you're adding HTML in action
+    //         ->make(true);
+    // }
+
+    // public function supplierExpenseDatabtable(Request $request)
+    // {
+    //     dd($request->all());
+
+    //     dd(PaymentTransaction::with('party'));
+        
+    //     $data = PaymentTransaction::with('party')
+    //                 ->when($request->party_id, function ($query) use ($request) {
+    //                     return $query->where('supplier_id', $request->party_id);
+    //                 });
+    //                 dd($data);
+
+    //     if ($request->filled('from_date') && $request->filled('to_date')) {
+    //         $from = \Carbon\Carbon::createFromFormat('d/m/Y', $request->from_date)->format('Y-m-d');
+    //         $to   = \Carbon\Carbon::createFromFormat('d/m/Y', $request->to_date)->format('Y-m-d');
+
+    //         $data->whereDate('transaction_date', '>=', $from);
+    //         $data->whereDate('transaction_date', '<=', $to);
+    //     }
+
+    //     return DataTables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('party_name', function ($row) {
+    //             return $row->party->first_name;
+    //         })
+    //         ->addColumn('transaction_date', function ($row) {
+    //             return $row->transaction_date;
+    //         })
+    //         ->addColumn('payment_direction', function () {
+    //             return 'You Paid';
+    //         })
+    //         ->addColumn('color', function () {
+    //             return 'success';
+    //         })
+    //         ->addColumn('reference_no', function ($row) {
+    //             return $row->reference_no ?? 'N/A';
+    //         })
+    //         ->addColumn('payment_type', function ($row) {
+    //             return $row->paymentType->name ?? '';
+    //         })
+    //         ->addColumn('amount', function ($row) {
+    //             return $this->formatWithPrecision($row->amount);
+    //         })
+    //         ->addColumn('action', function () {
+    //             return '';
+    //         })
+    //         ->rawColumns(['action'])
+    //         ->make(true);
+    // }
+
+
     public function supplierExpenseDatabtable(Request $request)
     {
         
-        $data = PartyPayment::with('party', 'paymentType')
-                    ->when($request->party_id, function ($query) use ($request) {
-                        return $query->where('party_id', $request->party_id);
-                    });
+        $data = PaymentTransaction::with('party')->where('transaction_type','Purchase')->get(); // No filter
 
-          if ($request->filled('from_date')) {
-            $data->whereDate('created_at', '>=', $this->toSystemDateFormat($request->from_date));
+        //  if ($request->filled('from_date') && $request->filled('to_date')) {
+        //     $from = \Carbon\Carbon::createFromFormat('d/m/Y', $request->from_date)->format('Y-m-d');
+        //     $to   = \Carbon\Carbon::createFromFormat('d/m/Y', $request->to_date)->format('Y-m-d');
+        //     $data->whereDate('transaction_date', '>=', $from);
+        //     $data->whereDate('transaction_date', '<=', $to);
+        // }
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $from = Carbon::createFromFormat('d/m/Y', $request->from_date)->format('Y-m-d');
+            $to   = Carbon::createFromFormat('d/m/Y', $request->to_date)->format('Y-m-d');
+
+            $data->whereBetween('transaction_date', [$from, $to]);
         }
 
-        // 📅 Filter by to_date
-        if ($request->filled('to_date')) {
-            $data->whereDate('created_at', '<=', $this->toSystemDateFormat($request->to_date));
-        }          
+
+ 
+
 
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('party_name', function ($row) {
-                return $row->party->getFullName();
+                return $row->party->first_name ?? 'N/A';
             })
             ->addColumn('transaction_date', function ($row) {
-                // return $this->toUserDateFormat($row->transaction_date);
-              return   $row->transaction_date;
+                return $row->transaction_date;
             })
-            ->addColumn('payment_direction', function ($row) {
-                return $row->payment_direction === 'pay' ? 'You Paid' : 'You Received';
+            ->addColumn('payment_direction', function () {
+                return 'You Paid';
             })
-            ->addColumn('color', function ($row) {
-                return $row->payment_direction === 'pay' ? 'danger' : 'success';
+            ->addColumn('color', function () {
+                return 'success';
             })
             ->addColumn('reference_no', function ($row) {
-                return $row->reference_no ?? '';
+                return $row->reference_no ?? 'N/A';
             })
             ->addColumn('payment_type', function ($row) {
                 return $row->paymentType->name ?? '';
@@ -670,13 +779,14 @@ class ExpenseController extends Controller
             ->addColumn('amount', function ($row) {
                 return $this->formatWithPrecision($row->amount);
             })
-            ->addColumn('action', function ($row) {
-                // Optional: Define actions if needed (Edit, Delete, etc.)
-                return ''; // Or build HTML like in your previous method
+            ->addColumn('action', function () {
+                return '';
             })
-            ->rawColumns(['action']) // If you're adding HTML in action
+            ->rawColumns(['action'])
             ->make(true);
     }
+
+
 
 
     public function CashInPage()
@@ -1038,17 +1148,26 @@ class ExpenseController extends Controller
         $query = DB::table('customer_payments')
             ->select(
                 'created_by',
-                DB::raw('SUM(amount) as total_paid'),
-                DB::raw('MAX(payment_date) as latest_payment_date')
+                DB::raw('DATE(payment_date) as payment_date'),
+                DB::raw('SUM(amount) as total_paid')
             )
-            ->groupBy('created_by');
+        ->groupBy('created_by', DB::raw('DATE(payment_date)'));
+
+        // $query = DB::table('customer_payments')
+        //     ->select(
+        //         'created_by',
+        //         DB::raw('SUM(amount) as total_paid'),
+        //         DB::raw('MAX(payment_date) as latest_payment_date')
+        //     )
+        //     ->groupBy('created_by');
+
 
         // 🔹 Exclude admins from results
-        $query->whereIn('created_by', function ($sub) {
-            $sub->select('id')
-                ->from('users')
-                ->where('role_id', '!=', 1);
-        });
+        // $query->whereIn('created_by', function ($sub) {
+        //     $sub->select('id')
+        //         ->from('users')
+        //         ->where('role_id', '!=', 1);
+        // });
 
         // 🔹 If current user is admin, optionally filter by selected user
         if ($user->role_id == 1 && $request->filled('user_id')) {
@@ -1074,7 +1193,7 @@ class ExpenseController extends Controller
                 return number_format($row->total_paid, 2);
             })
             ->addColumn('payment_date', function ($row) {
-                return $row->latest_payment_date ?? '—';
+                return $row->payment_date ?? '—';
             })
             ->addColumn('action', function ($row) {
                 return '<div class="dropdown ms-auto">

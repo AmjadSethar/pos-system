@@ -10,7 +10,8 @@ $(function() {
     /**
      *Server Side Datatable Records
     */
-    function loadDatatables(){
+    function loadDatatables()
+    {
         //Delete previous data
         tableId.DataTable().destroy();
 
@@ -20,15 +21,23 @@ $(function() {
             processing: true,
             serverSide: true,
             method:'get',
-            ajax: {
-                    url: baseURL+'/expense/total-list',
-                    data:{
-                    user_id : $('#user_id').val(),
+            // ajax: {
+            //         url: baseURL+'/expense/total-list',
+            //         data:{
+            //         user_id : $('#user_id').val(),
                     
-                    from_date : $('input[name="from_date"]').val(),
-                    to_date : $('input[name="to_date"]').val(),
-                },
-                },
+            //         from_date : $('input[name="from_date"]').val(),
+            //         to_date : $('input[name="to_date"]').val(),
+            //     },
+            //     },
+            ajax: {
+                url: baseURL+'/expense/total-list',
+                data: function(d){
+                    d.user_id   = $('#user_id').val();
+                    d.from_date = $('input[name="from_date"]').val();
+                    d.to_date   = $('input[name="to_date"]').val();
+                }
+            },
             columns: [
                 {targets: 0, data:'id', orderable:true, visible:false},
                 {

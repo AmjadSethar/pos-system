@@ -15,6 +15,7 @@ use App\Models\PaymentTypes;
 use App\Models\Accounts\AccountTransaction;
 use App\Models\User;
 use App\Models\ChequeTransaction;
+use App\Models\Party\Party;
 
 class PaymentTransaction extends Model
 {
@@ -38,6 +39,7 @@ class PaymentTransaction extends Model
         'reference_no',
         'note',
         'payment_from_unique_code',
+        'supplier_id'
     ];
 
     /**
@@ -118,4 +120,12 @@ class PaymentTransaction extends Model
     {
         return $this->hasOne(ChequeTransaction::class, 'payment_transaction_id');
     }
+
+    public function party()
+    {
+        return $this->belongsTo(Party::class, 'supplier_id', 'id');
+    }
+
+
+    
 }

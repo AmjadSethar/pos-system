@@ -159,6 +159,27 @@
                                                             />
                                                         </td>
                                                     </tr>
+                                                    <tr>
+                                                        <td class="w-50">
+                                                            <div class="form-check">
+                                                                <label class="form-check-label fw-bold cursor-pointer" for="discount">{{ __('Discount (%)') }}</label>
+                                                            </div>
+                                                        </td>
+                                                        <td class="w-50 position-relative">
+                                                            <x-input 
+                                                                type="number" 
+                                                                additionalClasses="text-end pe-4" 
+                                                                name="total_discount" 
+                                                                :required="true" 
+                                                                placeholder="0%" 
+                                                                value="0"
+                                                                min="0" 
+                                                                max="100"
+                                                            />
+                                                            <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted">%</span>
+                                                        </td>
+                                                    </tr>
+                                                    
                                                       <tr>
                                                          <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
                                                          <td>
@@ -185,7 +206,7 @@
                                                 <div class="col-md-6">
                                                     <x-label for="amount" id="amount_lang" labelDataName="{{ __('payment.amount') }}" name="<strong>#1</strong> {{ __('payment.amount') }}" />
                                                     <div class="input-group mb-3">
-                                                        <x-input type="text" additionalClasses="cu_numeric" name="payment_amount[0]" value=""/>
+                                                        <x-input type="text" additionalClasses="" name="payment_amount[0]" value=""/>
                                                         <span class="input-group-text" id="input-near-focus" role="button"><i class="fadeIn animated bx bx-dollar"></i></span>
                                                     </div>
                                                 </div>

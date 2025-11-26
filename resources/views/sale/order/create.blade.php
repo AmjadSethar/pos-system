@@ -123,7 +123,7 @@
                                                             <th scope="col">{{ __('app.qty') }}</th>
                                                             <th scope="col">{{ __('unit.unit') }}</th>
                                                             <th scope="col">{{ __('app.price_per_unit') }}</th>
-                                                            <th scope="col" class="{{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th>
+                                                            {{-- <th scope="col" class="{{ !app('company')['show_discount'] ? 'd-none':'' }}">{{ __('app.discount') }}</th> --}}
                                                             <th scope="col" class="{{ (app('company')['tax_type'] == 'no-tax') ? 'd-none':'' }}">{{ __('tax.tax') }}</th>
                                                             <th scope="col">{{ __('app.total') }}</th>
                                                         </tr>
@@ -206,11 +206,11 @@
                                                     </tr>
 
                                                     <tr>
-                                                                                                            <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
-                                                                                                            <td>
-                                                                                                                <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
-                                                                                                            </td>
-                                                                                                        </tr> 
+                                                        <td><span class="fw-bold">{{ __('app.grand_total') }}</span></td>
+                                                        <td>
+                                                            <x-input type="text" additionalClasses="text-end grand_total" readonly=true name="grand_total" :required="true" placeholder="Round-Off" value="0"/>
+                                                        </td>
+                                                    </tr> 
 
                                                     <tr>
                                                         <td><span class="fw-bold">{{ __('Discounted Total') }}</span></td>

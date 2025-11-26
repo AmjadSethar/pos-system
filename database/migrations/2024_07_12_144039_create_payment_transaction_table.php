@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('payment_transactions', function (Blueprint $table) {
             $table->id();
             $table->date('transaction_date');
+
+            $table->unsignedBigInteger('supplier_id');
+            $table->foreign('supplier_id')->references('id')->on('parties');
             
             $table->unsignedBigInteger('payment_type_id');
             $table->foreign('payment_type_id')->references('id')->on('payment_types');

@@ -93,45 +93,42 @@ $(function() {
         });
     }
 
-    function formAdjustIfSaveOperation(response){
-        var tableBody = tableId.find('tbody');
+    function formAdjustIfSaveOperation(response) {
+    var tableBody = tableId.find('tbody');
 
-        var id = 1;
-        var tr = "";
-        
-        var totalAmount = parseFloat(0);
-        
-        $.each(response.data, function(index, item) {
-            totalAmount += parseFloat(item.amount);
+    var id = 1;
+    var tr = "";
 
-            tr  +=`
-                <tr>
-                    <td>${id++}</td>
-                    <td>${item.transaction_date}</td>
-                    <td>${item.invoice_or_bill_code}</td>
-                    <td>${item.party_name}</td>
-                    <td>${item.payment_type}</td>
-                    <td class='text-end' data-tableexport-celltype="number" >${_formatNumber(item.amount)}</td>
-                </tr>
-            `;
-        });
+    var totalAmount = parseFloat(0);
 
-        tr  +=`
-            <tr class='fw-bold'>
-                <td colspan='0' class='text-end tfoot-first-td'>${_lang.total}</td>
-                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(totalAmount)}</td>
+    $.each(response.data, function(index, item) {
+        totalAmount += parseFloat(item.total_sales);
+
+        tr += `
+            <tr>
+                <td>${id++}</td>
+                <td>${item.order_date}</td>
+                <td class='text-end' data-tableexport-celltype="number">${_formatNumber(item.total_sales)}</td>
             </tr>
         `;
+    });
 
-        // Clear existing rows:
-        tableBody.empty();
-        tableBody.append(tr);
+    // Add the grand total row
+    tr += `
+        <tr class='fw-bold'>
+            <td colspan='2' class='text-end tfoot-first-td'>${_lang.total}</td>
+            <td class='text-end' data-tableexport-celltype="number">${_formatNumber(response.grand_total)}</td>
+        </tr>
+    `;
 
-        /**
-         * Set colspan of the table bottom
-         * */
-        $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(1));
-    }
+    // Clear existing rows and append new ones
+    tableBody.empty();
+    tableBody.append(tr);
+
+    // Adjust colspan for the footer cell
+    $('.tfoot-first-td').attr('colspan', columnCountWithoutDNoneClass(1));
+}
+
 
     function showNoRecordsMessageOnTableBody() {
         var tableBody = tableId.find('tbody');

@@ -120,7 +120,6 @@ class ItemController extends Controller
      * Return JsonResponse
      * */
     public function store(ItemRequest $request)  {
-         dd($request->all());
         try {
 
             DB::beginTransaction();
@@ -146,6 +145,10 @@ class ItemController extends Controller
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
                 $filename = $this->uploadImage($request->file('image'));
             }
+
+             $baseQty = $request->opening_quantity ?? 0;
+            $conversionRate = ($request->base_unit_id == $request->secondary_unit_id) ? 1 : $request->conversion_rate;
+            $piecesQty = $baseQty * $conversionRate; // total pieces in stock
 
             /**
              * Save or Update the Items Model
@@ -176,7 +179,9 @@ class ItemController extends Controller
 
                 'tracking_type'             =>  $request->tracking_type,
                 'min_stock'                 =>  $request->min_stock,
-                'current_stock'             =>  $request->opening_quantity,
+                // 'current_stock'             =>  $request->opening_quantity,
+                'current_stock'             => $baseQty,       // stock in boxes
+                'current_pieces_stock'      => $piecesQty,     // ✅ total pieces
 
                 'status'                    =>  $request->status,
                 'supplier_id'                    =>  $request->supplier,
@@ -475,17 +480,49 @@ class ItemController extends Controller
                     ->addColumn('purchase_price', function ($row) {
                         return $this->formatWithPrecision($row->purchase_price);
                     })
-                    ->addColumn('current_stock', function ($row) use ($warehouseId){
-                        if ($warehouseId) {
-                            $warehouseQuantity = $row->itemGeneralQuantities
-                                ->where('warehouse_id', $warehouseId)
-                                ->first();
+                    // ->addColumn('current_stock', function ($row) use ($warehouseId){
+                    //     if ($warehouseId) {
+                    //         $warehouseQuantity = $row->itemGeneralQuantities
+                    //             ->where('warehouse_id', $warehouseId)
+                    //             ->first();
 
-                            $quantity = $warehouseQuantity ? $warehouseQuantity->quantity : 0;
-                        }else{
-                            $quantity = $row->current_stock;
-                        }
-                        return $this->formatQuantity($quantity);
+                    //         $quantity = $warehouseQuantity ? $warehouseQuantity->quantity : 0;
+                    //     }else{
+                    //         $quantity = $row->current_stock;
+                    //     }
+                    //     return $this->formatQuantity($quantity);
+                    // })
+                    ->addColumn('current_stock', function ($row) use ($warehouseId) {
+    if ($warehouseId) {
+        $warehouseQuantity = $row->itemGeneralQuantities
+            ->where('warehouse_id', $warehouseId)
+            ->first();
+
+        $quantity = $warehouseQuantity ? $warehouseQuantity->quantity : 0;
+    } else {
+        $quantity = $row->current_stock;
+    }
+
+    $conversionRate = $row->conversion_rate ?? 1;
+
+    // Calculate total pieces based on conversion rate
+    $totalPieces = $quantity * $conversionRate;
+
+    // Split into boxes and pieces
+    $boxes = floor($totalPieces / $conversionRate);
+    $pieces = round(fmod($totalPieces, $conversionRate), 0); // ✅ round to whole number
+
+    // Adjust display
+    if ($conversionRate > 1) {
+        return "{$boxes} Boxes {$pieces} Pcs";
+    } else {
+        return "{$quantity} {$row->baseUnit->name}";
+    }
+})
+
+
+                    ->addColumn('current_pieces_stock', function ($row) {
+                        return $this->formatWithPrecision($row->current_pieces_stock);
                     })
                     ->addColumn('action', function($row){
                             $id = $row->id;

@@ -238,13 +238,35 @@ class SaleOrderController extends Controller
         return view('print.sale-order.print', compact('isPdf', 'invoiceData', 'order','selectedPaymentTypesArray','batchTrackingRowCount'));
         //return view('sale.order.unused-print', compact('order','selectedPaymentTypesArray','batchTrackingRowCount'));
     }
+    public function printPdf($id, $isPdf = false) : View {
+        $order = SaleOrder::with(['party',
+                                        'itemTransaction' => [
+                                            'item',
+                                            'tax',
+                                            'batch.itemBatchMaster',
+                                            'itemSerialTransaction.itemSerialMaster'
+                                        ]])->find($id);
+
+        //Payment Details
+        $selectedPaymentTypesArray = json_encode($this->paymentTransactionService->getPaymentRecordsArray($order));
+
+        //Batch Tracking Row count for invoice columns setting
+        $batchTrackingRowCount = (new GeneralDataService())->getBatchTranckingRowCount();
+
+        $invoiceData = [
+            'name' => __('sale.order.order'),
+        ];
+
+        return view('print.sale-order.pdf', compact('isPdf', 'invoiceData', 'order','selectedPaymentTypesArray','batchTrackingRowCount'));
+        //return view('sale.order.unused-print', compact('order','selectedPaymentTypesArray','batchTrackingRowCount'));
+    }
 
 
     /**
      * Generate PDF using View: print() method
      * */
     public function generatePdf($id){
-        $html = $this->print($id, isPdf:true);
+        $html = $this->printPdf($id, isPdf:true);
 
         $mpdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -272,7 +294,7 @@ class SaleOrderController extends Controller
      * */
     public function store(SaleOrderRequest $request) : JsonResponse  {
         // try {
-            // dd($request->all());
+            //  dd($request->all());
         //    $item = Item::find($request->item_id);
         //    dd($item);
             DB::beginTransaction();
@@ -349,26 +371,7 @@ class SaleOrderController extends Controller
             }
 
 
-
-
-        // foreach ($items as $itemRow) {
-        //     $item = Item::find($itemRow['item_id'])->fresh();
-
-        //     if (!$item) {
-        //         throw new \Exception("Item not found.");
-        //     }
-
-        //     $requestedQty = $itemRow['qty'];
-
-        //     if ($item->current_stock < $requestedQty) {
-        //         throw new \Exception("Not enough stock for item: {$item->name}. Available: {$item->current_stock}, Requested: {$requestedQty}");
-        //     }
-
-        //     $item->current_stock -= $requestedQty;
-        //     $item->save();
-        // }
-
-        foreach ($items as $itemRow) {
+        foreach ($items as $index => $itemRow) {
             $item = Item::find($itemRow['item_id'])->fresh();
 
             if (!$item) {
@@ -376,24 +379,53 @@ class SaleOrderController extends Controller
             }
 
             $requestedQty = $itemRow['qty'];
+            $unitId = $request->unit_id[$index] ?? null;
+
+            if (!$unitId) {
+                throw new \Exception("Missing unit for item: {$item->name}.");
+            }
 
             if ($requestedQty <= 0) {
                 throw new \Exception("Invalid quantity for item: {$item->name}.");
             }
 
-            if ($item->current_stock < $requestedQty) {
-                throw new \Exception("Not enough stock for item: {$item->name}. Available: {$item->current_stock}, Requested: {$requestedQty}");
+            // ✅ Determine if the sale is in box or piece
+            $isBoxSale = ($unitId == $item->base_unit_id);
+            $isPieceSale = ($unitId == $item->secondary_unit_id);
+
+            if (!$isBoxSale && !$isPieceSale) {
+                throw new \Exception("Invalid unit selected for item: {$item->name}.");
             }
 
-            // ✅ Check if after deduction, stock falls below min_stock
-            $remainingStock = $item->current_stock - $requestedQty;
-            if ($remainingStock < $item->min_stock) {
-                throw new \Exception("Cannot proceed with sale. Deducting {$requestedQty} units of '{$item->name}' will reduce stock below the minimum allowed ({$item->min_stock}). Remaining would be: {$remainingStock}");
+            // ✅ Calculate and update stock based on selected unit
+            if ($isBoxSale) {
+                // Selling by boxes
+                if ($item->current_stock < $requestedQty) {
+                    throw new \Exception("Not enough boxes for item: {$item->name}. Available: {$item->current_stock}, Requested: {$requestedQty}");
+                }
+
+                $item->current_stock -= $requestedQty;
+                $item->current_pieces_stock -= ($requestedQty * $item->conversion_rate);
+            } elseif ($isPieceSale) {
+                // Selling by pieces
+                if ($item->current_pieces_stock < $requestedQty) {
+                    throw new \Exception("Not enough pieces for item: {$item->name}. Available: {$item->current_pieces_stock}, Requested: {$requestedQty}");
+                }
+
+                $item->current_pieces_stock -= $requestedQty;
+
+                // Update boxes count automatically
+                $item->current_stock = $item->current_pieces_stock / $item->conversion_rate;
             }
 
-            $item->current_stock = $remainingStock;
+            // ✅ Check minimum stock threshold
+            if ($item->current_stock < $item->min_stock) {
+                throw new \Exception("Cannot proceed with sale. Selling {$requestedQty} unit(s) of '{$item->name}' will reduce stock below minimum allowed ({$item->min_stock}).");
+            }
+
             $item->save();
         }
+
 
 
 
@@ -578,8 +610,8 @@ class SaleOrderController extends Controller
                 'mrp'                       => $request->mrp[$i]??0,
 
                 // 'discount'                  => $request->discount[$i],
-                'discount_type'             => $request->discount_type[$i],
-                'discount_amount'           => $request->discount_amount[$i],
+                // 'discount_type'             => $request->discount_type[$i],
+                // 'discount_amount'           => $request->discount_amount[$i],
 
                 'tax_id'                    => $request->tax_id[$i],
                 'tax_type'                  => $request->tax_type[$i],

@@ -45,7 +45,8 @@ class PurchaseRequest extends FormRequest
             'note'                 => ['nullable', 'string','max:250'],
             'state_id'             => ['nullable', 'integer', Rule::exists('states', 'id')],
             'row_count'            => ['required', 'integer', 'min:1'],
-            'bilty'            => ['nullable', 'integer'],
+            'bilty'            => ['nullable'],
+            'total_discount'            => ['nullable']
         ];
 
         //For Update Operation

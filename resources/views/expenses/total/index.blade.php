@@ -32,6 +32,8 @@
                                 <x-label for="user_id" name="{{ __('user.user') }}" />
                                 <x-dropdown-user selected="" :showOnlyUsername='true' />
                             </div> --}}
+
+
                             <div class="col-md-4">
                                 <x-label for="from_date" name="{{ __('app.from_date') }}" />
                                 <a tabindex="0" class="text-primary" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Filter by Order Date"><i class="fadeIn animated bx bx-info-circle"></i></a>

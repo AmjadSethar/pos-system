@@ -48,7 +48,7 @@ class Item extends Model
 
         'mrp',
         'current_stock',
-
+        'current_pieces_stock',
         'tracking_type',
         'min_stock',
         'item_location',

@@ -338,6 +338,9 @@ class PurchaseController extends Controller
      * Store Records
      * */
     public function store(PurchaseRequest $request) : JsonResponse  {
+            //  dd($request->all());
+
+        
         try {
 
             DB::beginTransaction();
@@ -345,18 +348,63 @@ class PurchaseController extends Controller
             $validatedData = $request->validated();
 
 
-            if($request->operation == 'save' || $request->operation == 'convert'){
-                // Create a new purchase record using Eloquent and save it
+            // if($request->operation == 'save' || $request->operation == 'convert'){
+            //     // Create a new purchase record using Eloquent and save it
+            //     $bilty = $request->bilty ?? 0;
+
+            //     // 👇 Add bilty to grand_total
+            //     $validatedData['grand_total'] += $bilty;
+
+            //     // 👇 Save bilty separately
+            //     $validatedData['bilty'] = $bilty;
+            //     $newPurchase = Purchase::create($validatedData);
+            if ($request->operation == 'save' || $request->operation == 'convert') {
+
                 $bilty = $request->bilty ?? 0;
 
-                // 👇 Add bilty to grand_total
-                $validatedData['grand_total'] += $bilty;
+                // Step 1: Add bilty to grand total
+                $totalWithBilty = $validatedData['grand_total'] + $bilty;
 
-                // 👇 Save bilty separately
-                $validatedData['bilty'] = $bilty;
+                // Step 2: Calculate percentage discount (5% here)
+                $discountPercent = $validatedData['total_discount'] ?? 0; // this is "5"
+                $discountAmount = ($totalWithBilty * $discountPercent) / 100;
+
+                // Step 3: Apply discount
+                 $finalTotal = $totalWithBilty - $discountAmount;
+
+                // Step 4: Save back to array
+                $validatedData['bilty']        = $bilty;
+                $validatedData['grand_total']  = $finalTotal;
+                $validatedData['total_discount'] = $discountAmount;
+
+                // Save purchase
                 $newPurchase = Purchase::create($validatedData);
 
+
+
                 $request->request->add(['purchase_id' => $newPurchase->id]);
+
+            
+
+
+            $itemIds = $request->item_id;      
+            $quantities = $request->quantity;
+
+            foreach ($itemIds as $index => $id) {
+
+                $item = Item::find($id);
+
+                if ($item) {
+                $item->current_stock += floatval($quantities[$index]); // convert to number
+                    $item->save();
+                }
+            }
+
+
+
+
+
+                
             }
             else{
                 $fillableColumns = [
@@ -374,6 +422,11 @@ class PurchaseController extends Controller
 
                 $newPurchase = Purchase::findOrFail($validatedData['purchase_id']);
                 $newPurchase->update($fillableColumns);
+
+                // $itemId = $request->item_id ;
+                
+
+
 
                 /**
                 * Before deleting ItemTransaction data take the
@@ -700,7 +753,7 @@ class PurchaseController extends Controller
      * Datatabale
      * */
     public function datatableList(Request $request){
-
+        
         $data = Purchase::with('user', 'party')
                         ->when($request->party_id, function ($query) use ($request) {
                             return $query->where('party_id', $request->party_id);

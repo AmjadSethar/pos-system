@@ -460,7 +460,7 @@ class PartyTransactionController extends Controller
 
             // Validation rules
             $rules = [
-                'transaction_date'  => 'required|date',
+                // 'transaction_date'  => 'required|date',
                 'receipt_no'        => 'nullable|string|max:255',
                 'payment_type_id'   => 'required|integer',
                 'payment'           => 'required|numeric|gt:0',
@@ -487,6 +487,10 @@ class PartyTransactionController extends Controller
             $paymentNote        = $request->input('payment_note');
             $record             = $request->input('record');
             $paymentDirection   = $request->input('payment_direction');
+
+            $formattedTransactionDate = \Carbon\Carbon::createFromFormat('d/m/Y', $transactionDate)
+                    ->format('Y-m-d');
+
 
 
             /**
@@ -552,7 +556,7 @@ class PartyTransactionController extends Controller
 
                     //Now Record Payments
                     $paymentsArray = [
-                        'transaction_date'          => $transactionDate,
+                        'transaction_date'          => $formattedTransactionDate,
                         'amount'                    => $amount,
                         'payment_type_id'           => $paymentTypeId,
                         'reference_no'              => $receiptNo,

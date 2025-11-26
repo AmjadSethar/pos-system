@@ -222,7 +222,7 @@ class PurchaseReturnPaymentController extends Controller
 
              // Validation rules
             $rules = [
-                'transaction_date'  => 'required|date',
+                'transaction_date'  => 'required',
                 'receipt_no'        => 'nullable|string|max:255',
                 'payment_type_id'   => 'required|integer',
                 'payment'           => 'required|numeric|gt:0',

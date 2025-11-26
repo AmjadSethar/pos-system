@@ -193,7 +193,11 @@ $(function() {
         table.empty(); // Clear existing rows
 
         $.each(response.data.paymentTransactions, function(index, payment) {
-            totalAmount += parseFloat(payment.amount);
+            // totalAmount += parseFloat(payment.amount);
+             let cleanAmount = parseFloat(payment.amount.toString().replace(/,/g, ""));
+    
+            totalAmount += cleanAmount;
+
             var newRow = `
                 <tr id="${payment.payment_id}">
                     <td>${payment.transaction_date}</td>

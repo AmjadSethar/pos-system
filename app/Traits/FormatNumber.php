@@ -7,13 +7,25 @@ use Carbon\Carbon;
 
 trait FormatNumber{
 
-	public function formatWithPrecision($number, $comma = true){
-		if($comma){
-			return Number::format($number, app('company')['number_precision']);
-		}else{
-			return str_replace(',', '', Number::format($number, app('company')['number_precision']));
-		}
-	}
+	// public function formatWithPrecision($number, $comma = true){
+	// 	if($comma){
+	// 		return Number::format($number, app('company')['number_precision']);
+	// 	}else{
+	// 		return str_replace(',', '', Number::format($number, app('company')['number_precision']));
+	// 	}
+	// }
+
+	public function formatWithPrecision($number, $comma = true)
+{
+    $number = $number ?? 0;
+
+    if($comma){
+        return Number::format((float)$number, app('company')['number_precision']);
+    }else{
+        return str_replace(',', '', Number::format((float)$number, app('company')['number_precision']));
+    }
+}
+
 
 	public function formatQuantity($number){
 		return str_replace(',', '', Number::format($number, app('company')['quantity_precision']));

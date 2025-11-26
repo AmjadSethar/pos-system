@@ -609,6 +609,7 @@ class ItemTransactionService{
 
             //MULTIPLE ITEM TRANSACTIONS
             foreach ($itemGeneralTransactions as $warehouseId => $generalransactions) {
+                dd($generalransactions);
                 foreach($generalransactions as $generalransaction){
                     //Record ItemGeneralQuantity
                     $readyData = [

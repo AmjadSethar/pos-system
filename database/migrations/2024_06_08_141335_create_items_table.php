@@ -53,6 +53,7 @@ return new class extends Migration
             //Stock
             $table->decimal('min_stock', 20, 4)->default(0);
             $table->decimal('current_stock', 20, 4)->default(0);
+            $table->decimal('current_pieces_stock', 20, 4)->default(0);
 
             //Image
             $table->string('image_path')->nullable();

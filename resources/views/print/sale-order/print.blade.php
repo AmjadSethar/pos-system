@@ -34,7 +34,7 @@
         }
 
         table {
-            width: 100%;
+            width: 98%;
             border-collapse: collapse;
         }
 
@@ -99,6 +99,7 @@
         <tr>
             <td><b>{{ __('app.time') }}:</b> {{ $order->format_created_time }}</td>
             <td class="text-end"><b>Customer:</b> {{ $order->party->first_name }} {{ $order->party->last_name }}</td>
+            <td class="text-end"><b>Created By:</b> {{ $order->user->first_name }} {{ $order->user->last_name }}</td>
         </tr>
     </table>
 
@@ -124,7 +125,7 @@
                     <td>{{ Str::limit($transaction->item->name, 22) }}</td>
                     <td class="text-center">{{ $formatNumber->formatQuantity($transaction->quantity) }}</td>
                     <td class="text-end">{{ $formatNumber->formatWithPrecision($transaction->unit_price) }}</td>
-                    <td class="text-end">{{ $formatNumber->formatWithPrecision($transaction->discount ?? 0) }}</td>
+                    <td class="text-end">{{ $formatNumber->formatWithPrecision($order->discount ?? 0) }}</td>
                     <td class="text-end">{{ $formatNumber->formatWithPrecision($transaction->total) }}</td>
                 </tr>
             @endforeach
